@@ -19,11 +19,10 @@ source=(
 
 # Use 'updpkgsums' para preencher isso automaticamente // Use 'updpkgsums' to automatically fill this in.
 
-sha256sums=('SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP'
-            )
+sha256sums=('14e56b6506397038bd4630ae45c1e23381bce8a2411a8f711827fbf88a7195cd'
+            '8529b988d4e3e6ef611ad5ef2124fafa2cbe416b78698c9596845d5471d93651'
+            '6b458151004c8f5d183aebdabf444360eba8044b412714850e8422fd21b62de1'
+            '3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986')
 
 package() {
 
