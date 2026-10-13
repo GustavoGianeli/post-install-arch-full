@@ -1177,7 +1177,7 @@ OTIMIZAR_HARDWARE() {
 
         local global_error=0
 
-        otimizar_detectar_hardware || global_error=1
+        OTIMIZAR_HARDWARE || global_error=1
 
             # 2. Otimização para GPUs Integradas / Pilha Aberta
         if [ "$HAS_AMD_GPU" -eq 1 ]; then
@@ -1951,6 +1951,9 @@ FUNCAO_INSTALAR_NAVEGADORES() {
     return 0
 }
 
+#=======================================
+#ENCERRAMENTO FUNÇÃO NAVEGADORES
+#=======================================
 
 
 #==============================================
