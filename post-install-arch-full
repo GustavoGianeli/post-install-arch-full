@@ -1065,96 +1065,137 @@ OTIMIZAR_HARDWARE() {
     # SUBFUNÇÃO 3: Otimização para GPUs NVIDIA
     # ==============================================================================
     otimizar_gpu_nvidia() {
-        local rc=0
+    local rc=0
 
-        msg  "${CYAN_NEON}[GPU - NVIDIA] Configurando placa gráfica NVIDIA..." \
-             "${CYAN_NEON}[GPU - NVIDIA] Configuring NVIDIA graphics card..." \
-             "${CYAN_NEON}[GPU - NVIDIA] Configurando tarjeta gráfica NVIDIA..."
+    # Detecta se o kernel ativo ou instalado é zen ou lts
+    local is_custom_kernel=false
+    if uname -r | grep -qE "(zen|lts)" || pacman -Q linux-zen &>/dev/null || pacman -Q linux-lts &>/dev/null; then
+        is_custom_kernel=true
+    fi
+
+    msg  "${CYAN_NEON}[GPU - NVIDIA] Configurando placa gráfica NVIDIA..." \
+         "${CYAN_NEON}[GPU - NVIDIA] Configuring NVIDIA graphics card..." \
+         "${CYAN_NEON}[GPU - NVIDIA] Configurando tarjeta gráfica NVIDIA..."
+    echo ""
+
+    if [ "$is_custom_kernel" = true ]; then
+        msg "${YELLOW_NEON}[RECOMENDAÇÃO] Kernel Zen ou LTS detectado. O uso de pacotes DKMS é altamente recomendado para garantir a compilação correta dos módulos.${NC}" \
+            "${YELLOW_NEON}[RECOMMENDATION] Zen or LTS kernel detected. Using DKMS packages is highly recommended to ensure correct module compilation.${NC}" \
+            "${YELLOW_NEON}[RECOMENDACIÓN] Kernel Zen o LTS detectado. Se recomienda encarecidamente usar paquetes DKMS para garantizar la compilación.${NC}"
         echo ""
-        while true; do
-            msg "Qual versão do driver NVIDIA deseja instalar?" \
-                "Which version of the NVIDIA driver do you want to install?" \
-                "¿Qué versión del controlador NVIDIA desea instalar?"
+    fi
 
+    while true; do
+        msg "Qual versão do driver NVIDIA deseja instalar?" \
+            "Which version of the NVIDIA driver do you want to install?" \
+            "¿Qué versión del controlador NVIDIA desea instalar?"
+
+        if [ "$is_custom_kernel" = true ]; then
+            msg "1) Driver Proprietário com DKMS [RECOMENDADO] (nvidia-dkms, nvidia-utils, lib32-nvidia-utils se multilib ativo)" \
+                "1) Proprietary Driver with DKMS [RECOMMENDED] (nvidia-dkms, nvidia-utils, lib32-nvidia-utils if multilib active)" \
+                "1) Controlador Propietario con DKMS [RECOMENDADO] (nvidia-dkms, nvidia-utils, lib32-nvidia-utils si multilib está activo)"
+        else
             msg "1) Driver Proprietário Padrão (nvidia, nvidia-utils, lib32-nvidia-utils se multilib ativo)" \
                 "1) Standard Proprietary Driver (nvidia, nvidia-utils, lib32-nvidia-utils if multilib active)" \
                 "1) Controlador Propietario Estándar (nvidia, nvidia-utils, lib32-nvidia-utils si multilib está activo)"
-            
-            echo ""
+        fi
+        
+        echo ""
 
+        if [ "$is_custom_kernel" = true ]; then
+            msg "2) Driver Kernel Aberto com DKMS (nvidia-open-dkms)" \
+                "2) Open Kernel Modules Driver with DKMS (nvidia-open-dkms)" \
+                "2) Controlador de Módulos de Kernel Abierto con DKMS (nvidia-open-dkms)"
+        else
             msg "2) Driver Kernel Aberto / Open-source (nvidia-open)" \
                 "2) Open Kernel Modules Driver (nvidia-open)" \
                 "2) Controlador de Módulos de Kernel Abierto (nvidia-open)"
-            
-            echo ""
+        fi
+        
+        echo ""
 
-            msg "0) Pular otimização NVIDIA" \
-                "0) Skip NVIDIA optimization" \
-                "0) Omitir optimización NVIDIA"
+        msg "0) Pular otimização NVIDIA" \
+            "0) Skip NVIDIA optimization" \
+            "0) Omitir optimización NVIDIA"
 
-            read -rp "Escolha / Choice / Opción: " nv_opt || return 1
+        read -rp "Escolha / Choice / Opción: " nv_opt || return 1
 
-            local pkgs=()
-            case "$nv_opt" in
-                1)
+        local pkgs=()
+        case "$nv_opt" in
+            1)
+                if [ "$is_custom_kernel" = true ]; then
+                    pkgs+=("nvidia-dkms" "nvidia-utils")
+                else
                     pkgs+=("nvidia" "nvidia-utils")
-                    if grep -q "^\[multilib\]" /etc/pacman.conf 2>/dev/null; then
-                        pkgs+=("lib32-nvidia-utils")
-                    fi
-                    ;;
-                2)
+                fi
+                if grep -q "^\[multilib\]" /etc/pacman.conf 2>/dev/null; then
+                    pkgs+=("lib32-nvidia-utils")
+                fi
+                ;;
+            2)
+                if [ "$is_custom_kernel" = true ]; then
+                    pkgs+=("nvidia-open-dkms" "nvidia-utils")
+                else
                     pkgs+=("nvidia-open" "nvidia-utils")
-                    if grep -q "^\[multilib\]" /etc/pacman.conf 2>/dev/null; then
-                        pkgs+=("lib32-nvidia-utils")
-                    fi
-                    ;;
-                0)
-                    msg "${CYAN_NEON}Otimização NVIDIA ignorada.${NC}" \
-                        "${CYAN_NEON}NVIDIA optimization skipped.${NC}" \
-                        "${CYAN_NEON}Optimización NVIDIA omitida.${NC}"
-                    echo ""
-                    return 0
-                    ;;
-                *)
-                    msg "${YELLOW_NEON}Comando inválido! Tente novamente.${NC}" \
-                        "${YELLOW_NEON}Invalid command! Try again.${NC}" \
-                        "${YELLOW_NEON}¡Comando inválido! Inténtelo de nuevo.${NC}"
-                    echo ""
-                    continue
-                    ;;
-            esac
-
-                       
-            if [ "${HAS_INTEL_GPU:-0}" -eq 1 ] || [ "${HAS_AMD_GPU:-0}" -eq 1 ]; then
-                pkgs+=("nvidia-prime")
-                msg "${CYAN_NEON}Gráfica híbrida detectada (iGPU + NVIDIA). Adicionando nvidia-prime: use 'prime-run <programa>' para rodar na NVIDIA.${NC}" \
-                    "${CYAN_NEON}Hybrid graphics detected (iGPU + NVIDIA). Adding nvidia-prime: use 'prime-run <program>' to run on NVIDIA.${NC}" \
-                    "${CYAN_NEON}Gráficos híbridos detectados (iGPU + NVIDIA). Añadiendo nvidia-prime: use 'prime-run <programa>' para ejecutar en NVIDIA.${NC}"
+                fi
+                if grep -q "^\[multilib\]" /etc/pacman.conf 2>/dev/null; then
+                    pkgs+=("lib32-nvidia-utils")
+                fi
+                ;;
+            0)
+                msg "${CYAN_NEON}Otimização NVIDIA ignorada.${NC}" \
+                    "${CYAN_NEON}NVIDIA optimization skipped.${NC}" \
+                    "${CYAN_NEON}Optimización NVIDIA omitida.${NC}"
                 echo ""
-            fi
+                return 0
+                ;;
+            *)
+                msg "${YELLOW_NEON}Comando inválido! Tente novamente.${NC}" \
+                    "${YELLOW_NEON}Invalid command! Try again.${NC}" \
+                    "${YELLOW_NEON}¡Comando inválido! Inténtelo de nuevo.${NC}"
+                echo ""
+                continue
+                ;;
+        esac
 
-            msg "Instalando componentes NVIDIA: ${pkgs[*]}..." \
-                "Installing NVIDIA components: ${pkgs[*]}..." \
-                "Instalando componentes NVIDIA: ${pkgs[*]}..."
+        
+        if [ "$is_custom_kernel" = true ]; then
+            pacman -Q linux &>/dev/null         && pkgs+=("linux-headers")
+            pacman -Q linux-lts &>/dev/null      && pkgs+=("linux-lts-headers")
+            pacman -Q linux-zen &>/dev/null      && pkgs+=("linux-zen-headers")
+            pacman -Q linux-hardened &>/dev/null && pkgs+=("linux-hardened-headers")
+        fi
 
-            if sudo pacman -S --needed --noconfirm "${pkgs[@]}"; then
+        if [ "${HAS_INTEL_GPU:-0}" -eq 1 ] || [ "${HAS_AMD_GPU:-0}" -eq 1 ]; then
+            pkgs+=("nvidia-prime")
+            msg "${CYAN_NEON}Gráfica híbrida detectada (iGPU + NVIDIA). Adicionando nvidia-prime: use 'prime-run <programa>' para rodar na NVIDIA.${NC}" \
+                "${CYAN_NEON}Hybrid graphics detected (iGPU + NVIDIA). Adding nvidia-prime: use 'prime-run <program>' to run on NVIDIA.${NC}" \
+                "${CYAN_NEON}Gráficos híbridos detectados (iGPU + NVIDIA). Añadiendo nvidia-prime: use 'prime-run <programa>' para ejecutar en NVIDIA.${NC}"
             echo ""
-                msg "${CYAN_NEON}Componentes NVIDIA instalados com sucesso.${NC}" \
-                    "${CYAN_NEON}NVIDIA components successfully installed.${NC}" \
-                    "${CYAN_NEON}Componentes NVIDIA instalados con éxito.${NC}"
-                rc=0
-            else
+        fi
+
+        msg "Instalando componentes NVIDIA: ${pkgs[*]}..." \
+            "Installing NVIDIA components: ${pkgs[*]}..." \
+            "Instalando componentes NVIDIA: ${pkgs[*]}..."
+
+        if sudo pacman -S --needed --noconfirm "${pkgs[@]}"; then
             echo ""
-                msg "${RED_NEON}Falha na instalação dos componentes NVIDIA.${NC}" \
-                    "${RED_NEON}Failed to install NVIDIA components.${NC}" \
-                    "${RED_NEON}Error al instalar los componentes NVIDIA.${NC}"
-                rc=1
-            fi
+            msg "${CYAN_NEON}Componentes NVIDIA instalados com sucesso.${NC}" \
+                "${CYAN_NEON}NVIDIA components successfully installed.${NC}" \
+                "${CYAN_NEON}Componentes NVIDIA instalados con éxito.${NC}"
+            rc=0
+        else
             echo ""
-            break
-        done
-        return $rc
-    }
+            msg "${RED_NEON}Falha na instalação dos componentes NVIDIA.${NC}" \
+                "${RED_NEON}Failed to install NVIDIA components.${NC}" \
+                "${RED_NEON}Error al instalar los componentes NVIDIA.${NC}"
+            rc=1
+        fi
+        echo ""
+        break
+    done
+    return $rc
+ }
 
     # ==============================================================================
     # SUBFUNÇÃO 4: Auditoria Real
@@ -1280,17 +1321,39 @@ VERIFICAR_CONECTIVIDADE() {
     fi
 }
 
-BOX_ERROR() {
-    local LARGURA=${LARGURA_BOX:-86} 
-    local INTERNO=$((LARGURA - 4))
-    
-    echo -e "\n${RED_NEON}╔$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╗${NC}"
-    
-    for LINHA in "$@"; do
-        # O printf desenha o espaço interno fixo e a cor amarela é aplicada na linha inteira de forma segura
-        printf "${RED_NEON}║${NC} ${YELLOW_NEON}%-*s${NC} ${RED_NEON}║${NC}\n" "$INTERNO" "$LINHA"
+QUEBRAR_TEXTO() {
+    # Quebra $2 em linhas de no máximo $1 caracteres, sem cortar palavras (uma linha por saída)
+    local largura="$1" texto="$2" linha="" palavra
+    local -a palavras
+    read -ra palavras <<< "$texto"
+    for palavra in "${palavras[@]}"; do
+        if [ -z "$linha" ]; then
+            linha="$palavra"
+        elif [ $(( ${#linha} + 1 + ${#palavra} )) -le "$largura" ]; then
+            linha+=" $palavra"
+        else
+            printf '%s\n' "$linha"
+            linha="$palavra"
+        fi
     done
-    
+    printf '%s\n' "$linha"
+}
+
+BOX_ERROR() {
+    local LARGURA=${LARGURA_BOX:-86}
+    local INTERNO=$((LARGURA - 4))
+    local LINHA SUB_LINHA PAD
+
+    echo -e "\n${RED_NEON}╔$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╗${NC}"
+
+    for LINHA in "$@"; do
+        while IFS= read -r SUB_LINHA; do
+            PAD=$(( INTERNO - ${#SUB_LINHA} ))
+            [ "$PAD" -lt 0 ] && PAD=0
+            printf "${RED_NEON}║${NC} ${YELLOW_NEON}%s%*s${NC} ${RED_NEON}║${NC}\n" "$SUB_LINHA" "$PAD" ""
+        done < <(QUEBRAR_TEXTO "$INTERNO" "$LINHA")
+    done
+
     echo -e "${RED_NEON}╚$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╝${NC}"
 }
 
@@ -1393,9 +1456,11 @@ LIMPAR_ORFAOS() {
         "${NEON_BLUE}Verificando paquetes huérfanos...${NC}"
     echo ""
 
+    local LARGURA=${LARGURA_BOX:-86}
+    local rc=0
     local texto_orfao="PURGING RESIDUAL FRAGMENTS (ORPHANS)"
     local TAM_TEXTO=${#texto_orfao}
-    local ESPACOS=$((LARGURA_BOX - TAM_TEXTO - 2))
+    local ESPACOS=$((LARGURA - TAM_TEXTO - 2))
     if [ "$ESPACOS" -lt 0 ]; then ESPACOS=0; fi
 
     echo -e "${NEON_BLUE}╔$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╗${NC}"
@@ -1418,11 +1483,16 @@ LIMPAR_ORFAOS() {
             "${YELLOW_NEON}Orphan packages detected. Wiping them out...${NC}" \
             "${YELLOW_NEON}Paquetes huérfanos detectados. Eliminando residuos...${NC}"
 
-        sudo pacman -Rns "${ORPHANS_LIST[@]}" --noconfirm
-
-        msg "${GREEN_NEON}Fragmentos residuais eliminados com sucesso.${NC}" \
-            "${GREEN_NEON}Residual data erased.${NC}" \
-            "${GREEN_NEON}Fragmentos residuales eliminados con éxito.${NC}"
+        if sudo pacman -Rns "${ORPHANS_LIST[@]}" --noconfirm; then
+            msg "${GREEN_NEON}Fragmentos residuais eliminados com sucesso.${NC}" \
+                "${GREEN_NEON}Residual data erased.${NC}" \
+                "${GREEN_NEON}Fragmentos residuales eliminados con éxito.${NC}"
+        else
+            msg "${RED_NEON}[ERRO] Falha ao remover os pacotes órfãos.${NC}" \
+                "${RED_NEON}[ERROR] Failed to remove orphan packages.${NC}" \
+                "${RED_NEON}[ERROR] Error al eliminar los paquetes huérfanos.${NC}"
+            rc=1
+        fi
         echo ""
     else
         echo ""
@@ -1433,6 +1503,7 @@ LIMPAR_ORFAOS() {
     fi
 
     echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    return "$rc"
 }
 
 #==========================================
@@ -2277,7 +2348,7 @@ FUNCAO_INSTALAR_ARCH_UPDATE_FULL() {
     elif [ "$has_paru" = true ]; then
         msg "${GREEN_NEON}Helper 'paru' detectado. Instalando arch-update-full...${NC}" \
             "${GREEN_NEON}Helper 'paru' detected. Installing arch-update-full...${NC}" \
-            "${GREEN_NEON}Asistente 'paru' detected. Instalando arch-update-full...${NC}"
+            "${GREEN_NEON}Asistente 'paru' detectado. Instalando arch-update-full...${NC}"
         paru -S --noconfirm arch-update-full
         install_status=$?
     else
