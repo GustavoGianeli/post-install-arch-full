@@ -929,6 +929,7 @@ FUNCAO_CORE(){
 }
 
 OTIMIZAR_HARDWARE() {
+
     local rc=0
     echo ""
     echo -e "${NEON_BLUE}===============================================================${NC}"
@@ -1199,9 +1200,233 @@ OTIMIZAR_HARDWARE() {
         return "$global_error"
     
  } 
+
 #========================================
     #FIM DO CORE // END OF CORE
 #========================================
+
+VERIFICAR_CONECTIVIDADE() {
+    local TEXTO_NET=" ESTABLISHING UPLINK: CHECKING SECTOR NETWORK"
+    : "${LARGURA_BOX:=60}" # Fallback de segurança caso a largura não esteja definida
+    local TAM_TEXTO=${#TEXTO_NET}
+    local ESPACOS=$((LARGURA_BOX - TAM_TEXTO - 2))
+    local MIRROR_ALVO
+    local TARGET_1
+    local TARGET_2="archlinux.org"
+    local PING_RES
+    local LATENCY
+
+    msg "${NEON_BLUE}Verificando conectividade de rede...${NC}" \
+        "${NEON_BLUE}Checking network connectivity...${NC}" \
+        "${NEON_BLUE}Verificando la conectividad de red...${NC}"
+    echo ""
+   
+    echo -e "${NEON_BLUE}╔$(printf '═%.0s' $(seq 1 $((LARGURA_BOX-2))))╗${NC}"
+    printf "${NEON_BLUE}║${NC}${YELLOW_NEON}%s%*s${NC}${NEON_BLUE}║${NC}\n" "$TEXTO_NET" "$ESPACOS" ""
+    echo -e "${NEON_BLUE}╚$(printf '═%.0s' $(seq 1 $((LARGURA_BOX-2))))╝${NC}"
+    
+    echo ""
+    msg "Isso pode levar alguns segundos dependendo da sua conexão. Por favor, aguarde..." \
+        "This may take a few seconds depending on your connection. Please wait..." \
+        "Esto puede tardar unos segundos dependiendo de su conexión. Por favor, espere..."
+    echo ""
+
+    # Extrai o primeiro mirror ativo da lista do usuário // Extracts the first active mirror from the user's list
+    MIRROR_ALVO=$(sed -n '/^[[:space:]]*Server[[:space:]]*=/ { s|.*https?://\([^/:]*\).*|\1|p; q }' /etc/pacman.d/mirrorlist)
+    TARGET_1=${MIRROR_ALVO:-"archlinux.org"} # Se a lista estiver vazia por algum bug, assume o oficial // If the list is empty due to some bug, defaults to the official site
+
+    # TENTATIVA 1: Testa a rota do Mirror local // ATTEMPT 1: Tests the route of the local Mirror
+    if PING_RES=$(ping -c 3 -W 13 "$TARGET_1" 2>/dev/null); then
+        LATENCY=$(echo "$PING_RES" | awk -F'/' '/^rtt/ {print $5}')
+        LATENCY=${LATENCY:-0.00}
+        
+        msg "${GREEN_NEON}[SUCESSO] CONEXÃO OK (Mirror) | LATÊNCIA: ${LATENCY}ms${NC}" \
+            "${GREEN_NEON}[SUCCESS] CONNECTION OK (Mirror) | LATENCY: ${LATENCY}ms${NC}" \
+            "${GREEN_NEON}[ÉXITO] CONEXIÓN OK (Mirror) | LATENCIA: ${LATENCY}ms${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+
+    # TENTATIVA 2: Se o Mirror falhar, tenta o site oficial do Arch // ATTEMPT 2: If the Mirror fails, tries the official Arch site
+    elif PING_RES=$(ping -c 3 -W 13 "$TARGET_2" 2>/dev/null); then
+        LATENCY=$(echo "$PING_RES" | awk -F'/' '/^rtt/ {print $5}')
+        LATENCY=${LATENCY:-0.00}
+        
+        msg "${GREEN_NEON}[SUCESSO] CONEXÃO OK (Arch.org) | LATÊNCIA: ${LATENCY}ms${NC}" \
+            "${GREEN_NEON}[SUCCESS] CONNECTION OK (Arch.org) | LATENCY: ${LATENCY}ms${NC}" \
+            "${GREEN_NEON}[ÉXITO] CONEXIÓN OK (Arch.org) | LATENCIA: ${LATENCY}ms${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+
+    # FALHA TOTAL: Sem internet ou rotas caídas // TOTAL FAILURE: No internet or down routes
+    else
+        msg "${RED_NEON}[ERRO] SEM CONEXÃO COM A INTERNET${NC}" \
+            "${RED_NEON}[ERROR] NO INTERNET CONNECTION${NC}" \
+            "${RED_NEON}[ERROR] SIN CONEXIÓN A INTERNET${NC}"
+        echo ""
+        msg "${YELLOW_NEON}[!] Nenhuma conexão com a internet disponível, protocolo abortado.${NC}" \
+            "${YELLOW_NEON}[!] Sentinel Protocol aborted. Please check your network connection.${NC}" \
+            "${YELLOW_NEON}[!] Protocolo Sentinel abortado. Por favor, compruebe su conexión de red.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        exit 1
+    fi
+}
+
+BOX_ERROR() {
+    local LARGURA=${LARGURA_BOX:-86} 
+    local INTERNO=$((LARGURA - 4))
+    
+    echo -e "\n${RED_NEON}╔$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╗${NC}"
+    
+    for LINHA in "$@"; do
+        # O printf desenha o espaço interno fixo e a cor amarela é aplicada na linha inteira de forma segura
+        printf "${RED_NEON}║${NC} ${YELLOW_NEON}%-*s${NC} ${RED_NEON}║${NC}\n" "$INTERNO" "$LINHA"
+    done
+    
+    echo -e "${RED_NEON}╚$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╝${NC}"
+}
+
+CHECK_DISK_SPACE() {
+    local LARGURA=${LARGURA_BOX:-86}
+    local TEXTO_DISK=" ANALYZING STORAGE: CHECKING DISK INTEGRITY RESERVE"
+    local TAM_TEXTO=${#TEXTO_DISK}
+    local ESPACOS=$((LARGURA - TAM_TEXTO - 2))
+    if [ "$ESPACOS" -lt 0 ]; then ESPACOS=0; fi
+    local FREE_SPACE
+    FREE_SPACE=$(df --output=avail -BG / | tail -n 1 | tr -d 'G ')
+
+    msg "${NEON_BLUE}Verificando espaço em disco disponível...${NC}" \
+        "${NEON_BLUE}Checking available disk space...${NC}" \
+        "${NEON_BLUE}Verificando el espacio en disco disponible...${NC}"
+    echo ""
+
+    echo -e "${NEON_BLUE}╔$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╗${NC}"
+    printf "${NEON_BLUE}║${NC}${PINK_NEON}%s%*s${NC}${NEON_BLUE}║${NC}\n" "$TEXTO_DISK" "$ESPACOS" ""
+    echo -e "${NEON_BLUE}╚$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╝${NC}"
+    
+    echo ""
+    msg "Analisando partições e espaço de segurança..." \
+        "Analyzing partitions and safety space..." \
+        "Analizando particiones y espacio de seguridad..."
+    echo ""
+    sleep 0.7
+
+    # Captura espaço livre na raiz (/) em GB // Captures free space on root (/) in GB
+    if [ "${FREE_SPACE:-0}" -lt 25 ]; then
+        
+        local msg_title msg_desc1 msg_desc2 msg_desc3 msg_desc4 msg_abort
+        case "$IDIOMA_SISTEMA" in
+            "PT_BR")
+                msg_title="⚠️ Espaço insuficiente para continuar a atualização."
+                msg_desc1="O seu sistema tem apenas ${FREE_SPACE}GB de espaço livre."
+                msg_desc2="O programa de atualização exige no mínimo 25 GB livres para funcionar com segurança."
+                msg_desc3="Não foi possível concluir a atualização por falta de espaço."
+                msg_desc4="Por favor, libere espaço para continuar com a atualização (25 GB é a margem de segurança)."
+                msg_abort="ABORTANDO O PROTOCOLO DE ATUALIZAÇÃO."
+                ;;
+            "ES_ES")
+                msg_title="⚠️ Espacio insuficiente para continuar la actualización."
+                msg_desc1="Su sistema tiene sólo ${FREE_SPACE}GB de espacio libre."
+                msg_desc2="El programa de actualización requiere un mínimo de 25 GB libres para funcionar de forma segura."
+                msg_desc3="No se pudo completar la actualización por falta de espacio."
+                msg_desc4="Por favor, libere espacio para continuar con la actualización (25 GB es el margen de seguridad)."
+                msg_abort="ABORTANDO EL PROTOCOLO DE ACTUALIZACIÓN."
+                ;;
+            *)
+                msg_title="⚠️ Insufficient space to continue the update."
+                msg_desc1="Your system has only ${FREE_SPACE}GB of free space."
+                msg_desc2="The update program requires a minimum of 25 GB free to work safely."
+                msg_desc3="Could not complete the update due to lack of space."
+                msg_desc4="Please free up space to continue with the update (25 GB is the safety margin)."
+                msg_abort="ABORTING THE UPDATE PROTOCOL."
+                ;;
+        esac
+
+        BOX_ERROR "$msg_title" "$msg_desc1" "$msg_desc2"
+        
+        echo ""
+        msg "${YELLOW_NEON}${msg_desc3}\n${msg_desc4}${NC}" \
+            "${YELLOW_NEON}${msg_desc3}\n${msg_desc4}${NC}" \
+            "${YELLOW_NEON}${msg_desc3}\n${msg_desc4}${NC}"
+        echo ""
+        msg "${RED_NEON}${msg_abort}${NC}" \
+            "${RED_NEON}${msg_abort}${NC}" \
+            "${RED_NEON}${msg_abort}${NC}"
+        echo ""
+
+        if [[ -n "${LOG_ATUAL:-}" ]]; then
+            echo "[LOG] Aborting due to insufficient space (${FREE_SPACE}GB) on $(date)" >> "$LOG_ATUAL"    
+        fi
+        
+        echo -e "${YELLOW_NEON}--------------------------------------------------------------------------------------${NC}"
+        exit 1
+    else
+        msg "${GREEN_NEON}[OK] Reserva de disco confirmada: ${FREE_SPACE}GB disponíveis na raiz.${NC}" \
+            "${GREEN_NEON}[OK] Disk reserve confirmed: ${FREE_SPACE}GB available on root.${NC}" \
+            "${GREEN_NEON}[OK] Reserva de disco confirmada: ${FREE_SPACE}GB disponibles en la raíz.${NC}"
+        echo ""
+        msg "${CYAN_NEON}Detalhamento das partições e espaço total do sistema:${NC}" \
+            "${CYAN_NEON}System partitions and total storage details:${NC}" \
+            "${CYAN_NEON}Detalles de las particiones y espacio total del sistema:${NC}"
+        echo ""
+        
+        # Exibe o espaço total do disco e das partições montadas de forma limpa
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        df -h --output=target,size,avail,pcent | grep -E '^/|Mounted' | while read -r linha; do
+            echo -e "${YELLOW_NEON}  -> $linha${NC}"
+        done
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    fi
+}
+
+LIMPAR_ORFAOS() {
+    msg "${NEON_BLUE}Verificando por pacotes órfãos...${NC}" \
+        "${NEON_BLUE}Checking for orphaned packages...${NC}" \
+        "${NEON_BLUE}Verificando paquetes huérfanos...${NC}"
+    echo ""
+
+    local texto_orfao="PURGING RESIDUAL FRAGMENTS (ORPHANS)"
+    local TAM_TEXTO=${#texto_orfao}
+    local ESPACOS=$((LARGURA_BOX - TAM_TEXTO - 2))
+    if [ "$ESPACOS" -lt 0 ]; then ESPACOS=0; fi
+
+    echo -e "${NEON_BLUE}╔$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╗${NC}"
+    printf "${NEON_BLUE}║${NC}${YELLOW_NEON} %s%*s${NC}${NEON_BLUE}║${NC}\n" "$texto_orfao" "$((ESPACOS-1))" ""
+    echo -e "${NEON_BLUE}╚$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╝${NC}"
+
+    local -a ORPHANS_LIST
+    mapfile -t ORPHANS_LIST < <(pacman -Qdtq 2>/dev/null)
+
+    local -a ORPHANS_CLEAN=()
+    for pkg in "${ORPHANS_LIST[@]}"; do
+        [[ -n "$pkg" ]] && ORPHANS_CLEAN+=("$pkg")
+    done
+    ORPHANS_LIST=("${ORPHANS_CLEAN[@]}")
+    unset ORPHANS_CLEAN
+
+    if [ ${#ORPHANS_LIST[@]} -gt 0 ]; then
+        echo "" 
+        msg "${YELLOW_NEON}Pacotes órfãos detectados. Eliminando resíduos...${NC}" \
+            "${YELLOW_NEON}Orphan packages detected. Wiping them out...${NC}" \
+            "${YELLOW_NEON}Paquetes huérfanos detectados. Eliminando residuos...${NC}"
+
+        sudo pacman -Rns "${ORPHANS_LIST[@]}" --noconfirm
+
+        msg "${GREEN_NEON}Fragmentos residuais eliminados com sucesso.${NC}" \
+            "${GREEN_NEON}Residual data erased.${NC}" \
+            "${GREEN_NEON}Fragmentos residuales eliminados con éxito.${NC}"
+        echo ""
+    else
+        echo ""
+        msg "${YELLOW_NEON}Nenhum fragmento encontrado nos setores.${NC}" \
+            "${YELLOW_NEON}No fragments found in sectors.${NC}" \
+            "${YELLOW_NEON}Ningún fragmento encontrado en los sectores.${NC}"
+        echo "" 
+    fi
+
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+}
+
+#==========================================
+#ENCERRANDO FUNÇÕES DE SEGURANÇA
+#==========================================
 
 CODECS_MULTIMIDIA_CORE() {
         echo ""
@@ -2017,6 +2242,8 @@ PERGUNTAR_REINICIAR() {
 
 MENSAGEM_FINAL() {
 
+    LIMPAR_ORFAOS
+
     msg "" "" ""
     msg "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
@@ -2073,7 +2300,15 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         echo ""
     sleep 0.5
 
-
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    msg "${NEON_BLUE}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 25 GB)...${NC}" \
+        "${NEON_BLUE}Executing security blocks: checking internet connectivity and available disk space (minimum 25 GB)...${NC}" \
+        "${NEON_BLUE}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 25 GB)...${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+        VERIFICAR_CONECTIVIDADE
+        CHECK_DISK_SPACE
+    sleep 0.5
+    echo ""    
 
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
     msg "${CYAN_NEON}Executando função CORE para estabelecer a fundação do sistema...${NC}" \
@@ -2085,15 +2320,43 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         FUNCAO_CORE
     echo ""
 
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    msg "${CYAN_NEON}Executando a função de otimização de hardware para melhorar o sistema com bibliotecas específicas para o seu hardware...${NC}" \
+        "${CYAN_NEON}Executing hardware optimization function to improve the system with specific libraries for your hardware...${NC}" \
+        "${CYAN_NEON}Ejecutando la función de optimización de hardware para mejorar el sistema con bibliotecas específicas para su hardware..."
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    sleep 0.5
+        OTIMIZAR_HARDWARE
+    echo ""    
 
-   echo -e "${NEON_BLUE}===========================================================================================${NC}"
+     echo -e "${NEON_BLUE}===========================================================================================${NC}"
     msg "${CYAN_NEON}Executando função CODECS para instalar codecs multimídia...${NC}" \
         "${CYAN_NEON}Executing CODECS function to install multimedia codecs...${NC}" \
         "${CYAN_NEON}Ejecutando función CODECS para instalar códecs multimedia...${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"    
     sleep 0.5    
         CODECS_MULTIMIDIA_CORE
+    echo "" 
+
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    msg "${CYAN_NEON}Iniciando função para instalar um AUR helper, extremamente importante e necessário para baixar pacotes do AUR...${NC}" \
+        "${CYAN_NEON}Starting function to install an AUR helper, extremely important and necessary to download packages from AUR...${NC}" \
+        "${CYAN_NEON}Iniciando función para instalar un AUR helper, extremadamente importante y necesario para descargar paquetes de AUR...${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    sleep 0.5
+        FUNCAO_AUR_HELPER
+    echo ""
+
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    msg "${CYAN_NEON}Carregando módulo de instalação de navegador. Agora você pode, se quiser, instalar um navegador de internet altamente recomendado para poder navegar na rede...${NC}" \
+        "${CYAN_NEON}Loading browser installation module. Now you can, if you want, install a highly recommended internet browser to browse the web...${NC}" \
+        "${CYAN_NEON}Cargando módulo de instalación de navegador. Ahora puedes, si lo deseas, instalar un navegador de internet altamente recomendado para navegar por la red...${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    sleep 0.5
+        FUNCAO_INSTALAR_NAVEGADORES
     echo ""    
+
+     
 
 
 
