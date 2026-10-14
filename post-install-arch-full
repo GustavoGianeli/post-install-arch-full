@@ -2,6 +2,8 @@
 
 SHELL=${SHELL:-/bin/bash}
 
+COLUMNS=$(tput cols)
+LARGURA_BOX=64
 #===============================================================
 # DEFINIÇÃO DE CORES ANSI PARA O TERMINAL
 #===============================================================
@@ -1122,6 +1124,15 @@ OTIMIZAR_HARDWARE() {
                     ;;
             esac
 
+                       
+            if [ "${HAS_INTEL_GPU:-0}" -eq 1 ] || [ "${HAS_AMD_GPU:-0}" -eq 1 ]; then
+                pkgs+=("nvidia-prime")
+                msg "${CYAN_NEON}Gráfica híbrida detectada (iGPU + NVIDIA). Adicionando nvidia-prime: use 'prime-run <programa>' para rodar na NVIDIA.${NC}" \
+                    "${CYAN_NEON}Hybrid graphics detected (iGPU + NVIDIA). Adding nvidia-prime: use 'prime-run <program>' to run on NVIDIA.${NC}" \
+                    "${CYAN_NEON}Gráficos híbridos detectados (iGPU + NVIDIA). Añadiendo nvidia-prime: use 'prime-run <programa>' para ejecutar en NVIDIA.${NC}"
+                echo ""
+            fi
+
             msg "Instalando componentes NVIDIA: ${pkgs[*]}..." \
                 "Installing NVIDIA components: ${pkgs[*]}..." \
                 "Instalando componentes NVIDIA: ${pkgs[*]}..."
@@ -1232,7 +1243,7 @@ VERIFICAR_CONECTIVIDADE() {
     echo ""
 
     # Extrai o primeiro mirror ativo da lista do usuário // Extracts the first active mirror from the user's list
-    MIRROR_ALVO=$(sed -n '/^[[:space:]]*Server[[:space:]]*=/ { s|.*https?://\([^/:]*\).*|\1|p; q }' /etc/pacman.d/mirrorlist)
+    MIRROR_ALVO=$(sed -nE '/^[[:space:]]*Server[[:space:]]*=/ { s|.*https?://([^/:]*).*|\1|p; q }' /etc/pacman.d/mirrorlist)
     TARGET_1=${MIRROR_ALVO:-"archlinux.org"} # Se a lista estiver vazia por algum bug, assume o oficial // If the list is empty due to some bug, defaults to the official site
 
     # TENTATIVA 1: Testa a rota do Mirror local // ATTEMPT 1: Tests the route of the local Mirror
@@ -1860,7 +1871,7 @@ FUNCAO_AUR_HELPER() {
 
                     # Se for o pamac-all, instala o snapd DIRETAMENTE DO AUR usando o helper escolhido e ativa o socket
                     if [ $needs_snap -eq 1 ]; then
-                        msg "${CYAN_NEON}}Instalando e configurando o snapd via AUR ($chosen_helper) para o pamac-all...${NC}" \
+                        msg "${CYAN_NEON}Instalando e configurando o snapd via AUR ($chosen_helper) para o pamac-all...${NC}" \
                             "${CYAN_NEON}Installing and configuring snapd via AUR ($chosen_helper) for pamac-all...${NC}" \
                             "${CYAN_NEON}Instalando y configurando snapd vía AUR ($chosen_helper) para pamac-all...${NC}"
                         echo ""
@@ -2179,10 +2190,373 @@ FUNCAO_INSTALAR_NAVEGADORES() {
 #=======================================
 #ENCERRAMENTO FUNÇÃO NAVEGADORES
 #=======================================
+FUNCAO_INSTALAR_ARCH_UPDATE_FULL() {
+    local resp_update=""
+    while true; do
+        msg "${CYAN_NEON}O arch-update-full é uma ferramenta altamente recomendada para verificar as atualizações disponíveis no sistema e deixar seu Arch sempre atualizado e limpo. Deseja instalá-la agora? (s/n):${NC}" \
+            "${CYAN_NEON}Arch-update-full is a highly recommended tool to check available system updates and keep your Arch always updated and clean. Do you want to install it now? (y/n):${NC}" \
+            "${CYAN_NEON}Arch-update-full es una herramienta altamente recomendada para verificar las actualizaciones disponibles en el sistema y mantener tu Arch siempre actualizado y limpio. ¿Deseas instalarla ahora? (s/n):${NC}"
+        echo ""
+        if ! read -rp "Opção / Choice / Opción [s/y/n]: " resp_update; then
+            return 1
+        fi
 
+        case "$resp_update" in
+            [sSyY])
+                break
+                ;;
+            [nN])
+                msg "${YELLOW_NEON}Instalação do arch-update-full ignorada. Continuando o script...${NC}" \
+                    "${YELLOW_NEON}Arch-update-full installation skipped. Continuing script...${NC}" \
+                    "${YELLOW_NEON}Instalación de arch-update-full omitida. Continuando el script...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                return 0
+                ;;
+            *)
+                msg "${RED_NEON}[ERRO] Opção inválida. Digite 's' para sim ou 'n' para não.${NC}" \
+                    "${RED_NEON}[ERROR] Invalid option. Type 'y' for yes or 'n' for no.${NC}" \
+                    "${RED_NEON}[ERROR] Opción inválida. Escribe 's' para sí o 'n' para no.${NC}"
+                echo ""
+                ;;
+        esac
+    done
+
+    local has_yay=false
+    local has_paru=false
+
+    command -v yay &>/dev/null && has_yay=true
+    command -v paru &>/dev/null && has_paru=true
+
+    local install_status=0
+
+    if [ "$has_yay" = true ] && [ "$has_paru" = true ]; then
+        local escolha_helper=""
+        while true; do
+            msg "${YELLOW_NEON}Tanto o 'yay' quanto o 'paru' foram detectados. Qual helper deseja utilizar?${NC}" \
+                "${YELLOW_NEON}Both 'yay' and 'paru' detected. Which helper do you want to use?${NC}" \
+                "${YELLOW_NEON}Se detectaron tanto 'yay' como 'paru'. ¿Qué asistente deseas utilizar?${NC}"
+            echo ""
+            echo -e "${CYAN_NEON}  [1] yay${NC}"
+            echo -e "${CYAN_NEON}  [2] paru${NC}"
+            echo ""
+            if ! read -rp "Escolha / Choice / Opción [1/2]: " escolha_helper; then
+                return 1
+            fi
+
+            case "$escolha_helper" in
+                1)
+                    msg "${GREEN_NEON}Utilizando o yay para instalar o arch-update-full...${NC}" \
+                        "${GREEN_NEON}Using yay to install arch-update-full...${NC}" \
+                        "${GREEN_NEON}Usando yay para instalar arch-update-full...${NC}"
+                    yay -S --noconfirm arch-update-full
+                    install_status=$?
+                    break
+                    ;;
+                2)
+                    msg "${GREEN_NEON}Utilizando o paru para instalar o arch-update-full...${NC}" \
+                        "${GREEN_NEON}Using paru to install arch-update-full...${NC}" \
+                        "${GREEN_NEON}Usando paru para instalar arch-update-full...${NC}"
+                    paru -S --noconfirm arch-update-full
+                    install_status=$?
+                    break
+                    ;;
+                *)
+                    msg "${RED_NEON}[ERRO] Opção inválida. Digite 1 para yay ou 2 para paru.${NC}" \
+                        "${RED_NEON}[ERROR] Invalid option. Type 1 for yay or 2 for paru.${NC}" \
+                        "${RED_NEON}[ERROR] Opción inválida. Escribe 1 para yay o 2 para paru.${NC}"
+                    echo ""
+                    ;;
+            esac
+        done
+    elif [ "$has_yay" = true ]; then
+        msg "${GREEN_NEON}Helper 'yay' detectado. Instalando arch-update-full...${NC}" \
+            "${GREEN_NEON}Helper 'yay' detected. Installing arch-update-full...${NC}" \
+            "${GREEN_NEON}Asistente 'yay' detectado. Instalando arch-update-full...${NC}"
+        yay -S --noconfirm arch-update-full
+        install_status=$?
+    elif [ "$has_paru" = true ]; then
+        msg "${GREEN_NEON}Helper 'paru' detectado. Instalando arch-update-full...${NC}" \
+            "${GREEN_NEON}Helper 'paru' detected. Installing arch-update-full...${NC}" \
+            "${GREEN_NEON}Asistente 'paru' detected. Instalando arch-update-full...${NC}"
+        paru -S --noconfirm arch-update-full
+        install_status=$?
+    else
+        msg "${YELLOW_NEON}Nenhum AUR helper detectado. Clonando e compilando via Git em diretório seguro (mktemp)...${NC}" \
+            "${YELLOW_NEON}No AUR helper detected. Cloning and building via Git in a secure directory (mktemp)...${NC}" \
+            "${YELLOW_NEON}Ningún asistente de AUR detectado. Clonando y compilando vía Git en un directorio seguro (mktemp)...${NC}"
+        echo ""
+
+        local temp_dir
+        temp_dir=$(mktemp -d)
+        if [ -n "$temp_dir" ] && [ -d "$temp_dir" ]; then
+            if git clone https://aur.archlinux.org/arch-update-full.git "$temp_dir/arch-update-full" &>/dev/null; then
+                if (cd "$temp_dir/arch-update-full" && makepkg -si --noconfirm); then
+                    install_status=0
+                else
+                    install_status=1
+                fi
+                rm -rf "$temp_dir"
+            else
+                msg "${RED_NEON}[ERRO] Falha ao clonar o repositório arch-update-full do AUR.${NC}" \
+                    "${RED_NEON}[ERROR] Failed to clone arch-update-full repository from AUR.${NC}" \
+                    "${RED_NEON}[ERROR] Error al clonar el repositorio arch-update-full de AUR.${NC}"
+                rm -rf "$temp_dir"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                return 1
+            fi
+        else
+            msg "${RED_NEON}[ERRO] Falha ao criar diretório temporário para build.${NC}" \
+                "${RED_NEON}[ERROR] Failed to create temporary directory for build.${NC}" \
+                "${RED_NEON}[ERROR] Error al crear el directorio temporal para la compilación.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            return 1
+        fi
+    fi
+
+    echo ""
+    if [ $install_status -eq 0 ]; then
+        msg "${GREEN_NEON}[SUCESSO] Arch Update Full instalado e integrado com sucesso ao sistema!${NC}" \
+            "${GREEN_NEON}[SUCCESS] Arch Update Full successfully installed and integrated!${NC}" \
+            "${GREEN_NEON}[ÉXITO] Arch Update Full instalado e integrado con éxito.${NC}"
+    else
+        msg "${RED_NEON}[ERRO] A instalação do Arch Update Full falhou durante o processo.${NC}" \
+            "${RED_NEON}[ERROR] Arch Update Full installation failed during the process.${NC}" \
+            "${RED_NEON}[ERROR] La instalación de Arch Update Full falló durante el proceso.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        return 1
+    fi
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+}
+
+FUNCAO_INSTALAR_WALLPAPERS() {
+    local resp_wall=""
+    while true; do
+        msg "${CYAN_NEON}Deseja instalar os wallpapers personalizados do Projeto Odin? (s/n):${NC}" \
+            "${CYAN_NEON}Do you want to install Project Odin's custom wallpapers? (y/n):${NC}" \
+            "${CYAN_NEON}¿Deseas instalar los fondos de pantalla personalizados del Proyecto Odin? (s/n):${NC}"
+        echo ""
+        if ! read -rp "Opção / Choice / Opción [s/y/n]: " resp_wall; then
+            return 1
+        fi
+
+        case "$resp_wall" in
+            [sSyY])
+                break
+                ;;
+            [nN])
+                msg "${YELLOW_NEON}Instalação de wallpapers ignorada. Continuando o script...${NC}" \
+                    "${YELLOW_NEON}Wallpapers installation skipped. Continuing script...${NC}" \
+                    "${YELLOW_NEON}Instalación de fondos de pantalla omitida. Continuando el script...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                return 0
+                ;;
+            *)
+                msg "${RED_NEON}[ERRO] Opção inválida. Digite 's' para sim ou 'n' para não.${NC}" \
+                    "${RED_NEON}[ERROR] Invalid option. Type 'y' for yes or 'n' for no.${NC}" \
+                    "${RED_NEON}[ERROR] Opción inválida. Escribe 's' para sí o 'n' para no.${NC}"
+                echo ""
+                ;;
+        esac
+    done
+
+    msg "${GREEN_NEON}Baixando e instalando wallpapers personalizados...${NC}" \
+        "${GREEN_NEON}Downloading and installing custom wallpapers...${NC}" \
+        "${GREEN_NEON}Descargando e instalando fondos de pantalla personalizados...${NC}"
+    echo ""
+
+    local img_dir
+    img_dir="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Imagens")"
+    local target_folder="$img_dir/wallpapers personalizados"
+    mkdir -p "$target_folder"
+
+    local temp_zip
+    temp_zip=$(mktemp --suffix=.zip)
+    if [ -z "$temp_zip" ]; then
+        msg "${RED_NEON}[ERRO] Falha ao criar arquivo temporário para o download.${NC}" \
+            "${RED_NEON}[ERROR] Failed to create temporary file for download.${NC}" \
+            "${RED_NEON}[ERROR] Error al crear el archivo temporal para la descarga.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        return 1
+    fi
+
+    local zip_url="https://raw.githubusercontent.com/GustavoGianeli/post-install-arch-full/main/wallpapers%20personalizados.zip"
+
+    # Utiliza -f (fail) para que erros HTTP (como 404) retornem código de erro real
+    if curl -fL -o "$temp_zip" "$zip_url" &>/dev/null; then
+        if command -v unzip &>/dev/null; then
+            # A flag -j (junk paths) extrai apenas os arquivos direto para a pasta destino, sem recriar subpastas
+            if unzip -q -j "$temp_zip" -d "$target_folder"; then
+                rm -f "$temp_zip"
+                msg "${CYAN_NEON}[SUCESSO] Wallpapers instalados com sucesso em: $target_folder${NC}" \
+                    "${CYAN_NEON}[SUCCESS] Wallpapers successfully installed at: $target_folder${NC}" \
+                    "${CYAN_NEON}[ÉXITO] Fondos de pantalla instalados con éxito en: $target_folder${NC}"
+            else
+                rm -f "$temp_zip"
+                msg "${RED_NEON}[ERRO] Falha ao descompactar o pacote de wallpapers.${NC}" \
+                    "${RED_NEON}[ERROR] Failed to extract the wallpapers package.${NC}" \
+                    "${RED_NEON}[ERROR] Error al descomprimir el paquete de fondos de pantalla.${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                return 1
+            fi
+        else
+            rm -f "$temp_zip"
+            msg "${RED_NEON}[ERRO] O comando 'unzip' não foi encontrado. Por favor, instale o pacote unzip.${NC}" \
+                "${RED_NEON}[ERROR] The 'unzip' command was not found. Please install the unzip package.${NC}" \
+                "${RED_NEON}[ERROR] No se encontró el comando 'unzip'. Por favor, instale el paquete unzip.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            return 1
+        fi
+    else
+        rm -f "$temp_zip"
+        msg "${RED_NEON}[ERRO] Falha ao baixar o pacote de wallpapers do repositório.${NC}" \
+            "${RED_NEON}[ERROR] Failed to download wallpapers package from the repository.${NC}" \
+            "${RED_NEON}[ERROR] Error al descargar el paquete de fondos de pantalla del repositorio.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        return 1
+    fi
+
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+}
+
+#====================================
+#ENCERRAMENTO DOS PERSONALIZADOS
+#===================================
+MENU_AVANCADO() {
+    local opcao=""
+    while true; do
+        echo ""
+        msg "${NEON_BLUE}======================================================================================${NC}" \
+            "${NEON_BLUE}======================================================================================${NC}" \
+            "${NEON_BLUE}======================================================================================${NC}"
+
+        msg "${CYAN_NEON} [1] FUNCAO_CORE            - Configuração base e pacotes essenciais do sistema${NC}" \
+            "${CYAN_NEON} [1] FUNCAO_CORE            - Base configuration and essential system packages${NC}" \
+            "${CYAN_NEON} [1] FUNCAO_CORE            - Configuración base y paquetes esenciales del sistema${NC}"
+        
+        echo ""
+
+        msg "${CYAN_NEON} [2] FUNCAO_OTIMIZACAO      - Otimização de hardware, drivers e stack gráfica${NC}" \
+            "${CYAN_NEON} [2] FUNCAO_OTIMIZACAO      - Hardware optimization, drivers and graphics stack${NC}" \
+            "${CYAN_NEON} [2] FUNCAO_OTIMIZACAO      - Optimización de hardware, controladores y pila gráfica${NC}"
+        
+        echo ""
+
+        msg "${CYAN_NEON} [3] CODECS_MULTIMIDIA_CORE - Instalação de codecs de áudio e vídeo essenciais${NC}" \
+            "${CYAN_NEON} [3] CODECS_MULTIMIDIA_CORE - Installation of essential audio and video codecs${NC}" \
+            "${CYAN_NEON} [3] CODECS_MULTIMIDIA_CORE - Instalación de códecs de audio y video esenciales${NC}"
+        
+        echo ""
+
+        msg "${CYAN_NEON} [4] FUNCAO_AUR_HELPER      - Gerenciamento e instalação de AUR helpers (yay/paru)${NC}" \
+            "${CYAN_NEON} [4] FUNCAO_AUR_HELPER      - Management and installation of AUR helpers (yay/paru)${NC}" \
+            "${CYAN_NEON} [4] FUNCAO_AUR_HELPER      - Gestión e instalación de asistentes AUR (yay/paru)${NC}"
+        
+        echo ""
+
+        msg "${CYAN_NEON} [5] FUNCAO_NAVEGADORES     - Instalador modular de navegadores de internet${NC}" \
+            "${CYAN_NEON} [5] FUNCAO_NAVEGADORES     - Modular internet browser installer${NC}" \
+            "${CYAN_NEON} [5] FUNCAO_NAVEGADORES     - Instalador modular de navegadores de internet${NC}"
+        
+        echo ""
+
+        msg "${CYAN_NEON} [6] ARCH_UPDATE_FULL       - Instalação da ferramenta de atualização e limpeza${NC}" \
+            "${CYAN_NEON} [6] ARCH_UPDATE_FULL       - Installation of update and cleanup tool${NC}" \
+            "${CYAN_NEON} [6] ARCH_UPDATE_FULL       - Instalación de la herramienta de actualización y limpieza${NC}"
+        
+        echo ""
+        
+        msg "${CYAN_NEON} [7] FUNCAO_WALLPAPERS      - Download e instalação dos wallpapers personalizados${NC}" \
+            "${CYAN_NEON} [7] FUNCAO_WALLPAPERS      - Download and installation of custom wallpapers${NC}" \
+            "${CYAN_NEON} [7] FUNCAO_WALLPAPERS      - Descarga e instalación de fondos de pantalla personalizados${NC}"
+        
+        echo ""
+        
+        msg "${YELLOW_NEON} [0] Voltar / Sair          - Retornar ao menu principal${NC}" \
+            "${YELLOW_NEON} [0] Back / Exit            - Return to main menu${NC}" \
+            "${YELLOW_NEON} [0] Volver / Salir         - Volver al menú principal${NC}"
+        echo ""
+       
+        msg "${CYAN_NEON}Deseja baixar pacotes especializados para Jogos (bibliotecas 32-bit, Steam, Lutris, Heroic, Proton), Desenvolvimento (Dev) ou Pentest? Por favor, utilize o modo 3 nas funções pré-definidas.${NC}" \
+            "${CYAN_NEON}Do you want to download specialized packages for Gaming (32-bit libraries, Steam, Lutris, Heroic, Proton), Development (Dev), or Pentest? Please use mode 3 in the predefined functions.${NC}" \
+            "${CYAN_NEON}¿Deseas descargar paquetes especializados para Juegos (bibliotecas de 32-bit, Steam, Lutris, Heroic, Proton), Desarrollo (Dev) o Pentest? Por favor, utiliza el modo 3 en las funciones predefinidas.${NC}"
+
+        msg "${NEON_BLUE}======================================================================================${NC}" \
+            "${NEON_BLUE}======================================================================================${NC}" \
+            "${NEON_BLUE}======================================================================================${NC}"
+        echo ""
+
+        if ! read -rp "Escolha / Choice / Opción [1-7, 0]: " opcao; then
+            return 1
+        fi
+
+        case "$opcao" in
+            1)
+                msg "${GREEN_NEON}Iniciando a configuração base do sistema (FUNCAO_CORE)...${NC}" \
+                    "${GREEN_NEON}Starting base system configuration (FUNCAO_CORE)...${NC}" \
+                    "${GREEN_NEON}Iniciando la configuración base del sistema (FUNCAO_CORE)...${NC}"
+                echo ""
+                FUNCAO_CORE
+                MENSAGEM_FINAL
+                ;;
+            2)
+                msg "${GREEN_NEON}Iniciando as otimizações de hardware (FUNCAO_OTIMIZACAO)...${NC}" \
+                    "${GREEN_NEON}Starting hardware optimizations (FUNCAO_OTIMIZACAO)...${NC}" \
+                    "${GREEN_NEON}Iniciando las optimizaciones de hardware (FUNCAO_OTIMIZACAO)...${NC}"
+                echo ""
+                FUNCAO_OTIMIZACAO
+                MENSAGEM_FINAL
+                ;;
+            3)
+                msg "${GREEN_NEON}Iniciando a instalação de codecs multimídia (CODECS_MULTIMIDIA_CORE)...${NC}" \
+                    "${GREEN_NEON}Starting multimedia codecs installation (CODECS_MULTIMIDIA_CORE)...${NC}" \
+                    "${GREEN_NEON}Iniciando la instalación de códecs multimedia (CODECS_MULTIMIDIA_CORE)...${NC}"
+                echo ""
+                CODECS_MULTIMIDIA_CORE
+                MENSAGEM_FINAL
+                ;;
+            4)
+                msg "${GREEN_NEON}Iniciando o gerenciador de AUR Helper (FUNCAO_AUR_HELPER)...${NC}" \
+                    "${GREEN_NEON}Starting AUR Helper manager (FUNCAO_AUR_HELPER)...${NC}" \
+                    "${GREEN_NEON}Iniciando el administrador de AUR Helper (FUNCAO_AUR_HELPER)...${NC}"
+                echo ""
+                FUNCAO_AUR_HELPER
+                MENSAGEM_FINAL
+                ;;
+            5)
+                msg "${GREEN_NEON}Iniciando o instalador de navegadores (FUNCAO_INSTALAR_NAVEGADORES)...${NC}" \
+                    "${GREEN_NEON}Starting browsers installer (FUNCAO_INSTALAR_NAVEGADORES)...${NC}" \
+                    "${GREEN_NEON}Iniciando el instalador de navegadores (FUNCAO_INSTALAR_NAVEGADORES)...${NC}"
+                echo ""
+                FUNCAO_INSTALAR_NAVEGADORES
+                MENSAGEM_FINAL
+                ;;
+            6)
+                FUNCAO_INSTALAR_ARCH_UPDATE_FULL
+                MENSAGEM_FINAL
+                ;;
+            7)
+                FUNCAO_INSTALAR_WALLPAPERS
+                MENSAGEM_FINAL
+                ;;
+            0)
+                msg "${YELLOW_NEON}Retornando ao menu principal do Projeto Odin...${NC}" \
+                    "${YELLOW_NEON}Returning to Project Odin's main menu...${NC}" \
+                    "${YELLOW_NEON}Volviendo al menú principal del Proyecto Odin...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                return 0
+                ;;
+            *)
+                msg "${RED_NEON}[ERRO] Opção inválida! Escolha um número entre 1 e 7, ou 0 para retornar.${NC}" \
+                    "${RED_NEON}[ERROR] Invalid option! Choose a number between 1 and 7, or 0 to return.${NC}" \
+                    "${RED_NEON}[ERROR] ¡Opción inválida! Elige un número entre 1 y 7, o 0 para volver.${NC}"
+                echo ""
+                ;;
+        esac
+    done
+}
 
 #==============================================
-# FUNÇÃO DE REINICIALIZAÇÃO // REBOOT FUNCTION
+# ENCERRAMENTO DO MENU AVANÇADO
 #===============================================
 
 PERGUNTAR_REINICIAR() {
@@ -2323,13 +2697,13 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
     msg "${CYAN_NEON}Executando a função de otimização de hardware para melhorar o sistema com bibliotecas específicas para o seu hardware...${NC}" \
         "${CYAN_NEON}Executing hardware optimization function to improve the system with specific libraries for your hardware...${NC}" \
-        "${CYAN_NEON}Ejecutando la función de optimización de hardware para mejorar el sistema con bibliotecas específicas para su hardware..."
+        "${CYAN_NEON}Ejecutando la función de optimización de hardware para mejorar el sistema con bibliotecas específicas para su hardware..${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
     sleep 0.5
-        OTIMIZAR_HARDWARE
+        FUNCAO_OTIMIZACAO
     echo ""    
 
-     echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
     msg "${CYAN_NEON}Executando função CODECS para instalar codecs multimídia...${NC}" \
         "${CYAN_NEON}Executing CODECS function to install multimedia codecs...${NC}" \
         "${CYAN_NEON}Ejecutando función CODECS para instalar códecs multimedia...${NC}"
@@ -2356,45 +2730,65 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         FUNCAO_INSTALAR_NAVEGADORES
     echo ""    
 
-     
-
-
-
-
+    echo -e "${NEON_BLUE}===========================================================================================${NC}" 
+    msg "${CYAN_NEON}A base do Arch foi configurada. Gostaria de instalar uma ferramenta para sempre deixar seu sistema atualizado e limpo? E wallpapers personalizados?${NC}" \
+        "${CYAN_NEON}The Arch base has been configured. Would you like to install a tool to always keep your system updated and clean? And custom wallpapers?${NC}" \
+        "${CYAN_NEON}La base de Arch ha sido configurada. ¿Te gustaría instalar una herramienta para mantener siempre tu sistema actualizado y limpio? ¿Y fondos de pantalla personalizados?${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    sleep 0.5
+        FUNCAO_INSTALAR_ARCH_UPDATE_FULL
+        FUNCAO_INSTALAR_WALLPAPERS
     echo ""
-    sleep 0.2
+    sleep 0.5
     MENSAGEM_FINAL
 }
 
 OPCAO_INTERMEDIARIO_AVANCADO_SCRIPT() {
     MENU_CABECALHO
+
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    msg "${NEON_BLUE}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 25 GB)...${NC}" \
+        "${NEON_BLUE}Executing security blocks: checking internet connectivity and available disk space (minimum 25 GB)...${NC}" \
+        "${NEON_BLUE}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 25 GB)...${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+        VERIFICAR_CONECTIVIDADE
+        CHECK_DISK_SPACE
+    sleep 0.5
+    echo "" 
+
     msg "${CYAN_NEON}[MODO AVANÇADO]${NC} Carregando lista de blocos..." \
         "${CYAN_NEON}[ADVANCED MODE]${NC} Loading block list..." \
         "${CYAN_NEON}[MODO AVANZADO]${NC} Cargando lista de bloques..."
         echo ""
+        MENU_AVANCADO
 
-
-
-    msg "${CYAN_NEON} Pressione ENTER para voltar ao menu...${NC}" \
-        "${CYAN_NEON} Press ENTER to return to menu...${NC}" \
-        "${CYAN_NEON} Presione ENTER para volver al menú...${NC}"
-    read -r
 }
 
 OPCAO_PRE_DEFINIDAS_SCRIPTS() {
     MENU_CABECALHO
+
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    msg "${NEON_BLUE}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 25 GB)...${NC}" \
+        "${NEON_BLUE}Executing security blocks: checking internet connectivity and available disk space (minimum 25 GB)...${NC}" \
+        "${NEON_BLUE}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 25 GB)...${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+        VERIFICAR_CONECTIVIDADE
+        CHECK_DISK_SPACE
+    sleep 0.5
+    echo "" 
+
     msg "${CYAN_NEON}[MODO PRÉ-DEFINIDO]${NC} Carregando perfis (GAME, DEV, HACKER)..." \
         "${CYAN_NEON}[PRE-DEFINED MODE]${NC} Loading profiles (GAME, DEV, HACKER)..." \
         "${CYAN_NEON}[MODO PREDEFINIDO]${NC} Cargando perfiles (GAME, DEV, HACKER)..."
         echo ""
-
+    
 
 
 
     msg "${CYAN_NEON} Pressione ENTER para voltar ao menu...${NC}" \
         "${CYAN_NEON} Press ENTER to return to menu...${NC}" \
         "${CYAN_NEON} Presione ENTER para volver al menú...${NC}"
-    read -r
+    
 
 }
 
