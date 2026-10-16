@@ -3,7 +3,7 @@ Odin Protocol: Advanced Arch Linux post-installation automation, intelligent mul
 
 ## novas noticias logo!
 ```bash
-git clone [https://github.com/GustavoGianeli/post-install-arch-full.git](https://github.com/GustavoGianeli/post-install-arch-full.git)
+git clone https://github.com/GustavoGianeli/post-install-arch-full.git
 cd post-install-arch-full
 makepkg -si
 ```
