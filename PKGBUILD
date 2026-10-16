@@ -19,7 +19,7 @@ source=(
 
 # Use 'updpkgsums' para preencher isso automaticamente // Use 'updpkgsums' to automatically fill this in.
 
-sha256sums=('14e56b6506397038bd4630ae45c1e23381bce8a2411a8f711827fbf88a7195cd'
+sha256sums=('4ecaf32d11c157ae149c89b8b0b1c2c70bf35a0b734e11d68efe75a5b1a084eb'
             '3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986'
             '2eaa3fadd7b41d9395bca2dc5ebdc9bd3e206a842a7ee441d0d7be04deb77c59'
             '8529b988d4e3e6ef611ad5ef2124fafa2cbe416b78698c9596845d5471d93651')
