@@ -6,7 +6,7 @@ pkgdesc="Advanced Arch Linux post-installation automation, intelligent multimedi
 arch=('any')
 url="https://github.com/GustavoGianeli/post-install-arch-full"
 license=('GPL3')
-depends=('bash' 'pacman')
+depends=('bash' 'pacman' 'git' 'debugedit' 'base-devel')
 
 
 # --- ADICIONADO O ÍCONE NO SOURCE // The icon has been added to the source. ---
