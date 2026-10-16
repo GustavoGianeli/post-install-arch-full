@@ -265,7 +265,7 @@ CHAMAR_MENU_OPCOES() {
         msg "\nEscolha uma opção [1-4]:" \
             "\nChoose an option [1-4]:" \
             "\nElija una opción [1-4]:"
-        read -rp ">> " opcao
+        read -rp ">> " opcao || exit 0
 
         case "$opcao" in
             1) 
