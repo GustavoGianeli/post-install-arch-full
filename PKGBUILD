@@ -6,7 +6,7 @@ pkgdesc="Advanced Arch Linux post-installation automation, intelligent multimedi
 arch=('any')
 url="https://github.com/GustavoGianeli/post-install-arch-full"
 license=('GPL3')
-depends=('bash' 'pacman' 'git' 'debugedit' 'base-devel')
+depends=('bash' 'pacman' 'git' 'debugedit' 'base-devel' 'curl' 'unzip' 'pciutils' 'enscript' 'ghostscript' 'glibc')
 
 
 # --- ADICIONADO O ÍCONE NO SOURCE // The icon has been added to the source. ---
@@ -19,7 +19,7 @@ source=(
 
 # Use 'updpkgsums' para preencher isso automaticamente // Use 'updpkgsums' to automatically fill this in.
 
-sha256sums=('4ecaf32d11c157ae149c89b8b0b1c2c70bf35a0b734e11d68efe75a5b1a084eb'
+sha256sums=('7dcee6f386f0e0780e6dbf2ba950e3621d735b79187195dab05b0d91422dc7fc'
             '3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986'
             '2eaa3fadd7b41d9395bca2dc5ebdc9bd3e206a842a7ee441d0d7be04deb77c59'
             '8529b988d4e3e6ef611ad5ef2124fafa2cbe416b78698c9596845d5471d93651')

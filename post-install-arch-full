@@ -17,12 +17,12 @@ WHITE_NEON='\033[1;97m'
 # ==============================================================================
 # PALETA DE CORES E GRADIENTE (RGB TRUE COLOR)
 # ==============================================================================
-GRAD_1="\e[38;2;0;220;255m"   # Neon Blue
-GRAD_2="\e[38;2;80;185;255m"  # Azul Claro
-GRAD_3="\e[38;2;130;160;250m" # Azul Lavanda
-GRAD_4="\e[38;2;170;135;245m" # Roxo Suave
-GRAD_5="\e[38;2;190;120;235m" # Roxo Pastel
-GRAD_6="\e[38;2;160;100;210m" # Roxo Atenuado
+#GRAD_1="\e[38;2;0;220;255m"   # Neon Blue
+#GRAD_2="\e[38;2;80;185;255m"  # Azul Claro
+#GRAD_3="\e[38;2;130;160;250m" # Azul Lavanda
+#GRAD_4="\e[38;2;170;135;245m" # Roxo Suave
+#GRAD_5="\e[38;2;190;120;235m" # Roxo Pastel
+#GRAD_6="\e[38;2;160;100;210m" # Roxo Atenuado
 
 PINK_NEON="\e[38;2;255;105;180m"
 RED_NEON="\e[38;2;255;50;50m"
@@ -198,25 +198,40 @@ export -f manage_service
 
 MENU_CABECALHO() {
     clear 
-
     msg "${CYAN_NEON}Bem-vindo ao Odin - Instalador Pós-Instalação Arch Linux${NC}"\
         "${CYAN_NEON}Welcome to Odin - Post-Installation Arch Linux Installer${NC}" \
         "${CYAN_NEON}Bienvenido a Odin - Instalador Post-Instalación Arch Linux${NC}"
-    echo ""
-    echo -e "${GRAD_1}  ██████╗  ██████╗ ███████╗████████╗    ██╗███╗   ██╗███████╗████████╗█████╗  ██╗     ██╗     ${NC}"
-    echo -e "${GRAD_2}  ██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝    ██║████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██║     ██║     ${NC}"
-    echo -e "${GRAD_3}  ██████╔╝██║   ██║███████╗   ██║       ██║██╔██╗ ██║███████╗   ██║   ███████║██║     ██║     ${NC}"
-    echo -e "${GRAD_4}  ██╔═══╝ ██║   ██║╚════██║   ██║       ██║██║╚██╗██║╚════██║   ██║   ██╔══██║██║     ██║     ${NC}"
-    echo -e "${GRAD_5}  ██║     ╚██████╔╝███████║   ██║       ██║██║ ╚████║███████║   ██║   ██║  ██║███████╗███████╗${NC}"
-    echo -e "${GRAD_6}  ╚═╝      ╚═════╝ ╚══════╝   ╚═╝       ╚═╝╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚══════╝${NC}"
-    echo -e "                                                                                              "
-    echo -e "${GRAD_4}              █████╗ ██████╗  ██████╗██╗  ██╗    ███████╗██╗   ██╗██╗     ██╗     ${NC}"
-    echo -e "${GRAD_5}             ██╔══██╗██╔══██╗██╔════╝██║  ██║    ██╔════╝██║   ██║██║     ██║     ${NC}"
-    echo -e "${GRAD_5}             ███████║██████╔╝██║     ███████║    █████╗  ██║   ██║██║     ██║     ${NC}"
-    echo -e "${GRAD_6}             ██╔══██║██╔══██╗██║     ██╔══██║    ██╔══╝  ██║   ██║██║     ██║     ${NC}"
-    echo -e "${GRAD_6}             ██║  ██║██║  ██║╚██████╗██║  ██║    ██║     ╚██████╔╝███████╗███████╗${NC}"
-    echo -e "${GRAD_6}             ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝      ╚═════╝ ╚══════╝╚══════╝${NC}"
-    echo ""
+    sleep 0.7
+    echo -e "                                                        \e[38;5;32m▗\e[38;5;81m▄▄\e[38;5;25m▄\e[0m"
+    echo -e "                                                    \e[38;5;38m▄\e[38;5;81m▄\e[48;5;38m \e[48;5;45m▀ \e[38;5;38;48;5;25m▐▀\e[38;5;45;48;5;32m▐\e[48;5;81m▄▄\e[38;5;32;49m▙\e[38;5;81m▄\e[0m"
+    echo -e "                                                 \e[38;5;38m▄\e[38;5;81m▟\e[48;5;45m▀ \e[38;5;25m▄\e[38;5;18;48;5;32m▄\e[38;5;19;48;5;25m▄\e[48;5;18m▄▄█\e[48;5;25m▙▄\e[38;5;38;48;5;18m▘\e[38;5;25;48;5;45m▄\e[38;5;38m▖\e[38;5;81m▝\e[38;5;32m▀\e[38;5;81;49m▄\e[0m"
+    echo -e " \e[38;5;81m▄\e[38;5;87m▄▄\e[38;5;123m▄\e[38;5;117m▄  ▄\e[38;5;87m▄\e[38;5;81m▄\e[38;5;123m▄\e[38;5;117m▖ ▗\e[38;5;123m▄\e[38;5;81m▄\e[38;5;123m▄\e[38;5;81m▄ ▄\e[38;5;87m▄▄▄\e[38;5;81m▄                     \e[38;5;25m▗\e[38;5;81m▄\e[48;5;39m▀\e[38;5;45m▘\e[38;5;18;48;5;32m▗\e[38;5;45m▘\e[38;5;39;48;5;25m▄▄\e[48;5;19m▄\e[38;5;26m▄\e[38;5;25m▄▄▄▄▄▄▄\e[48;5;18m▄\e[48;5;38m▙\e[48;5;45m▟\e[38;5;38m▌\e[38;5;39;48;5;81m▄\e[38;5;81;49m▙▖\e[0m"
+    echo -e " \e[38;5;45;48;5;25m▐\e[48;5;51m▄\e[38;5;18;48;5;38m▐\e[38;5;45;48;5;25m▐\e[48;5;51m▄\e[38;5;17;48;5;81m▐\e[38;5;38;49m▐\e[38;5;45;48;5;51m▄\e[48;5;32m▌\e[38;5;25;48;5;17m▐\e[38;5;45;48;5;51m▄\e[48;5;81m▙\e[38;5;17;49m▌\e[38;5;32;48;5;45m▖\e[38;5;51m▀\e[38;5;32;48;5;18m▖\e[38;5;39m▀\e[38;5;45m▀\e[38;5;17;49m▙\e[38;5;18m▝\e[48;5;45m▌\e[38;5;51m▀\e[38;5;25m▐\e[38;5;18;49m▛\e[38;5;17m▘                   \e[38;5;81m▟\e[48;5;32m▀\e[38;5;39m▀\e[48;5;25m▀\e[38;5;195m▄\e[38;5;231;48;5;117m▄\e[48;5;153m▄▄\e[48;5;81m▄\e[38;5;153;48;5;39m▄\e[38;5;81m▖\e[38;5;26m▀█\e[49m███████\e[48;5;231m▟\e[48;5;25m▄\e[38;5;32m▀\e[38;5;39m▜▀\e[38;5;81;49m▙\e[38;5;117m▖\e[0m"
+    echo -e " \e[38;5;39;48;5;25m▐█▙\e[48;5;32m▟\e[48;5;26m▀\e[38;5;32;48;5;17m▘\e[38;5;25;49m▜\e[48;5;39m ▐\e[48;5;17m▐\e[48;5;39m \e[38;5;33m▄\e[38;5;17;49m▌\e[38;5;25m▝\e[38;5;18;48;5;39m▄\e[38;5;32;48;5;81m▄\e[38;5;81;49m▙\e[38;5;117m▖  \e[38;5;39m▐█\e[48;5;18m▌\e[38;5;17;49m▌                  \e[38;5;81m▄\e[48;5;39m▀ \e[38;5;25m▄\e[48;5;117m▀\e[38;5;153;48;5;231m▘\e[38;5;159m▗▄ \e[38;5;195m▐▌ \e[38;5;117m▜\e[38;5;81;48;5;39m▖\e[38;5;26m▝\e[49m█\e[48;5;231m▟▙█▟▛█▌██\e[48;5;18m▙\e[38;5;39;48;5;25m▝\e[48;5;32m▜\e[48;5;81m▙\e[38;5;81;49m▙\e[0m"
+    echo -e " \e[38;5;27;48;5;25m▐\e[48;5;33m▄\e[38;5;17;48;5;26m▐\e[38;5;18;49m▀\e[38;5;17m▀▘\e[38;5;26m▐\e[38;5;27;48;5;33m▄\e[48;5;25m▌\e[38;5;17m▌\e[38;5;27;48;5;33m▄\e[48;5;26m▛\e[38;5;17;49m▌\e[38;5;33m▄\e[38;5;32m▟\e[38;5;18m▛\e[38;5;26;48;5;27m▖\e[38;5;33m▝\e[38;5;25;49m▙ \e[38;5;27m▐\e[48;5;33m▄\e[48;5;18m▌\e[38;5;17;49m▌ \e[38;5;18;48;5;117m▄▄\e[48;5;25m▄\e[38;5;17;49m▖            \e[38;5;81m▟\e[38;5;32;48;5;33m▘\e[38;5;25;48;5;39m▄\e[38;5;18;48;5;32m▞\e[38;5;81m▐\e[38;5;231;48;5;117m▐\e[48;5;195m▀▘▝▀▀\e[48;5;159m▀\e[48;5;195m▀\e[48;5;159m▛\e[48;5;81m \e[48;5;39m \e[38;5;32;48;5;26m▄▄▄▖\e[38;5;26;49m████\e[48;5;231m▜\e[49m███\e[48;5;25m▄\e[38;5;39m▀\e[48;5;32m▚\e[48;5;81m▄\e[38;5;117;49m▖\e[0m"
+    echo -e " \e[38;5;27;48;5;19m▝\e[48;5;20m▀\e[38;5;17m▐\e[49m   \e[38;5;18m▝\e[48;5;27m▄\e[38;5;20m▄\e[48;5;32m▄\e[48;5;27m▄\e[38;5;18m▟\e[38;5;17;49m▌\e[38;5;19m▜\e[38;5;20;48;5;27m▄\e[48;5;32m▄\e[48;5;27m▄\e[38;5;19m▄\e[38;5;18;48;5;17m▘\e[49m \e[38;5;26m▐\e[38;5;20;48;5;27m▄\e[38;5;18m▟\e[38;5;17;49m▌               \e[38;5;32m▗\e[48;5;81m▚\e[48;5;33m \e[38;5;18m▗\e[38;5;26;48;5;25m▄\e[48;5;33m▙\e[48;5;39m \e[38;5;117;48;5;81m▝\e[48;5;195m▖\e[38;5;195;49m█\e[48;5;159m▄█▙\e[38;5;81m▗\e[38;5;38;48;5;117m▗\e[38;5;25m▄\e[38;5;16m▄\e[48;5;81m▄▄▄▄\e[38;5;17;48;5;123m▄\e[38;5;25;48;5;81m▄\e[38;5;32m▀\e[38;5;26m▀\e[48;5;32m▜█████\e[48;5;18m▙\e[38;5;33;48;5;25m▝█\e[48;5;117m▙\e[38;5;117;49m▖\e[0m"
+    echo -e "  \e[38;5;17m▀▀     ▀▀▀▘  ▝▀\e[38;5;18m▀\e[38;5;17m▀   ▀▀               \e[38;5;25m▗\e[38;5;33;48;5;81m▗\e[48;5;26m▞\e[38;5;18;48;5;32m▄\e[48;5;27m▘  \e[38;5;33m▝\e[48;5;39m▖\e[38;5;81m▀\e[38;5;117m▀\e[38;5;81;48;5;195m▄▄▄\e[48;5;17m▌\e[38;5;16;49m██████\e[48;5;17m▛\e[48;5;81m▀▀\e[48;5;17m▚\e[48;5;81m▄\e[38;5;17m▖\e[38;5;33m▀\e[48;5;27m▄▄\e[38;5;231m▐\e[38;5;33m▌ \e[38;5;26m▝\e[48;5;18m▞\e[48;5;33m▄\e[38;5;117m▝\e[49m▖\e[0m"
+    echo -e " \e[38;5;87;48;5;25m▐\e[38;5;51;48;5;123m▄\e[38;5;25;49m▙\e[38;5;87m▐\e[48;5;51m▀\e[48;5;25m▌\e[38;5;38;49m▟\e[38;5;51;48;5;87m▄\e[38;5;25;49m▙\e[38;5;87m▗\e[38;5;51;48;5;123m▄\e[38;5;18;48;5;81m▗\e[38;5;38;48;5;87m▄\e[38;5;81;49m▙\e[38;5;18m▖\e[48;5;117m▄\e[38;5;45;48;5;87m▄\e[38;5;51m▄\e[38;5;25m▄\e[38;5;18;49m▙ \e[38;5;51;48;5;123m▄\e[38;5;38;48;5;87m▄\e[38;5;51m▄\e[38;5;38;49m▙ \e[38;5;87m▐\e[48;5;51m▀\e[38;5;17;48;5;81m▗\e[49m  \e[38;5;87m▐\e[48;5;51m▀\e[38;5;17;48;5;81m▗\e[49m    \e[38;5;81m▟\e[48;5;33m \e[38;5;18m▗▘\e[38;5;33;49m██████\e[48;5;39m▄▄▄▄\e[38;5;17;48;5;81m▝\e[48;5;16m \e[38;5;16;49m█████\e[48;5;17m▙\e[38;5;87m▀▀\e[38;5;16m▟\e[49m██\e[48;5;38m▙\e[48;5;117m▄\e[38;5;25;48;5;81m▄\e[38;5;39m▀\e[38;5;33m▀\e[48;5;39m▜\e[49m█\e[48;5;25m▙▝\e[49m█\e[48;5;117m▌\e[38;5;25;49m▖\e[0m"
+    echo -e " \e[38;5;45;48;5;25m▐\e[48;5;39m▀\e[38;5;17;48;5;25m▐\e[38;5;45;49m▐\e[48;5;39m▀█\e[48;5;25m▐\e[48;5;39m▀\e[38;5;17;48;5;32m▐\e[38;5;25;49m▐\e[38;5;26;48;5;45m▖\e[38;5;25m▝\e[38;5;117;48;5;18m▖\e[38;5;18;49m▀\e[38;5;17m▀ \e[38;5;45;48;5;32m▐\e[48;5;39m▀\e[38;5;17;48;5;25m▐\e[49m \e[38;5;32m▐\e[38;5;39;48;5;45m▄\e[38;5;18m▐\e[38;5;39m▄\e[38;5;25m▐\e[38;5;17;49m▌\e[38;5;45m▐\e[48;5;39m▀\e[38;5;17;48;5;38m▐\e[49m  \e[38;5;45m▐\e[48;5;39m▀\e[38;5;17;48;5;38m▐\e[49m   \e[38;5;117m▐\e[38;5;81;48;5;26m▘\e[38;5;25;48;5;33m▄▛\e[38;5;33;49m██████████\e[38;5;81;48;5;39m▗\e[48;5;25m▀\e[38;5;16m▟\e[49m███████████████\e[48;5;25m▄\e[38;5;17;48;5;81m▄\e[38;5;39m▀\e[38;5;33m▜\e[48;5;18m▙\e[38;5;26m▜\e[48;5;33m▄\e[38;5;81;49m▙\e[0m"
+    echo -e " \e[38;5;33;48;5;25m▐\e[48;5;39m▄\e[38;5;17;48;5;25m▐\e[38;5;33;49m▐\e[48;5;39m▄\e[48;5;26m▀\e[48;5;39m▄▄\e[38;5;17;48;5;26m▐\e[49m \e[38;5;18m▝\e[38;5;25m▜\e[38;5;27;48;5;39m▄\e[38;5;39;49m▙\e[38;5;25m▖ \e[48;5;33m▌\e[38;5;39m▀\e[38;5;17;48;5;25m▐\e[49m \e[38;5;33m▐\e[48;5;39m▄\e[38;5;17;48;5;26m▐\e[38;5;33m▜█\e[38;5;17;49m▌\e[38;5;33m▐\e[48;5;39m▄\e[38;5;17;48;5;32m▐\e[49m  \e[38;5;33m▐\e[48;5;39m▄\e[38;5;17;48;5;32m▐\e[49m   \e[38;5;159;48;5;32m▖\e[38;5;27;49m█\e[48;5;18m▌\e[38;5;26;48;5;39m▘\e[38;5;33m▀▀▀▀▀▀▀▀▀▀ \e[38;5;16;48;5;81m▐\e[49m██\e[48;5;17m▙▄█▄\e[49m█████\e[48;5;38m▛▀▀\e[48;5;39m▀▀▀▀\e[38;5;17m▀\e[38;5;81m▀▘\e[38;5;26;48;5;18m▞\e[38;5;27;49m█\e[48;5;81m▌\e[38;5;32;49m▖\e[0m"
+    echo -e " \e[38;5;27;48;5;25m▐\e[49m█\e[38;5;17;48;5;19m▐\e[38;5;27;49m▐█\e[38;5;18;48;5;26m▐\e[38;5;27m▜\e[49m█\e[38;5;17;48;5;26m▐\e[38;5;27;49m▐\e[48;5;33m▄\e[38;5;17;48;5;32m▝\e[38;5;25;48;5;27m▘ \e[48;5;17m▘\e[49m \e[48;5;27m▌\e[38;5;27;49m█\e[38;5;17;48;5;19m▐\e[49m \e[38;5;26m▟\e[38;5;27m█\e[38;5;19;48;5;81m▄\e[48;5;27m▖\e[38;5;27;49m█\e[38;5;17;48;5;25m▐\e[38;5;27;49m▐█\e[38;5;17;48;5;26m▝\e[38;5;25;49m▄ \e[38;5;27m▐█\e[38;5;17;48;5;26m▝\e[38;5;25;49m▄ \e[38;5;38m▗\e[38;5;27;48;5;81m▐\e[48;5;26m▀\e[38;5;18m▌\e[38;5;39;49m████████\e[48;5;81m▀▀▀▀▘\e[38;5;17;48;5;16m▗▄▄▄▖  \e[38;5;16;49m███\e[48;5;81m▛\e[38;5;25m▘\e[38;5;39m▝\e[48;5;45m▜\e[49m███████\e[48;5;18m▌\e[38;5;25;48;5;27m▖\e[38;5;26m▄\e[38;5;117;49m▌\e[0m"
+    echo -e " \e[38;5;19m▀\e[38;5;17;48;5;20m▄\e[49m▛\e[38;5;20m▝\e[48;5;17m▀\e[38;5;19m▘\e[49m▀\e[38;5;17;48;5;20m▄\e[48;5;19m▟\e[49m \e[38;5;18m▜\e[38;5;17;48;5;20m▄▄\e[48;5;19m▄\e[49m▀ \e[38;5;19m▀\e[38;5;17;48;5;20m▄\e[49m▛ \e[38;5;19m▀\e[38;5;17;48;5;20m▄\e[49m▛\e[38;5;18m▀\e[38;5;17;48;5;20m▄\e[48;5;19m▟\e[38;5;20;49m▝\e[48;5;17m▀▀▀\e[38;5;25m▘\e[38;5;20;49m▝\e[48;5;17m▀▀▀\e[38;5;26m▘\e[38;5;117;49m▐\e[38;5;27;48;5;33m▐\e[48;5;26m▖\e[38;5;39;48;5;17m▐█████\e[48;5;81m▀\e[38;5;25m▗\e[38;5;16m▄\e[38;5;87;48;5;25m▗\e[38;5;38;48;5;16m▖\e[38;5;16;49m█\e[38;5;81;48;5;17m▐\e[38;5;16;48;5;25m▐\e[49m█████\e[48;5;17m▙▄▄▄\e[38;5;81m▗\e[38;5;38m▞\e[38;5;81m▘\e[38;5;51;48;5;25m▄\e[38;5;16m▗\e[38;5;17;48;5;81m▄\e[38;5;39m▀\e[48;5;45m▜████\e[48;5;32m▌\e[38;5;27;48;5;18m▐█\e[38;5;81;49m▙\e[0m"
+    echo -e "                                     \e[38;5;159m▐\e[48;5;27m \e[38;5;26m▐\e[38;5;81;48;5;18m▐███\e[48;5;25m▀\e[48;5;16m▀\e[38;5;25m▘\e[38;5;16;49m██\e[48;5;17m▙█\e[48;5;81m▛▗\e[48;5;25m▟\e[48;5;17m▄█▄▖▀▀▀▀\e[48;5;81m▛\e[38;5;32;48;5;17m▞\e[38;5;81;48;5;16m▘   \e[38;5;16;49m█\e[48;5;17m▙\e[48;5;25m▄\e[48;5;81m▄\e[38;5;38m▖  ▐\e[38;5;27;48;5;18m▐\e[49m█\e[38;5;32;48;5;81m▐\e[0m"
+    echo -e "                                     \e[38;5;159m▐\e[38;5;26;48;5;27m▄▟\e[38;5;81;48;5;25m▐\e[49m████\e[48;5;38m▄\e[48;5;32m▄\e[48;5;17m▙\e[38;5;16m▜\e[49m██\e[48;5;25m▛\e[48;5;81m▐\e[48;5;17m▛▀█▀▀\e[49m███\e[48;5;25m▛\e[48;5;32m▘\e[48;5;25m▐██\e[49m██\e[48;5;32m▘\e[38;5;81m▄\e[48;5;38m▄███\e[49m██\e[38;5;26;48;5;18m▐\e[48;5;27m▄\e[38;5;38;48;5;33m▐\e[0m"
+    echo -e "                                     \e[38;5;159m▐\e[38;5;21;48;5;27m▄\e[48;5;26m▄\e[38;5;81;48;5;25m▐\e[38;5;38;48;5;123m▄▄▄▄▄▄▄\e[48;5;25m▌\e[38;5;17m▀▀\e[48;5;38m▌\e[38;5;16;48;5;25m▝▀▀▀▀▀▀▀▀\e[38;5;81;48;5;17m▐\e[38;5;25;48;5;16m▄▄▄▄\e[48;5;17m▄▐\e[38;5;38;48;5;117m▄\e[48;5;123m▄▄▄▄▄▄\e[38;5;32;48;5;117m▄\e[38;5;27;48;5;18m▐\e[48;5;21m▀\e[38;5;38;48;5;33m▐\e[0m"
+    echo -e "                                     \e[38;5;25m▝\e[38;5;19m▀\e[38;5;153;48;5;18m▄\e[38;5;17;49m▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀\e[38;5;19m▀\e[38;5;25m▘\e[0m"
+    echo -e "     \e[38;5;25m▀\e[38;5;32m▄\e[38;5;81m▀\e[38;5;39m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀  \e[38;5;231;48;5;153m▐\e[49m█\e[48;5;153m▌\e[49m  \e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;45m▄\e[38;5;87m▀\e[38;5;39m▄\e[38;5;81m▀\e[38;5;32m▄\e[38;5;25m▀\e[0m"
+    echo -e "                      \e[38;5;25m▗▄▄              \e[38;5;153m▀\e[0m"
+    echo -e " \e[38;5;38m▐\e[38;5;45;48;5;87m▄▄\e[48;5;25m▜\e[48;5;87m▄▄\e[38;5;17;49m▌  \e[38;5;38m▐\e[38;5;45;48;5;87m▄▄\e[48;5;18m▛\e[38;5;38m▀\e[38;5;45;48;5;87m▄▄\e[38;5;38;49m▙  ▟\e[38;5;45;48;5;87m▄▄\e[38;5;17;48;5;32m▄\e[38;5;18;48;5;45m▖\e[38;5;87m▀\e[38;5;117m▀\e[38;5;25;49m▖  \e[38;5;45;48;5;87m▄▄\e[38;5;25;48;5;51m▐\e[38;5;17;49m▖\e[38;5;45;48;5;87m▄▄\e[48;5;81m▄\e[38;5;17;49m▌       \e[38;5;51m▐\e[38;5;45;48;5;87m▄▄\e[38;5;17;48;5;38m▗\e[48;5;32m▄▄\e[49m▌ \e[38;5;45m▐\e[48;5;87m▄▄\e[38;5;17;48;5;38m▐\e[38;5;25;49m▐\e[38;5;45;48;5;87m▄▄\e[38;5;17;48;5;51m▐\e[49m  \e[38;5;51m▐\e[38;5;45;48;5;87m▄▄\e[38;5;25;49m▙    \e[38;5;38m▐\e[38;5;45;48;5;87m▄▄\e[38;5;17;48;5;51m▐\e[0m"
+    echo -e " \e[38;5;38m▟\e[38;5;39;48;5;45m▄\e[48;5;32m▛\e[38;5;25;48;5;17m▐\e[38;5;39;48;5;45m▄▄\e[38;5;17;48;5;32m▐\e[49m  \e[38;5;32m▐\e[38;5;39;48;5;45m▄▄\e[48;5;25m▌\e[38;5;32m▟\e[38;5;39;48;5;45m▄\e[48;5;32m▛\e[38;5;26;48;5;17m▘\e[38;5;17;49m▘ \e[38;5;39;48;5;25m▐\e[48;5;45m▄▄\e[38;5;17;49m▌\e[38;5;19m▝\e[38;5;17;48;5;25m▄▄\e[49m▛  \e[38;5;39;48;5;45m▄▄\e[48;5;32m▌\e[38;5;26;48;5;25m▄\e[38;5;39;48;5;45m▄▄▟\e[38;5;17;49m▌       \e[38;5;39m▐\e[48;5;45m▄▄\e[48;5;25m▌\e[38;5;26m▄\e[38;5;25;49m▙\e[38;5;17m▖ \e[38;5;38m▐\e[38;5;39;48;5;45m▄▄\e[38;5;17;48;5;32m▐\e[38;5;25;49m▐\e[38;5;39;48;5;45m▄▄\e[48;5;18m▌\e[49m  ▐\e[48;5;45m▄▄\e[38;5;17;48;5;25m▐\e[49m    \e[38;5;32m▐\e[38;5;39;48;5;45m▄▄\e[48;5;17m▌\e[0m"
+    echo -e " \e[38;5;32;48;5;27m▘\e[38;5;33m▀\e[48;5;25m▙\e[38;5;117;48;5;17m▄\e[38;5;27;48;5;33m▄▄\e[48;5;25m▌\e[38;5;17;49m▖ \e[38;5;25m▐\e[38;5;27;48;5;33m▄▄\e[48;5;18m▌\e[38;5;26;48;5;17m▐\e[38;5;27;48;5;33m▄▙\e[38;5;25;49m▙  \e[48;5;27m▌\e[38;5;33m▀▀\e[38;5;17;49m▌\e[38;5;32m▐\e[38;5;27;48;5;117m▄▄\e[38;5;18;49m▄  \e[38;5;27;48;5;33m▄▄\e[48;5;19m▌\e[38;5;17;49m▛\e[38;5;33;48;5;27m▝▀▘\e[38;5;17;49m▌       \e[38;5;27m▐\e[48;5;33m▄▄\e[38;5;17;48;5;26m▐\e[49m▀▀▘ \e[38;5;26m▐\e[38;5;27;48;5;33m▄▄\e[38;5;17;48;5;26m▐\e[38;5;25;49m▐\e[38;5;27;48;5;33m▄▄\e[48;5;18m▌\e[49m  ▐\e[48;5;33m▄▄\e[38;5;17;48;5;25m▐\e[49m    \e[38;5;25m▐\e[38;5;27;48;5;33m▄▄\e[48;5;17m▌\e[0m"
+    echo -e "\e[38;5;18m▐\e[38;5;19;48;5;27m▄▄\e[38;5;18m▟\e[49m▀\e[38;5;20m▜\e[38;5;19;48;5;27m▄▄\e[38;5;17;49m▌ \e[38;5;18m▐\e[38;5;19;48;5;27m▄▄\e[38;5;18m▟\e[38;5;25;48;5;17m▝\e[38;5;19;48;5;27m▄▄\e[38;5;18m▟\e[49m  \e[38;5;20m▝\e[38;5;18;48;5;27m▄\e[38;5;19m▄\e[38;5;20;48;5;117m▄\e[48;5;81m▟\e[38;5;19;48;5;27m▄\e[38;5;18;48;5;26m▄\e[38;5;17;49m▛  \e[38;5;19;48;5;27m▄▄\e[38;5;18m▟\e[38;5;17;49m▌\e[38;5;19;48;5;27m▄▄▄\e[38;5;17;49m▌       \e[38;5;20m▐\e[38;5;19;48;5;27m▄▄\e[38;5;26;48;5;17m▘\e[49m    \e[38;5;18m▝\e[38;5;26m▜\e[38;5;19;48;5;27m▄\e[38;5;20;48;5;32m▄▄\e[38;5;19;48;5;27m▄\e[38;5;18m▄\e[38;5;19;48;5;17m▘\e[49m  \e[38;5;20m▐\e[38;5;19;48;5;27m▄▄\e[48;5;32m▄\e[48;5;25m▄▄\e[38;5;17;49m▖ \e[38;5;18m▐\e[38;5;19;48;5;27m▄▄\e[38;5;25;48;5;20m▝\e[48;5;19m▀▀\e[38;5;18;49m▄\e[0m"
+    echo -e " \e[38;5;17m▝▀▘  ▀▀\e[38;5;159m▖▗ ▖\e[38;5;17m▀▀\e[38;5;159m▗▖\e[38;5;17m▀▀\e[38;5;159m▄▖  \e[38;5;17m▝\e[48;5;159m▀▀\e[49m▀\e[48;5;159m▘\e[38;5;159;49m▄ ▗\e[48;5;17m▙\e[38;5;17;49m▀▀\e[38;5;159m▄▖\e[48;5;17m▄▄\e[49m▖▗▄▖▄▄▖  ▗\e[48;5;17m▄\e[38;5;17;49m▘\e[38;5;159m▄▄ ▄▄▖▖\e[38;5;17m▀\e[48;5;159m▜\e[49m▀▘\e[38;5;159m▗  ▖\e[38;5;17m▀\e[48;5;159m▜\e[49m▀▀▀▘ \e[38;5;159m▖\e[38;5;17m▝▀▀▀▀▀\e[0m"
+    echo -e "        \e[38;5;51m▙▘ ▛▄ ▐▝▚ ▙▞   ▌ ▌▌ ▌▌ ▌ ▐ ▌  ▌   ▌   ▌ ▌▌ ▌ ▌ ▛▖▌ ▗▜▚ ▛▞▌ ▞▖ ▞▝▖\e[0m"
+    echo -e "        \e[38;5;45m▌▞ ▌ ▌▐▚\e[38;5;39m▖ \e[38;5;45m▌▚   ▛▀ ▛▛ ▌ ▌ ▐ ▛▀ ▌   ▌   ▌ ▌▌ ▌ ▌ ▌▝▌  ▐  ▛▝▌▝\e[38;5;39m▖\e[38;5;45m▞ ▞▞\e[38;5;39m▖\e[0m"
+    echo -e "        \e[38;5;39m▛  ▌ ▌▐ ▝ ▌ ▘  ▌  ▌▝\e[38;5;33m▖\e[38;5;39m▚\e[38;5;33m▄\e[38;5;39m▘▚▞ \e[38;5;33m▙▄▖\e[38;5;39m▚\e[38;5;33m▄▖ \e[38;5;39m▌   ▚\e[38;5;33m▄\e[38;5;39m▘\e[38;5;33m▙▄\e[38;5;39m▘\e[38;5;33m▄▙▖\e[38;5;39m▌ ▌  ▐  ▌ ▌ ▝  ▌ ▌\e[0m"
+    sleep 0.5
+    echo "" 
     echo -e "  ${PINK_NEON}─────────────────────────────── ${RED_NEON}< PROJECT-ODIN -V: 1.0 >${PINK_NEON} ────────────────────────────────${NC}"
     echo ""
     echo -e "  ${NEON_BLUE}───────────>>[ COMPLETE POST-INSTALLER FOR ARCH AND DERIVATIVES ]<<───────────${NC}"
@@ -224,7 +239,7 @@ MENU_CABECALHO() {
     echo -e "${RED_NEON}By: 𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍🐧 ${NC}"
     echo -e "${RED_NEON}--------------------------------${NC}"
     echo ""
-    sleep 1
+    sleep 1.5
 }
 
 
@@ -249,9 +264,9 @@ CHAMAR_MENU_OPCOES() {
         echo ""
         sleep 0.2    
       
-        msg "${CYAN_NEON}3) - Opções Pré-definidas:${NC}\n   Escolha uma opção pré-definida para deixar seu arch pronto para um dos propósitos:\n   ${YELLOW_NEON}GAME${NC}   : Deixa seu arch pronto para jogos com instalação de pacotes e bibliotecas próprias\n            para jogar com opção de baixar kernel-zen para baixa latência.\n   ${YELLOW_NEON}DEV${NC}    : Baixa e deixa pronto seu arch para programação baixando as principais\n            linguagens, compiladores e VMs.\n   ${RED_NEON}HACKER${NC} : (Opção instável) Habilita os repositórios do black arch e baixa as\n            principais ferramentas deixando seu arch pronto para pentest.\n" \
-            "${CYAN_NEON}3) - Pre-defined Options:${NC}\n   Choose a pre-defined option to ready your arch for one of these purposes:\n   ${YELLOW_NEON}GAME${NC}   : Gets your arch ready for gaming by installing specific packages and\n            libraries, with an option to download kernel-zen for low latency.\n   ${YELLOW_NEON}DEV${NC}    : Readies your arch for programming by downloading the main languages,\n            compilers, and VMs.\n   ${RED_NEON}HACKER${NC} : (Unstable option) Enables black arch repos and downloads the main\n            tools, leaving your arch ready for pentesting.\n" \
-            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n   Elija una opción predefinida para preparar su arch para uno de estos propósitos:\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu arch para juegos instalando paquetes y librerías propias,\n            con la opción de descargar kernel-zen para baja latencia.\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de black arch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
+        msg "${CYAN_NEON}3) - Opções Pré-definidas:${NC}\n    Escolha uma opção pré-definida para deixar seu arch pronto para um dos propósitos:\n   ${YELLOW_NEON}GAME${NC}   : Deixa seu arch pronto para jogos com instalação de pacotes e bibliotecas próprias\n            para jogar com opção de baixar kernel-zen para baixa latência.\n   ${YELLOW_NEON}DEV${NC}    : Baixa e deixa pronto seu arch para programação baixando as principais\n            linguagens, compiladores e VMs.\n   ${RED_NEON}HACKER${NC} : (Opção instável) Habilita os repositórios do black arch e baixa as\n            principais ferramentas deixando seu arch pronto para pentest.\n" \
+            "${CYAN_NEON}3) - Pre-defined Options:${NC}\n    Choose a pre-defined option to ready your arch for one of these purposes:\n   ${YELLOW_NEON}GAME${NC}   : Gets your arch ready for gaming by installing specific packages and\n            libraries, with an option to download kernel-zen for low latency.\n   ${YELLOW_NEON}DEV${NC}    : Readies your arch for programming by downloading the main languages,\n            compilers, and VMs.\n   ${RED_NEON}HACKER${NC} : (Unstable option) Enables black arch repos and downloads the main\n            tools, leaving your arch ready for pentesting.\n" \
+            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n    Elija una opción predefinida para preparar su arch para uno de estos propósitos:\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu arch para juegos instalando paquetes y librerías propias,\n            con la opción de descargar kernel-zen para baja latencia.\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de black arch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
         
         echo ""
         sleep 0.2
@@ -262,9 +277,9 @@ CHAMAR_MENU_OPCOES() {
 
         echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------${NC}"
         
-        msg "\nEscolha uma opção [1-4]:" \
-            "\nChoose an option [1-4]:" \
-            "\nElija una opción [1-4]:"
+        msg "\nEscolha uma opção [1-2-3-4]:" \
+            "\nChoose an option [1-2-3-4]:" \
+            "\nElija una opción [1-2-3-4]:"
         read -rp ">> " opcao || exit 0
 
         case "$opcao" in
@@ -285,7 +300,7 @@ CHAMAR_MENU_OPCOES() {
                 read -rp ">> " opcao_sair
                 
                 case "$opcao_sair" in
-                    1)
+                    1|sim|yes|si)
                         echo ""
                         # Loop de contagem regressiva de 5 a 0
                         for i in {5..0}; do
@@ -294,7 +309,7 @@ CHAMAR_MENU_OPCOES() {
                         done
                         exit 0
                         ;;
-                    2)
+                    2|nao|no|não)
                         continue # Pula o resto e volta pro começo do 'while true'
                         ;;
                     *)
@@ -2715,9 +2730,9 @@ MENSAGEM_FINAL() {
     echo -e "                       \\\\______________/"
     echo -e "${NC}"
 
-    msg " ${WHITE_NEON}​2026 @copyright Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}" \
-        " ${WHITE_NEON}2026 ​@copyright Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}" \
-        " ${WHITE_NEON}​2026 @copyright Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}"
+    msg " ${WHITE_NEON}​​© By: Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}" \
+        " ${WHITE_NEON}​© By: Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}" \
+        " ${WHITE_NEON}​© By: Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}"
 
     msg "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
@@ -2867,9 +2882,7 @@ OPCAO_PRE_DEFINIDAS_SCRIPTS() {
 # PONTO DE ENTRADA PRINCIPAL // MAIN ENTRY POINT
 #===========================================================================================
 MAIN() {
-
     VERIFICAR_IDIOMA 
-
     while true; do
         MENU_CABECALHO
         CHAMAR_MENU_OPCOES
