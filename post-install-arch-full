@@ -13,17 +13,6 @@ GREEN_NEON="\033[1;32m"
 YELLOW_NEON="\033[1;33m"
 NEON_BLUE="\033[1;34m"
 WHITE_NEON='\033[1;97m'
-
-# ==============================================================================
-# PALETA DE CORES E GRADIENTE (RGB TRUE COLOR)
-# ==============================================================================
-#GRAD_1="\e[38;2;0;220;255m"   # Neon Blue
-#GRAD_2="\e[38;2;80;185;255m"  # Azul Claro
-#GRAD_3="\e[38;2;130;160;250m" # Azul Lavanda
-#GRAD_4="\e[38;2;170;135;245m" # Roxo Suave
-#GRAD_5="\e[38;2;190;120;235m" # Roxo Pastel
-#GRAD_6="\e[38;2;160;100;210m" # Roxo Atenuado
-
 PINK_NEON="\e[38;2;255;105;180m"
 RED_NEON="\e[38;2;255;50;50m"
 
@@ -198,9 +187,9 @@ export -f manage_service
 
 MENU_CABECALHO() {
     clear 
-    msg "${CYAN_NEON}Bem-vindo ao Odin - Instalador Pós-Instalação Arch Linux${NC}"\
-        "${CYAN_NEON}Welcome to Odin - Post-Installation Arch Linux Installer${NC}" \
-        "${CYAN_NEON}Bienvenido a Odin - Instalador Post-Instalación Arch Linux${NC}"
+    msg "${CYAN_NEON}Bem-vindo ao Odin -  Pós-Instalação Arch Linux 🐧${NC}"\
+        "${CYAN_NEON}Welcome to Odin - Post-Installation Arch Linux Installer 🐧${NC}" \
+        "${CYAN_NEON}Bienvenido a Odin - Post-Instalación Arch Linux 🐧${NC}"
     sleep 0.7
     echo -e "                                                        \e[38;5;32m▗\e[38;5;81m▄▄\e[38;5;25m▄\e[0m"
     echo -e "                                                    \e[38;5;38m▄\e[38;5;81m▄\e[48;5;38m \e[48;5;45m▀ \e[38;5;38;48;5;25m▐▀\e[38;5;45;48;5;32m▐\e[48;5;81m▄▄\e[38;5;32;49m▙\e[38;5;81m▄\e[0m"
@@ -230,13 +219,13 @@ MENU_CABECALHO() {
     echo -e "        \e[38;5;51m▙▘ ▛▄ ▐▝▚ ▙▞   ▌ ▌▌ ▌▌ ▌ ▐ ▌  ▌   ▌   ▌ ▌▌ ▌ ▌ ▛▖▌ ▗▜▚ ▛▞▌ ▞▖ ▞▝▖\e[0m"
     echo -e "        \e[38;5;45m▌▞ ▌ ▌▐▚\e[38;5;39m▖ \e[38;5;45m▌▚   ▛▀ ▛▛ ▌ ▌ ▐ ▛▀ ▌   ▌   ▌ ▌▌ ▌ ▌ ▌▝▌  ▐  ▛▝▌▝\e[38;5;39m▖\e[38;5;45m▞ ▞▞\e[38;5;39m▖\e[0m"
     echo -e "        \e[38;5;39m▛  ▌ ▌▐ ▝ ▌ ▘  ▌  ▌▝\e[38;5;33m▖\e[38;5;39m▚\e[38;5;33m▄\e[38;5;39m▘▚▞ \e[38;5;33m▙▄▖\e[38;5;39m▚\e[38;5;33m▄▖ \e[38;5;39m▌   ▚\e[38;5;33m▄\e[38;5;39m▘\e[38;5;33m▙▄\e[38;5;39m▘\e[38;5;33m▄▙▖\e[38;5;39m▌ ▌  ▐  ▌ ▌ ▝  ▌ ▌\e[0m"
-    sleep 0.5
+    sleep 0.7
     echo "" 
     echo -e "  ${PINK_NEON}─────────────────────────────── ${RED_NEON}< PROJECT-ODIN -V: 1.0 >${PINK_NEON} ────────────────────────────────${NC}"
     echo ""
     echo -e "  ${NEON_BLUE}───────────>>[ COMPLETE POST-INSTALLER FOR ARCH AND DERIVATIVES ]<<───────────${NC}"
     echo -e "  ${NEON_BLUE}-----------------------------------------------------------------------------------------${NC}"
-    echo -e "${RED_NEON}By: 𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍🐧 ${NC}"
+    echo -e "${RED_NEON}By: 𝕿𝖍𝖊 𝑺𝖊𝖛𝖊𝖓𝖙𝖍 🐧 ${NC}"
     echo -e "${RED_NEON}--------------------------------${NC}"
     echo ""
     sleep 1.5
@@ -248,7 +237,6 @@ CHAMAR_MENU_OPCOES() {
     local opcao_sair
 
     while true; do
-        MENU_CABECALHO
         
         msg "${CYAN_NEON}1) - Script Iniciantes Padrão:${NC}\n   Instala tudo por padrão que seu arch precisa para você poder sair usando\n   como (codecs de multimídia, leitura de arquivos, otimização de hardware).\n" \
             "${CYAN_NEON}1) - Standard Beginner Script:${NC}\n   Installs everything your arch needs out of the box so you can start using it\n   (such as multimedia codecs, file readers, hardware optimization).\n" \
@@ -303,6 +291,7 @@ CHAMAR_MENU_OPCOES() {
                     1|sim|yes|si)
                         echo ""
                         # Loop de contagem regressiva de 5 a 0
+                        MENSAGEM_FINAL
                         for i in {5..0}; do
                             msg "Encerrando em $i..." "Exiting in $i..." "Cerrando en $i..."
                             sleep 1
@@ -361,12 +350,62 @@ FUNCAO_CORE(){
     }
 
     _core_install() {
-        if sudo pacman -S --needed --noconfirm "$@"; then
-            msg "-> Pacotes instalados: $*" "-> Packages installed: $*" "-> Paquetes instalados: $*"
+        local pkg
+        local -a pkgs_ok=() pkgs_ignorados=() pkgs_falha=() pkgs_instalados=()
+
+        # Separa o que existe nos repositórios do que não existe (renomeado, removido, repo desativado)
+        for pkg in "$@"; do
+            if pacman -Si "$pkg" &>/dev/null; then
+                pkgs_ok+=("$pkg")
+            else
+                pkgs_ignorados+=("$pkg")
+            fi
+        done
+
+        if [ "${#pkgs_ignorados[@]}" -gt 0 ]; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO]: Pacotes não encontrados nos repositórios (ignorados): ${pkgs_ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[WARNING]: Packages not found in the repositories (skipped): ${pkgs_ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[AVISO]: Paquetes no encontrados en los repositorios (omitidos): ${pkgs_ignorados[*]}${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"     
+        fi
+
+        if [ "${#pkgs_ok[@]}" -eq 0 ]; then
+            msg "${RED_NEON}[ERRO]: Falha ao instalar: $* ${NC}" "${RED_NEON}[ERROR]: Failed to install: $* ${NC}" "${RED_NEON}[ERROR]: Error al instalar: $* ${NC}"
+            return 1
+        fi
+
+        if sudo pacman -S --needed --noconfirm "${pkgs_ok[@]}"; then
+            msg "-> Pacotes instalados: ${pkgs_ok[*]}" "-> Packages installed: ${pkgs_ok[*]}" "-> Paquetes instalados: ${pkgs_ok[*]}"
             return 0
         fi
-        msg "${RED_NEON}[ERRO]: Falha ao instalar: $* ${NC}" "${RED_NEON}[ERROR]: Failed to install: $* ${NC}" "${RED_NEON}[ERROR]: Error al instalar: $* ${NC}"
-        return 1
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}[AVISO]: A instalação em bloco falhou. Tentando um pacote por vez...${NC}" \
+            "${YELLOW_NEON}[WARNING]: Bulk installation failed. Trying one package at a time...${NC}" \
+            "${YELLOW_NEON}[AVISO]: La instalación en bloque falló. Intentando un paquete a la vez...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        for pkg in "${pkgs_ok[@]}"; do
+            if sudo pacman -S --needed --noconfirm "$pkg"; then
+                pkgs_instalados+=("$pkg")
+            else
+                pkgs_falha+=("$pkg")
+            fi
+        done
+
+        if [ "${#pkgs_instalados[@]}" -eq 0 ]; then
+            msg "${RED_NEON}[ERRO]: Falha ao instalar: $* ${NC}" "${RED_NEON}[ERROR]: Failed to install: $* ${NC}" "${RED_NEON}[ERROR]: Error al instalar: $* ${NC}"
+            return 1
+        fi
+
+        if [ "${#pkgs_falha[@]}" -gt 0 ]; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO]: Não foi possível instalar: ${pkgs_falha[*]}${NC}" \
+                "${YELLOW_NEON}[WARNING]: Could not install: ${pkgs_falha[*]}${NC}" \
+                "${YELLOW_NEON}[AVISO]: No se pudo instalar: ${pkgs_falha[*]}${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"        
+        fi
+        msg "-> Pacotes instalados: ${pkgs_instalados[*]}" "-> Packages installed: ${pkgs_instalados[*]}" "-> Paquetes instalados: ${pkgs_instalados[*]}"
+        return 0
     }
 
     _core_init_pkg() {
@@ -439,18 +478,18 @@ FUNCAO_CORE(){
     #==========================
     local resp_audio mirror_target reflector_ok ucode_pkg root_fs
     local efi_dir conf limine_conf user_uid mirror_run_bak
-    local base_pkgs=(git base-devel dkms curl wget exfatprogs htop unrar tar gzip bzip2 xz lrzip p7zip ntfs-3g dosfstools lm_sensors fastfetch)
+    local base_pkgs=(git base-devel dkms curl wget exfatprogs htop unrar unzip tar gzip bzip2 xz lrzip 7zip ntfs-3g dosfstools lm_sensors fastfetch noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-liberation ttf-dejavu dmidecode btop)
     local target_user="${SUDO_USER:-${USER:-$(id -un)}}"
 
     echo -e "${CYAN_NEON}\n============================================================${NC}"
-    echo ""
     msg "${CYAN_NEON}[CORE]:${NC} ${NEON_BLUE}Iniciando configurações essenciais do Project Odin...${NC}" \
         "${CYAN_NEON}[CORE]:${NC} ${NEON_BLUE}Starting essential configurations for Project Odin...${NC}" \
         "${CYAN_NEON}[CORE]:${NC} ${NEON_BLUE}Iniciando configuraciones esenciales del Project Odin...${NC}"
-        sleep 0.2
     echo -e "${PINK_NEON}\n============================================================${NC}"
+    sleep 1
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${YELLOW_NEON}[1/15]: Solicitando credenciais de sudo...${NC}" \
         "${YELLOW_NEON}[1/15]: Requesting sudo credentials...${NC}" \
         "${YELLOW_NEON}[1/15]: Solicitando credenciales de sudo...${NC}"
@@ -466,19 +505,29 @@ FUNCAO_CORE(){
         "-> Sudo validated and keep-alive active." \
         "-> Sudo validado y keep-alive activo."
     
-    sleep 0.2
+    sleep 0.7
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [2/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[2/15]: Sincronizando o relógio do sistema (NTP)...${NC}" \
         "${CYAN_NEON}[2/15]: Synchronizing system clock (NTP)...${NC}" \
         "${CYAN_NEON}[2/15]: Sincronizando el reloj del sistema (NTP)...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
     if command -v timedatectl &>/dev/null && pidof systemd &>/dev/null; then
-        sudo timedatectl set-ntp true
-        msg "-> NTP ativado via systemd. Relógio sincronizado." \
-            "-> NTP enabled via systemd. Clock synced." \
-            "-> NTP activado vía systemd. Reloj sincronizado."
+        if sudo timedatectl set-ntp true; then
+            msg "-> NTP ativado via systemd. Relógio sincronizado." \
+                "-> NTP enabled via systemd. Clock synced." \
+                "-> NTP activado vía systemd. Reloj sincronizado."
+        else
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO]: Não foi possível ativar o NTP via systemd.${NC}" \
+                "${YELLOW_NEON}[WARNING]: Could not enable NTP via systemd.${NC}" \
+                "${YELLOW_NEON}[AVISO]: No se pudo activar NTP vía systemd.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        fi
     elif command -v rc-service &>/dev/null; then
         if pacman -Q chrony &>/dev/null; then
             manage_service enable chronyd
@@ -486,9 +535,11 @@ FUNCAO_CORE(){
         elif pacman -Q ntp &>/dev/null; then
             manage_service enable ntpd
             manage_service start ntpd
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         elif _core_ask_yn "Nenhum cliente NTP encontrado. Instalar o chrony? [s/n]" \
                           "No NTP client found. Install chrony? [y/n]" \
                           "Ningún cliente NTP encontrado. ¿Instalar chrony? [s/n]"; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"           
             if _core_install chrony; then
                 _core_init_pkg chrony
                 manage_service enable chronyd
@@ -501,31 +552,38 @@ FUNCAO_CORE(){
         _core_skip
     fi
 
-    sleep 0.2    
+    sleep 0.7    
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [3/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[3/15]: Configurando repositórios e otimizações no pacman.conf...${NC}" \
         "${CYAN_NEON}[3/15]: Configuring repositories and optimizations in pacman.conf...${NC}" \
         "${CYAN_NEON}[3/15]: Configurando repositorios y optimizaciones en pacman.conf...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
     if [ ! -f /etc/pacman.conf.bak-core ]; then
         sudo cp /etc/pacman.conf /etc/pacman.conf.bak-core
     fi
 
     if grep -q "^\[multilib\]" /etc/pacman.conf; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "-> Repositório Multilib já está ativo." \
             "-> Multilib repository is already enabled." \
             "-> Repositorio Multilib ya está activado."
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     else
         sudo sed -i '/^#\[multilib\]/{N;s/#//g}' /etc/pacman.conf
         sudo sed -i '/^\[multilib\]/{n;s/^#//}' /etc/pacman.conf 2>/dev/null || true
 
         if grep -q "^\[multilib\]" /etc/pacman.conf; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "-> Repositório Multilib e Include ativados com sucesso." \
                 "-> Multilib repository and Include enabled successfully." \
                 "-> Repositorio Multilib e Include activados con éxito."
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         else
             msg "${RED_NEON}[ERRO]: Falha ao ativar Multilib.${NC}" "${RED_NEON}[ERROR] Failed to enable Multilib.${NC}" "${RED_NEON}[ERROR] Error al activar Multilib.${NC}"
         fi
@@ -553,14 +611,17 @@ FUNCAO_CORE(){
         _core_skip
     fi
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE} ---------------------------------------------------------------- [4/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[4/15]: Atualizando lista de espelhos com Reflector...${NC}" \
         "${CYAN_NEON}[4/15]: Updating mirrorlist with Reflector...${NC}" \
         "${CYAN_NEON}[4/15]: Actualizando lista de espejos con Reflector...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
     mirror_target="/etc/pacman.d/mirrorlist"
     reflector_ok=true
@@ -585,11 +646,11 @@ FUNCAO_CORE(){
             [ -f "${mirror_target}.bak-core" ] || sudo cp -f "$mirror_target" "${mirror_target}.bak-core" 2>/dev/null
             mirror_run_bak=$(mktemp)
             sudo cp -f "$mirror_target" "$mirror_run_bak" 2>/dev/null
-
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${CYAN_NEON}-> Reflector executando. Acompanhe o progresso:${NC}" \
                 "${CYAN_NEON}-> Reflector running. Follow the progress:${NC}" \
                 "${CYAN_NEON}-> Reflector ejecutando. Siga el progreso:${NC}"
-
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
            
             tput civis 2>/dev/null || true
             local total_espelhos=10
@@ -607,20 +668,26 @@ FUNCAO_CORE(){
             echo "" 
 
             if [ "$ref_status" -eq 0 ]; then
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "-> Espelhos otimizados com sucesso." \
                     "-> Mirrors optimized successfully." \
                     "-> Espejos optimizados con éxito."
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             else
                 sudo cp -f "$mirror_run_bak" "$mirror_target" 2>/dev/null
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${RED_NEON}[ERRO]: Reflector falhou. Restaurado backup.${NC}" \
                     "${RED_NEON}[ERROR]: Reflector failed. Backup restored.${NC}" \
                     "${RED_NEON}[ERROR]: Reflector falló. Backup restaurado.${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             fi
             rm -f "$mirror_run_bak"
         else
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${YELLOW_NEON}[AVISO]: Reflector não pôde ser instalado.${NC}" \
                 "${YELLOW_NEON}[WARNING]: Reflector could not be installed.${NC}" \
                 "${YELLOW_NEON}[AVISO]: Reflector no se pudo instalar.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         fi
     fi
 
@@ -629,33 +696,45 @@ FUNCAO_CORE(){
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [5/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[5/15]: Sincronizando repositórios e atualizando o sistema (Syyu):${NC}" \
         "${CYAN_NEON}[5/15]: Synchronizing repos and updating system (Syyu):${NC}" \
         "${CYAN_NEON}[5/15]: Sincronizando repositorios y actualizando el sistema (Syyu):${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+    sleep 0.7
     echo ""
 
     if sudo pacman -Syyu --noconfirm; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "-> Sistema atualizado e sincronizado." \
             "-> System updated and synchronized." \
             "-> Sistema actualizado y sincronizado."
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     else
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${RED_NEON}[ERRO CRÍTICO]: Sincronização do Pacman falhou. Abortando CORE.${NC}" \
             "${RED_NEON}[CRITICAL ERROR]: Pacman synchronization failed. Aborting CORE.${NC}" \
             "${RED_NEON}[ERROR CRÍTICO]: Sincronización de Pacman falló. Abortando CORE.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"       
+        _core_sudo_keepalive_stop
         return 1
     fi
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [6/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[6/15]: Verificando e Autoconfigurando Microcódigo da CPU...${NC}" \
         "${CYAN_NEON}[6/15]: Checking and Autoconfiguring CPU Microcode...${NC}" \
         "${CYAN_NEON}[6/15]: Comprobando y Autoconfigurando Microcódigo de CPU...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
 
     ucode_pkg=""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     if grep -q "AuthenticAMD" /proc/cpuinfo; then
         ucode_pkg="amd-ucode"
         msg "-> Processador AMD detectado. Instalando amd-ucode..." \
@@ -666,6 +745,7 @@ FUNCAO_CORE(){
         msg "-> Processador Intel detectado. Instalando intel-ucode..." \
             "-> Intel Processor detected. Installing intel-ucode..." \
             "-> Procesador Intel detectado. Instalando intel-ucode..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     fi
 
     if [ -n "$ucode_pkg" ]; then
@@ -713,14 +793,17 @@ FUNCAO_CORE(){
             "-> Entorno virtualizado o CPU sin microcódigo dedicado."
     fi
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [7/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[7/15]: Verificando hardware Bluetooth...${NC}" \
         "${CYAN_NEON}[7/15]: Checking Bluetooth hardware...${NC}" \
         "${CYAN_NEON}[7/15]: Comprobando el hardware Bluetooth...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
 
     if ! _core_has_bluetooth; then
@@ -743,14 +826,17 @@ FUNCAO_CORE(){
         _core_skip
     fi
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [8/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[8/15]: Verificando daemon de energia...${NC}" \
         "${CYAN_NEON}[8/15]: Checking power daemon...${NC}" \
         "${CYAN_NEON}[8/15]: Comprobando el demonio de energía...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
 
     if pacman -Q power-profiles-daemon &>/dev/null || pacman -Q tlp &>/dev/null; then
@@ -765,14 +851,17 @@ FUNCAO_CORE(){
         fi
     fi
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [9/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[9/15]: Verificando gerenciador de impressora (CUPS)...${NC}" \
         "${CYAN_NEON}[9/15]: Checking printer manager (CUPS)...${NC}" \
         "${CYAN_NEON}[9/15]: Comprobando el administrador de impresoras (CUPS)...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
 
     if pacman -Q cups &>/dev/null; then
@@ -789,14 +878,17 @@ FUNCAO_CORE(){
         _core_skip
     fi
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [10/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[10/15]: Verificando servidor de áudio...${NC}" \
         "${CYAN_NEON}[10/15]: Checking audio server...${NC}" \
         "${CYAN_NEON}[10/15]: Comprobando el servidor de audio...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
 
     if pacman -Q pipewire &>/dev/null || pacman -Q pulseaudio &>/dev/null; then
@@ -805,9 +897,11 @@ FUNCAO_CORE(){
             "-> Servidor de audio ya instalado."
     else
         while true; do
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "Nenhum áudio detectado. Qual instalar? [1] Pipewire (Recomendado) [2] PulseAudio [3] Pular" \
                 "No audio detected. Which to install? [1] Pipewire (Recommended) [2] PulseAudio [3] Skip" \
                 "Sin audio detectado. ¿Cuál instalar? [1] Pipewire (Recomendado) [2] PulseAudio [3] Saltar"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             read -r -p "> " resp_audio || resp_audio=3
             resp_audio="${resp_audio//[[:space:]]/}"
             case "$resp_audio" in
@@ -839,9 +933,12 @@ FUNCAO_CORE(){
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [11/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[11/15]: Verificando Flatpak...${NC}" \
         "${CYAN_NEON}[11/15]: Checking Flatpak...${NC}" \
         "${CYAN_NEON}[11/15]: Comprobando Flatpak...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
 
     if pacman -Q flatpak &>/dev/null; then
@@ -854,38 +951,45 @@ FUNCAO_CORE(){
         _core_skip
     fi
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [12/15]${NC}"
     _core_sep
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[12/15]: Verificando ambiente gráfico...${NC}" \
         "${CYAN_NEON}[12/15]: Checking desktop environment...${NC}" \
         "${CYAN_NEON}[12/15]: Comprobando el entorno gráfico...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
-
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     if [[ "${XDG_CURRENT_DESKTOP:-}" == *GNOME* ]] && command -v gsettings &>/dev/null; then
         if _core_ask_yn "${CYAN_NEON}[12/15]: GNOME detectado. Permitir volume acima de 100% (até 150%)? [s/n]${NC}" \
                         "${CYAN_NEON}[12/15]: GNOME detected. Allow volume above 100% (up to 150%)? [y/n]${NC}" \
                         "${CYAN_NEON}[12/15]: GNOME detectado. ¿Permitir volumen por encima del 100% (hasta 150%)? [s/n]${NC}"; then
+                        echo ""
             user_uid=$(id -u "$target_user" 2>/dev/null || echo "")
             if [ -n "$user_uid" ] && [ -S "/run/user/$user_uid/bus" ] \
                && sudo -u "$target_user" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$user_uid/bus" \
                     gsettings set org.gnome.desktop.sound allow-volume-above-100-percent true 2>/dev/null; then
                 msg "-> Configuração de volume aplicada." "-> Volume setting applied." "-> Configuración de volumen aplicada."
             else
+                echo -e "${NEON_BLUE}------------------------------------------------------------------------------------------------------------------------------------------------------------------${NC}"            
                 msg "${YELLOW_NEON}[AVISO]: Sessão D-Bus do usuário indisponível. Depois, dentro do GNOME, rode: gsettings set org.gnome.desktop.sound allow-volume-above-100-percent true${NC}" \
                     "${YELLOW_NEON}[WARNING]: User D-Bus session unavailable. Later, inside GNOME, run: gsettings set org.gnome.desktop.sound allow-volume-above-100-percent true${NC}" \
                     "${YELLOW_NEON}[AVISO]: Sesión D-Bus del usuario no disponible. Luego, dentro de GNOME, ejecute: gsettings set org.gnome.desktop.sound allow-volume-above-100-percent true${NC}"
+                echo -e "${NEON_BLUE}-------------------------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
             fi
         else
             _core_skip
         fi
     else
         msg "-> Ambiente gráfico não GNOME pulando..." "-> Desktop environment is not GNOME. Skipping..." "-> Entorno gráfico no es GNOME. Saltando..."
+    
     fi
-
-    sleep 0.2
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [13/15]${NC}"
     _core_sep
@@ -894,13 +998,15 @@ FUNCAO_CORE(){
     if pacman -Q linux-lts &>/dev/null; then base_pkgs+=(linux-lts-headers); fi
     if pacman -Q linux-zen &>/dev/null; then base_pkgs+=(linux-zen-headers); fi
     if pacman -Q linux-hardened &>/dev/null; then base_pkgs+=(linux-hardened-headers); fi
-
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[13/15]: Instalando pacotes base e kernel headers:${NC} ${base_pkgs[*]}..." \
         "${CYAN_NEON}[13/15]: Installing base packages and kernel headers:${NC} ${base_pkgs[*]}..." \
         "${CYAN_NEON}[13/15]: Instalando paquetes base y cabeceras del kernel:${NC} ${base_pkgs[*]}..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+    sleep 0.7
     _core_install "${base_pkgs[@]}"
 
-    sleep 0.2
+    sleep 0.7
     echo ""
     #echo -e "${NEON_BLUE}---------------------------------------------------------------- [14/15]${NC}"
     root_fs=$(findmnt -n -o FSTYPE / 2>/dev/null)
@@ -908,9 +1014,12 @@ FUNCAO_CORE(){
 
     if [ "$root_fs" = "ext4" ]; then
         _core_sep
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}[14/15]: Sistema de arquivos EXT4 detectado na raiz (/).${NC}" \
             "${CYAN_NEON}[14/15]: EXT4 filesystem detected on root (/).${NC}" \
             "${CYAN_NEON}[14/15]: Sistema de archivos EXT4 detectado en la raíz (/).${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        sleep 0.7
         echo ""
 
         if _core_ask_yn "Deseja instalar o Timeshift para criar pontos de restauração (RSYNC)? [s/n]" \
@@ -922,9 +1031,11 @@ FUNCAO_CORE(){
                     "-> Timeshift installed successfully!" \
                     "-> ¡Timeshift instalado con éxito!"
                     echo ""
+                echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------------------${NC}"    
                 msg "${YELLOW_NEON}[14/15]: NOTA: Nenhuma rotina foi ativada. Abra o aplicativo para configurar seus backups manuais.${NC}" \
                     "${YELLOW_NEON}[14/15]: NOTE: No routine was activated. Open the app to configure your manual backups.${NC}" \
                     "${YELLOW_NEON}[14/15]: NOTA: No se activó ninguna rutina. Abra la aplicación para configurar sus backups manuales.${NC}"
+                echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------------------${NC}"
             fi
         else
             _core_skip
@@ -938,7 +1049,6 @@ FUNCAO_CORE(){
     msg "${CYAN_NEON}[15/15] [CORE]:${NC} ${NEON_BLUE}Fundação do sistema estabelecida com sucesso!${NC}" \
         "${CYAN_NEON}[15/15] [CORE]:${NC} ${NEON_BLUE}System foundation successfully established!${NC}" \
         "${CYAN_NEON}[15/15] [CORE]:${NC} ${NEON_BLUE}¡Fundación del sistema establecida con éxito!${NC}"
-
     _core_sudo_keepalive_stop
      echo -e "${NEON_BLUE}============================================================${NC}"
 
@@ -954,18 +1064,22 @@ OTIMIZAR_HARDWARE() {
         "${CYAN_NEON}Investigating system hardware...${NC}" \
         "${CYAN_NEON}Investigando el hardware del sistema...${NC}"
     echo -e "${NEON_BLUE}===============================================================${NC}"
-    
+    sleep 1
     echo ""
 
     if ! command -v lspci &> /dev/null; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "Instalando pciutils para auditoria de hardware..."\
              "Installing pciutils for hardware auditing..."\
              "Instalando pciutils para auditoría de hardware..."
-        
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"            
+        sleep 0.7
         if ! sudo pacman -S --needed --noconfirm pciutils; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${RED_NEON}Falha ao instalar pciutils. A detecção de GPU pode ser comprometida.${NC}"\
-                 "${RED_NEON}Failed to install pciutils. GPU detection may be compromised.${NC}"\
-                 "${RED_NEON}Error al instalar pciutils. La detección de GPU puede verse comprometida.${NC}"
+                "${RED_NEON}Failed to install pciutils. GPU detection may be compromised.${NC}"\
+                "${RED_NEON}Error al instalar pciutils. La detección de GPU puede verse comprometida.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             rc=1
         fi
     fi
@@ -993,11 +1107,11 @@ OTIMIZAR_HARDWARE() {
     echo "$pci_gpus" | grep -qi "\[8086:" && HAS_INTEL_GPU=1
     echo "$pci_gpus" | grep -qi "\[1002:" && HAS_AMD_GPU=1
     echo "$pci_gpus" | grep -qi "\[10de:" && HAS_NVIDIA_GPU=1
-
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "[OK] Detecção de Hardware Concluída:" \
         "[OK] Hardware Detection Completed:" \
         "[OK] Detección de Hardware Completada:"
-
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     echo ""
 
     msg " -> CPU: $DETECTED_CPU" \
@@ -1016,33 +1130,105 @@ OTIMIZAR_HARDWARE() {
 
 
     if [ "$HAS_INTEL_GPU" -eq 0 ] && [ "$HAS_AMD_GPU" -eq 0 ] && [ "$HAS_NVIDIA_GPU" -eq 0 ]; then
-
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${YELLOW_NEON}Aviso: Nenhuma GPU reconhecida foi detectada automaticamente.${NC}" \
             "${YELLOW_NEON}Warning: No recognized GPU was automatically detected.${NC}" \
-             "${YELLOW_NEON}Advertencia: No se detectó automáticamente ninguna GPU reconocida.${NC}"
+            "${YELLOW_NEON}Advertencia: No se detectó automáticamente ninguna GPU reconocida.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     fi
-
+    
     echo ""
     return $rc
     }
+    
+    otimizar_instalar_pkgs() {
+        sleep 0.5
+        local n_ess="$1"; shift
+        local pkg i=0
+        local -a essenciais=() ess_faltando=() ok=() ignorados=() opc_falha=()
 
+        # Separa o que existe nos repositórios do que não existe (renomeado, removido, repo desativado)
+        for pkg in "$@"; do
+            i=$((i + 1))
+            if [ "$i" -le "$n_ess" ]; then
+                essenciais+=("$pkg")
+            fi
+            if pacman -Si "$pkg" &>/dev/null; then
+                ok+=("$pkg")
+            else
+                ignorados+=("$pkg")
+                if [ "$i" -le "$n_ess" ]; then
+                    ess_faltando+=("$pkg")
+                fi
+            fi
+        done
+
+        if [ "${#ignorados[@]}" -gt 0 ]; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO]: Pacotes não encontrados nos repositórios (ignorados): ${ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[WARNING]: Packages not found in the repositories (skipped): ${ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[AVISO]: Paquetes no encontrados en los repositorios (omitidos): ${ignorados[*]}${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        fi
+
+        # Essencial ausente: cancela tudo para não deixar uma configuração pela metade
+        if [ "${#ess_faltando[@]}" -gt 0 ] || [ "${#ok[@]}" -eq 0 ]; then
+            echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------------------------${NC}"
+            msg "${RED_NEON}[ERRO]: Pacote essencial não encontrado: ${ess_faltando[*]:-$*}. Instalação cancelada para evitar uma configuração incompleta.${NC}" \
+                "${RED_NEON}[ERROR]: Essential package not found: ${ess_faltando[*]:-$*}. Installation cancelled to avoid an incomplete setup.${NC}" \
+                "${RED_NEON}[ERROR]: Paquete esencial no encontrado: ${ess_faltando[*]:-$*}. Instalación cancelada para evitar una configuración incompleta.${NC}"
+            echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------------------------${NC}"
+            return 1
+        fi
+
+        if sudo pacman -S --needed --noconfirm "${ok[@]}"; then
+            return 0
+        fi
+
+        # Falhou em bloco (conflito, download...): essenciais juntos (atômico) e depois cada opcional sozinho
+        echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}[AVISO]: A instalação em bloco falhou. Instalando os essenciais e depois os opcionais um a um...${NC}" \
+            "${YELLOW_NEON}[WARNING]: Bulk installation failed. Installing the essentials first, then the optional ones one by one...${NC}" \
+            "${YELLOW_NEON}[AVISO]: La instalación en bloque falló. Instalando los esenciales y luego los opcionales uno a uno...${NC}"
+        echo -e "${NEON_BLUE}------------------------------------------------------------------------------------------------------------------${NC}"    
+        if ! sudo pacman -S --needed --noconfirm "${essenciais[@]}"; then
+            return 1
+        fi
+        for pkg in "${ok[@]:$n_ess}"; do
+            if ! sudo pacman -S --needed --noconfirm "$pkg"; then
+                opc_falha+=("$pkg")
+            fi
+        done
+        if [ "${#opc_falha[@]}" -gt 0 ]; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO]: Não foi possível instalar (opcionais): ${opc_falha[*]}${NC}" \
+                "${YELLOW_NEON}[WARNING]: Could not install (optional): ${opc_falha[*]}${NC}" \
+                "${YELLOW_NEON}[AVISO]: No se pudo instalar (opcionales): ${opc_falha[*]}${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        fi
+        return 0
+    }
+    
     # ==============================================================================
     # SUBFUNÇÃO 2: Otimização para GPUs AMD / Intel (Mesa / Vulkan)
     # ==============================================================================
     otimizar_gpu_mesa() {
+        sleep 0.5
         local vendor="$1"
         local pkgs=()
         local rc=0
         echo ""
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}[GPU - $vendor] Configurando pilha gráfica aberta (Mesa/Vulkan)...${NC}" \
             "${CYAN_NEON}[GPU - $vendor] Configuring open graphics stack (Mesa/Vulkan)...${NC}" \
             "${CYAN_NEON}[GPU - $vendor] Configurando pila gráfica abierta (Mesa/Vulkan)...${NC}"
-
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         # Pacotes básicos de 64 bits (removido xf86-video-amdgpu obsoleto)
         pkgs+=("mesa")
 
         if [ "$vendor" == "AMD" ]; then
-            pkgs+=("vulkan-radeon" "libva-mesa-driver")
+            # libva-mesa-driver não é mais um pacote próprio: o 'mesa' já o fornece (provides)
+            pkgs+=("vulkan-radeon")
         elif [ "$vendor" == "INTEL" ]; then
             pkgs+=("vulkan-intel" "intel-media-driver")
         fi
@@ -1057,12 +1243,13 @@ OTIMIZAR_HARDWARE() {
             fi
         fi
         echo ""
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}Instalando/Verificando pacotes gráficos para $vendor: ${pkgs[*]}${NC}" \
             "${CYAN_NEON}Installing/Checking graphics packages for $vendor: ${pkgs[*]}${NC}" \
             "${CYAN_NEON}Instalando/Verificando paquetes gráficos para $vendor: ${pkgs[*]}${NC}"
-     
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
         echo ""
-        if sudo pacman -S --needed --noconfirm "${pkgs[@]}"; then
+        if otimizar_instalar_pkgs 1 "${pkgs[@]}"; then
             msg "Pacotes gráficos para $vendor instalados com sucesso." \
                 "Graphics packages for $vendor successfully installed." \
                 "Paquetes gráficos para $vendor instalados con éxito."
@@ -1075,11 +1262,12 @@ OTIMIZAR_HARDWARE() {
         echo ""
         return $rc
     }
-
+   
     # ==============================================================================
     # SUBFUNÇÃO 3: Otimização para GPUs NVIDIA
     # ==============================================================================
     otimizar_gpu_nvidia() {
+    sleep 0.5
     local rc=0
 
     # Detecta se o kernel ativo ou instalado é zen ou lts
@@ -1087,20 +1275,24 @@ OTIMIZAR_HARDWARE() {
     if uname -r | grep -qE "(zen|lts)" || pacman -Q linux-zen &>/dev/null || pacman -Q linux-lts &>/dev/null; then
         is_custom_kernel=true
     fi
-
-    msg  "${CYAN_NEON}[GPU - NVIDIA] Configurando placa gráfica NVIDIA..." \
-         "${CYAN_NEON}[GPU - NVIDIA] Configuring NVIDIA graphics card..." \
-         "${CYAN_NEON}[GPU - NVIDIA] Configurando tarjeta gráfica NVIDIA..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg  "${CYAN_NEON}[GPU - NVIDIA] Configurando placa gráfica NVIDIA...${NC}" \
+         "${CYAN_NEON}[GPU - NVIDIA] Configuring NVIDIA graphics card...${NC}" \
+         "${CYAN_NEON}[GPU - NVIDIA] Configurando tarjeta gráfica NVIDIA...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     echo ""
 
     if [ "$is_custom_kernel" = true ]; then
+        echo -e "${NEON_BLUE}---------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
         msg "${YELLOW_NEON}[RECOMENDAÇÃO] Kernel Zen ou LTS detectado. O uso de pacotes DKMS é altamente recomendado para garantir a compilação correta dos módulos.${NC}" \
             "${YELLOW_NEON}[RECOMMENDATION] Zen or LTS kernel detected. Using DKMS packages is highly recommended to ensure correct module compilation.${NC}" \
             "${YELLOW_NEON}[RECOMENDACIÓN] Kernel Zen o LTS detectado. Se recomienda encarecidamente usar paquetes DKMS para garantizar la compilación.${NC}"
+        echo -e "${NEON_BLUE}---------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
         echo ""
     fi
 
     while true; do
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "Qual versão do driver NVIDIA deseja instalar?" \
             "Which version of the NVIDIA driver do you want to install?" \
             "¿Qué versión del controlador NVIDIA desea instalar?"
@@ -1133,8 +1325,8 @@ OTIMIZAR_HARDWARE() {
             "0) Skip NVIDIA optimization" \
             "0) Omitir optimización NVIDIA"
 
-        read -rp "Escolha / Choice / Opción: " nv_opt || return 1
-
+        read -rp "Escolha / Choice / Opción: 1-2-0 " nv_opt || return 1
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         local pkgs=()
         case "$nv_opt" in
             1)
@@ -1170,7 +1362,7 @@ OTIMIZAR_HARDWARE() {
                     "${YELLOW_NEON}¡Comando inválido! Inténtelo de nuevo.${NC}"
                 echo ""
                 continue
-                ;;
+                ;;    
         esac
 
         
@@ -1183,27 +1375,34 @@ OTIMIZAR_HARDWARE() {
 
         if [ "${HAS_INTEL_GPU:-0}" -eq 1 ] || [ "${HAS_AMD_GPU:-0}" -eq 1 ]; then
             pkgs+=("nvidia-prime")
+            echo -e "${NEON_BLUE}------------------------------------------------------------------------------------------------------------------------------${NC}"
             msg "${CYAN_NEON}Gráfica híbrida detectada (iGPU + NVIDIA). Adicionando nvidia-prime: use 'prime-run <programa>' para rodar na NVIDIA.${NC}" \
                 "${CYAN_NEON}Hybrid graphics detected (iGPU + NVIDIA). Adding nvidia-prime: use 'prime-run <program>' to run on NVIDIA.${NC}" \
                 "${CYAN_NEON}Gráficos híbridos detectados (iGPU + NVIDIA). Añadiendo nvidia-prime: use 'prime-run <programa>' para ejecutar en NVIDIA.${NC}"
+            echo -e "${NEON_BLUE}------------------------------------------------------------------------------------------------------------------------------${NC}"
             echo ""
         fi
-
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "Instalando componentes NVIDIA: ${pkgs[*]}..." \
             "Installing NVIDIA components: ${pkgs[*]}..." \
             "Instalando componentes NVIDIA: ${pkgs[*]}..."
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
 
-        if sudo pacman -S --needed --noconfirm "${pkgs[@]}"; then
+        if otimizar_instalar_pkgs 2 "${pkgs[@]}"; then
             echo ""
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${CYAN_NEON}Componentes NVIDIA instalados com sucesso.${NC}" \
                 "${CYAN_NEON}NVIDIA components successfully installed.${NC}" \
                 "${CYAN_NEON}Componentes NVIDIA instalados con éxito.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             rc=0
         else
             echo ""
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${RED_NEON}Falha na instalação dos componentes NVIDIA.${NC}" \
                 "${RED_NEON}Failed to install NVIDIA components.${NC}" \
                 "${RED_NEON}Error al instalar los componentes NVIDIA.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             rc=1
         fi
         echo ""
@@ -1211,17 +1410,18 @@ OTIMIZAR_HARDWARE() {
     done
     return $rc
  }
-
+    
     # ==============================================================================
     # SUBFUNÇÃO 4: Auditoria Real
     # ==============================================================================
     otimizar_validar_resultado() {
+        sleep 0.5
         local has_errors="${1:-0}"
-
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${YELLOW_NEON}[AUDITORIA]:${NC} Validando otimizações de hardware aplicadas..." \
             "${YELLOW_NEON}[AUDITORIA]:${NC} Validating applied hardware optimizations..." \
             "${YELLOW_NEON}[AUDITORIA]:${NC} Validando optimizaciones de hardware aplicadas..."
-
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         if [ "$has_errors" -eq 0 ]; then
             msg "Otimização de hardware do Project Odin concluída com sucesso!" \
                 "Project Odin hardware optimization successfully completed!" \
@@ -1234,40 +1434,36 @@ OTIMIZAR_HARDWARE() {
         echo ""
     }
 
-    # ==============================================================================
-    # FUNÇÃO PRINCIPAL
-    # ==============================================================================
-    FUNCAO_OTIMIZACAO() {
-        msg "=== PROJECT ODIN · OTIMIZAÇÃO DE HARDWARE E DRIVERS ===" \
-            "=== PROJECT ODIN · HARDWARE & DRIVER OPTIMIZATION ===" \
-            "=== PROJECT ODIN · OPTIMIZACIÓN DE HARDWARE Y CONTROLADORES ==="
-        echo ""
 
-        local global_error=0
+FUNCAO_OTIMIZACAO() {
+    msg "=== PROJECT ODIN · OTIMIZAÇÃO DE HARDWARE E DRIVERS ===" \
+        "=== PROJECT ODIN · HARDWARE & DRIVER OPTIMIZATION ===" \
+        "=== PROJECT ODIN · OPTIMIZACIÓN DE HARDWARE Y CONTROLADORES ==="
+    echo ""
 
-        OTIMIZAR_HARDWARE || global_error=1
+    local global_error=0
+
+    OTIMIZAR_HARDWARE || global_error=1
 
             # 2. Otimização para GPUs Integradas / Pilha Aberta
-        if [ "$HAS_AMD_GPU" -eq 1 ]; then
+    if [ "$HAS_AMD_GPU" -eq 1 ]; then
             otimizar_gpu_mesa "AMD" || global_error=1
-        fi
+    fi
 
-        if [ "$HAS_INTEL_GPU" -eq 1 ]; then
+    if [ "$HAS_INTEL_GPU" -eq 1 ]; then
             otimizar_gpu_mesa "INTEL" || global_error=1
         fi
 
         # 3. Otimização para GPU Dedicada NVIDIA
-        if [ "$HAS_NVIDIA_GPU" -eq 1 ]; then
+    if [ "$HAS_NVIDIA_GPU" -eq 1 ]; then
             otimizar_gpu_nvidia || global_error=1
         fi
 
         # 4. Auditoria Real
-        otimizar_validar_resultado "$global_error"
+    otimizar_validar_resultado "$global_error"
 
-        return "$global_error"
-    
- } 
-
+      return "$global_error"
+}
 #========================================
     #FIM DO CORE // END OF CORE
 #========================================
@@ -1306,7 +1502,7 @@ VERIFICAR_CONECTIVIDADE() {
     if PING_RES=$(ping -c 3 -W 13 "$TARGET_1" 2>/dev/null); then
         LATENCY=$(echo "$PING_RES" | awk -F'/' '/^rtt/ {print $5}')
         LATENCY=${LATENCY:-0.00}
-        
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${GREEN_NEON}[SUCESSO] CONEXÃO OK (Mirror) | LATÊNCIA: ${LATENCY}ms${NC}" \
             "${GREEN_NEON}[SUCCESS] CONNECTION OK (Mirror) | LATENCY: ${LATENCY}ms${NC}" \
             "${GREEN_NEON}[ÉXITO] CONEXIÓN OK (Mirror) | LATENCIA: ${LATENCY}ms${NC}"
@@ -1316,7 +1512,7 @@ VERIFICAR_CONECTIVIDADE() {
     elif PING_RES=$(ping -c 3 -W 13 "$TARGET_2" 2>/dev/null); then
         LATENCY=$(echo "$PING_RES" | awk -F'/' '/^rtt/ {print $5}')
         LATENCY=${LATENCY:-0.00}
-        
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${GREEN_NEON}[SUCESSO] CONEXÃO OK (Arch.org) | LATÊNCIA: ${LATENCY}ms${NC}" \
             "${GREEN_NEON}[SUCCESS] CONNECTION OK (Arch.org) | LATENCY: ${LATENCY}ms${NC}" \
             "${GREEN_NEON}[ÉXITO] CONEXIÓN OK (Arch.org) | LATENCIA: ${LATENCY}ms${NC}"
@@ -1324,10 +1520,13 @@ VERIFICAR_CONECTIVIDADE() {
 
     # FALHA TOTAL: Sem internet ou rotas caídas // TOTAL FAILURE: No internet or down routes
     else
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${RED_NEON}[ERRO] SEM CONEXÃO COM A INTERNET${NC}" \
             "${RED_NEON}[ERROR] NO INTERNET CONNECTION${NC}" \
             "${RED_NEON}[ERROR] SIN CONEXIÓN A INTERNET${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
         echo ""
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${YELLOW_NEON}[!] Nenhuma conexão com a internet disponível, protocolo abortado.${NC}" \
             "${YELLOW_NEON}[!] Sentinel Protocol aborted. Please check your network connection.${NC}" \
             "${YELLOW_NEON}[!] Protocolo Sentinel abortado. Por favor, compruebe su conexión de red.${NC}"
@@ -1391,39 +1590,41 @@ CHECK_DISK_SPACE() {
     echo -e "${NEON_BLUE}╚$(printf '═%.0s' $(seq 1 $((LARGURA-2))))╝${NC}"
     
     echo ""
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "Analisando partições e espaço de segurança..." \
         "Analyzing partitions and safety space..." \
         "Analizando particiones y espacio de seguridad..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     echo ""
     sleep 0.7
 
     # Captura espaço livre na raiz (/) em GB // Captures free space on root (/) in GB
-    if [ "${FREE_SPACE:-0}" -lt 25 ]; then
+    if [ "${FREE_SPACE:-0}" -lt 15 ]; then
         
         local msg_title msg_desc1 msg_desc2 msg_desc3 msg_desc4 msg_abort
         case "$IDIOMA_SISTEMA" in
             "PT_BR")
                 msg_title="⚠️ Espaço insuficiente para continuar a atualização."
                 msg_desc1="O seu sistema tem apenas ${FREE_SPACE}GB de espaço livre."
-                msg_desc2="O programa de atualização exige no mínimo 25 GB livres para funcionar com segurança."
+                msg_desc2="O programa de atualização exige no mínimo 15 GB livres para funcionar com segurança."
                 msg_desc3="Não foi possível concluir a atualização por falta de espaço."
-                msg_desc4="Por favor, libere espaço para continuar com a atualização (25 GB é a margem de segurança)."
+                msg_desc4="Por favor, libere espaço para continuar com a atualização (15 GB é a margem de segurança)."
                 msg_abort="ABORTANDO O PROTOCOLO DE ATUALIZAÇÃO."
                 ;;
             "ES_ES")
                 msg_title="⚠️ Espacio insuficiente para continuar la actualización."
                 msg_desc1="Su sistema tiene sólo ${FREE_SPACE}GB de espacio libre."
-                msg_desc2="El programa de actualización requiere un mínimo de 25 GB libres para funcionar de forma segura."
+                msg_desc2="El programa de actualización requiere un mínimo de 15 GB libres para funcionar de forma segura."
                 msg_desc3="No se pudo completar la actualización por falta de espacio."
-                msg_desc4="Por favor, libere espacio para continuar con la actualización (25 GB es el margen de seguridad)."
+                msg_desc4="Por favor, libere espacio para continuar con la actualización (15 GB es el margen de seguridad)."
                 msg_abort="ABORTANDO EL PROTOCOLO DE ACTUALIZACIÓN."
                 ;;
             *)
                 msg_title="⚠️ Insufficient space to continue the update."
                 msg_desc1="Your system has only ${FREE_SPACE}GB of free space."
-                msg_desc2="The update program requires a minimum of 25 GB free to work safely."
+                msg_desc2="The update program requires a minimum of 15 GB free to work safely."
                 msg_desc3="Could not complete the update due to lack of space."
-                msg_desc4="Please free up space to continue with the update (25 GB is the safety margin)."
+                msg_desc4="Please free up space to continue with the update (15 GB is the safety margin)."
                 msg_abort="ABORTING THE UPDATE PROTOCOL."
                 ;;
         esac
@@ -1447,10 +1648,13 @@ CHECK_DISK_SPACE() {
         echo -e "${YELLOW_NEON}--------------------------------------------------------------------------------------${NC}"
         exit 1
     else
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${GREEN_NEON}[OK] Reserva de disco confirmada: ${FREE_SPACE}GB disponíveis na raiz.${NC}" \
             "${GREEN_NEON}[OK] Disk reserve confirmed: ${FREE_SPACE}GB available on root.${NC}" \
             "${GREEN_NEON}[OK] Reserva de disco confirmada: ${FREE_SPACE}GB disponibles en la raíz.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         echo ""
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}Detalhamento das partições e espaço total do sistema:${NC}" \
             "${CYAN_NEON}System partitions and total storage details:${NC}" \
             "${CYAN_NEON}Detalles de las particiones y espacio total del sistema:${NC}"
@@ -1526,26 +1730,27 @@ LIMPAR_ORFAOS() {
 #==========================================
 
 CODECS_MULTIMIDIA_CORE() {
+        local pacote
+
         echo ""
-        _core_sep
+        echo -e "${NEON_BLUE}\n------------------------------------------------------------${NC}"
         echo ""
         echo -e "${NEON_BLUE}===========================================================================================${NC}"
         msg "${CYAN_NEON}[CODECS]:${NC} ${NEON_BLUE}Verificando ambiente gráfico e instalando pacotes de mídia...${NC}" \
             "${CYAN_NEON}[CODECS]:${NC} ${NEON_BLUE}Checking desktop environment and installing media packages...${NC}" \
             "${CYAN_NEON}[CODECS]:${NC} ${NEON_BLUE}Comprobando el entorno gráfico e instalando paquetes de medios...${NC}"
         echo -e "${NEON_BLUE}===========================================================================================${NC}"
+        sleep 1
         echo ""
 
-        
         local pacotes_multimidia=(
-            ffmpeg gstreamer gst-plugins-base gst-plugins-good 
-            gst-plugins-bad gst-plugins-ugly gst-libav gstreamer-vaapi
-            libjpeg-turbo libpng libwebp libavif libtiff 
+            ffmpeg gstreamer gst-plugins-base gst-plugins-good
+            gst-plugins-bad gst-plugins-ugly gst-libav gst-plugin-va
+            libjpeg-turbo libpng libwebp libavif libtiff
             libheif libjxl libraw librsvg gdk-pixbuf2 taglib
             libdvdread libdvdnav libdvdcss libva-utils
         )
 
-    
         local pacotes_desktop=()
 
         local de_detectado="${XDG_CURRENT_DESKTOP:-${XDG_SESSION_DESKTOP:-${DESKTOP_SESSION:-}}}"
@@ -1556,69 +1761,143 @@ CODECS_MULTIMIDIA_CORE() {
                     "${CYAN_NEON}-> KDE environment detected: Selecting native thumbnailers${NC} (kdegraphics/ffmpegthumbs)." \
                     "${CYAN_NEON}-> Entorno KDE detectado: Seleccionando thumbnailers nativos${NC} (kdegraphics/ffmpegthumbs)."
                 pacotes_desktop=(kdegraphics-thumbnailers ffmpegthumbs kio-extras)
+                sleep 0.7
                 ;;
             *GNOME*)
                 msg "${CYAN_NEON}-> Ambiente GNOME detectado: Selecionando thumbnailers GTK e conector de extensões${NC}." \
                     "${CYAN_NEON}-> GNOME environment detected: Selecting GTK thumbnailers and extension connector.${NC}" \
                     "${CYAN_NEON}-> Entorno GNOME detectado: Seleccionando thumbnailers GTK y conector de extensiones.${NC}"
                 pacotes_desktop=(gst-thumbnailers poppler-glib libgsf gnome-browser-connector)
+                sleep 0.7
                 ;;
             *CINNAMON*)
                 msg "${CYAN_NEON}-> Ambiente Cinnamon detectado: Selecionando thumbnailers GTK/Nemo${NC} (Tumbler/FFmpegthumbnailer)." \
                     "${CYAN_NEON}-> Cinnamon environment detected: Selecting GTK/Nemo thumbnailers${NC} (Tumbler/FFmpegthumbnailer)." \
                     "${CYAN_NEON}-> Entorno Cinnamon detectado: Seleccionando thumbnailers GTK/Nemo${NC} (Tumbler/FFmpegthumbnailer)."
                 pacotes_desktop=(tumbler ffmpegthumbnailer poppler-glib libgsf)
+                sleep 0.7
                 ;;
             *MATE*)
                 msg "${CYAN_NEON}-> Ambiente MATE detectado: Selecionando thumbnailers GTK/Caja${NC} (Tumbler/FFmpegthumbnailer)." \
                     "${CYAN_NEON}-> MATE environment detected: Selecting GTK/Caja thumbnailers${NC} (Tumbler/FFmpegthumbnailer)." \
                     "${CYAN_NEON}-> Entorno MATE detectado: Seleccionando thumbnailers GTK/Caja${NC} (Tumbler/FFmpegthumbnailer)."
                 pacotes_desktop=(tumbler ffmpegthumbnailer poppler-glib libgsf)
+                sleep 0.7
                 ;;
             *XFCE*)
                 msg "${CYAN_NEON}-> Ambiente XFCE detectado: Selecionando Tumbler e complementos${NC}." \
                     "${CYAN_NEON}-> XFCE environment detected: Selecting Tumbler and add-ons${NC}." \
                     "${CYAN_NEON}-> Entorno XFCE detectado: Seleccionando Tumbler y complementos${NC}."
                 pacotes_desktop=(tumbler poppler-glib libgsf)
+                sleep 0.7
                 ;;
             *LXQT*)
                 msg "${CYAN_NEON}-> Ambiente LXQt detectado: Selecionando thumbnailers leves${NC} (Tumbler/FFmpegthumbs)." \
                     "${CYAN_NEON}-> LXQt environment detected: Selecting lightweight thumbnailers${NC} (Tumbler/FFmpegthumbs)." \
                     "${CYAN_NEON}-> Entorno LXQt detectado: Seleccionando thumbnailers ligeros${NC} (Tumbler/FFmpegthumbs)."
                 pacotes_desktop=(tumbler ffmpegthumbs poppler-glib libgsf)
+                sleep 0.7
                 ;;
             *)
-                # Fallback: informa qual interface está em uso e segue com a base padrão
                 if [[ -n "$de_detectado" ]]; then
+                    echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------------------------------------------${NC}"
                     msg "${CYAN_NEON}-> Interface detectada: ${CYAN_NEON}${de_detectado}${NC} (sem perfil específico). Seguindo com a base padrão (Tumbler)." \
                         "${CYAN_NEON}-> Interface detected: ${CYAN_NEON}${de_detectado}${NC} (no specific profile). Proceeding with the standard base (Tumbler)." \
                         "${CYAN_NEON}-> Interfaz detectada: ${CYAN_NEON}${de_detectado}${NC} (sin perfil específico). Continuando con la base estándar (Tumbler)."
+                    echo -e "${NEON_BLUE}------------------------------------------------------------------------------------------------------------------------------${NC}"    
                 else
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------------------------------------${NC}"                
                     msg "${CYAN_NEON}-> Nenhuma interface gráfica detectada (TTY ou sessão sem DE). Seguindo com a base padrão (Tumbler).${NC}" \
                         "${CYAN_NEON}-> No graphical interface detected (TTY or session without a DE). Proceeding with the standard base (Tumbler).${NC}" \
                         "${CYAN_NEON}-> No se detectó ninguna interfaz gráfica (TTY o sesión sin DE). Continuando con la base estándar (Tumbler).${NC}"
+                    echo -e "${NEON_BLUE}---------------------------------------------------------------------------------------------------------------------${NC}"    
                 fi
                 pacotes_desktop=(tumbler gst-thumbnailers)
                 ;;
         esac
 
-        # Junta os pacotes base com os pacotes específicos do DE em uma única linha de execução
-        local pacotes_finais=("${pacotes_multimidia[@]}" "${pacotes_desktop[@]}")
+        # Junta os pacotes base com os pacotes específicos do DE (sem repetidos)
+        local -a pacotes_finais=() pacotes_disponiveis=() pacotes_ignorados=() pacotes_com_falha=()
+        local -A vistos=()
+        for pacote in "${pacotes_multimidia[@]}" "${pacotes_desktop[@]}"; do
+            [[ -n "${vistos[$pacote]:-}" ]] && continue
+            vistos[$pacote]=1
+            pacotes_finais+=("$pacote")
+        done
 
-        echo ""
-        # Instalação unificada
-        if sudo pacman -S --needed --noconfirm "${pacotes_finais[@]}"; then
+        # Separa o que existe nos repositórios do que não existe (renomeado, removido, repo não habilitado)
+        for pacote in "${pacotes_finais[@]}"; do
+            if pacman -Si "$pacote" &>/dev/null; then
+                pacotes_disponiveis+=("$pacote")
+            else
+                pacotes_ignorados+=("$pacote")
+            fi
+        done
+
+        if [ "${#pacotes_ignorados[@]}" -gt 0 ]; then
             echo ""
-            msg "-> ${CYAN_NEON}Codecs e pacotes de mídia instalados com sucesso!${NC}" \
-                "-> ${CYAN_NEON}Codecs and media packages installed successfully!${NC}" \
-                "-> ${CYAN_NEON}¡Códecs y paquetes de medios instalados con éxito!${NC}"
-        else
+            echo -e "${NEON_BLUE}---------------------------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO]: Pacotes não encontrados nos repositórios (serão ignorados): ${pacotes_ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[WARNING]: Packages not found in the repositories (they will be skipped): ${pacotes_ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[AVISO]: Paquetes no encontrados en los repositorios (se omitirán): ${pacotes_ignorados[*]}${NC}"
+            echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------${NC}"    
+        fi
+
+        # Nada para instalar: provavelmente a base de dados do pacman não está sincronizada
+        if [ "${#pacotes_disponiveis[@]}" -eq 0 ]; then
             echo ""
-            msg "${RED_NEON}[ERRO]: Falha ao instalar os codecs de multimídia.${NC}" \
-                "${RED_NEON}[ERROR]: Failed to install multimedia codecs.${NC}" \
-                "${RED_NEON}[ERROR]: Error al instalar los códecs de multimedia.${NC}"
+            echo -e "${NEON_BLUE}------------------------------------------------------------------------------------------------------------------------------${NC}"
+            msg "${RED_NEON}[ERRO]: Nenhum pacote de mídia foi encontrado nos repositórios. Sincronize o pacman (pacman -Syu) e tente novamente.${NC}" \
+                "${RED_NEON}[ERROR]: No media package was found in the repositories. Sync pacman (pacman -Syu) and try again.${NC}" \
+                "${RED_NEON}[ERROR]: No se encontró ningún paquete de medios en los repositorios. Sincroniza pacman (pacman -Syu) e inténtalo de nuevo.${NC}"
+            echo -e "${NEON_BLUE}-------------------------------------------------------------------------------------------------------------------------------${NC}"    
             return 1
         fi
+
+        echo ""
+        # Instalação unificada apenas com o que existe
+        if sudo pacman -S --needed --noconfirm "${pacotes_disponiveis[@]}"; then
+            :
+        else
+            # Falhou por outro motivo (conflito, download, etc.): tenta um a um para salvar o que for possível
+            echo ""
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO]: A instalação em bloco falhou. Tentando instalar um pacote por vez...${NC}" \
+                "${YELLOW_NEON}[WARNING]: Bulk installation failed. Trying to install one package at a time...${NC}" \
+                "${YELLOW_NEON}[AVISO]: La instalación en bloque falló. Intentando instalar un paquete a la vez...${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            echo ""
+            for pacote in "${pacotes_disponiveis[@]}"; do
+                if ! sudo pacman -S --needed --noconfirm "$pacote"; then
+                    pacotes_com_falha+=("$pacote")
+                fi
+            done
+
+            # Nenhum pacote foi instalado: falha real
+            if [ "${#pacotes_com_falha[@]}" -eq "${#pacotes_disponiveis[@]}" ]; then
+                echo ""
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                msg "${RED_NEON}[ERRO]: Falha ao instalar os codecs de multimídia.${NC}" \
+                    "${RED_NEON}[ERROR]: Failed to install multimedia codecs.${NC}" \
+                    "${RED_NEON}[ERROR]: Error al instalar los códecs de multimedia.${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                return 1
+            fi
+
+            if [ "${#pacotes_com_falha[@]}" -gt 0 ]; then
+                echo ""
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                msg "${YELLOW_NEON}[AVISO]: Não foi possível instalar: ${pacotes_com_falha[*]}${NC}" \
+                    "${YELLOW_NEON}[WARNING]: Could not install: ${pacotes_com_falha[*]}${NC}" \
+                    "${YELLOW_NEON}[AVISO]: No se pudo instalar: ${pacotes_com_falha[*]}${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"   
+            fi
+        fi
+
+        echo ""
+        msg "-> ${CYAN_NEON}Codecs e pacotes de mídia instalados com sucesso!${NC}" \
+            "-> ${CYAN_NEON}Codecs and media packages installed successfully!${NC}" \
+            "-> ${CYAN_NEON}¡Códecs y paquetes de medios instalados con éxito!${NC}"
 }
 
 #=========================================
@@ -1634,19 +1913,21 @@ FUNCAO_AUR_HELPER() {
 
     # --- ETAPA 1: Gerenciamento dos Helpers (yay / paru) ---
     if [ $has_yay -eq 1 ] && [ $has_paru -eq 1 ]; then
-
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}Ambos os AUR helpers (yay e paru) já estão instalados no sistema.${NC}" \
         	"${CYAN_NEON}Both AUR helpers (yay and paru) are already installed on the system.${NC}" \
         	"${CYAN_NEON}Ambos los AUR helpers (yay y paru) ya están instalados en el sistema.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
         
         echo ""
-
+        sleep 0.5
         msg "Prosseguindo..." \
         	"Proceeding..." \
             "Prosiguiendo..."
-
+        sleep 0.5
     elif [ $has_yay -eq 0 ] && [ $has_paru -eq 0 ]; then
         while true; do
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${CYAN_NEON}Nenhum AUR helper (yay ou paru) foi encontrado.${NC}" \
                 "${CYAN_NEON}No AUR helper (yay or paru) was found.${NC}" \
                 "${CYAN_NEON}No se encontró ningún AUR helper (yay o paru).${NC}"
@@ -1656,7 +1937,8 @@ FUNCAO_AUR_HELPER() {
             msg "${CYAN_NEON}Esta ferramenta é necessária para baixar pacotes e software da comunidade no Arch Linux.${NC}" \
                 "${CYAN_NEON}This tool is required to download packages and community software on Arch Linux.${NC}" \
                 "${CYAN_NEON}Esta herramienta es necesaria para descargar paquetes y software de la comunidad en Arch Linux.${NC}"
-            
+            echo -e "${NEON_BLUE}---------------------------------------------------------------------------------------------${NC}"
+            sleep 1
             echo ""
 
             msg "Deseja instalar um agora?"\
@@ -1681,10 +1963,11 @@ FUNCAO_AUR_HELPER() {
                 "0) Exit / Skip"\
                 "0) Salir / Omitir"
             echo ""
-            read -rp "Escolha / Choice / Opción: " escolha || return 1
+            read -rp "Escolha / Choice / Opción: 1-2-0 " escolha || return 1
+            escolha="${escolha//[[:space:]]/}"; escolha="${escolha,,}"
 
             case "$escolha" in
-                1)
+                1|yay)
                     msg "Instalando o yay-bin..." \
                         "Installing yay-bin..." \
                         "Instalando yay-bin..."
@@ -1697,6 +1980,9 @@ FUNCAO_AUR_HELPER() {
                        (cd "$tmp_dir/yay-bin" && makepkg -si --noconfirm); then
                         rm -rf "$tmp_dir"
                         has_yay=1
+                        msg "yay-bin instalado com sucesso." \
+                            "yay-bin successfully installed." \
+                            "yay-bin instalado con éxito."
                         break
                     else
                         msg "${RED_NEON}Falha na instalação do yay-bin.${NC}" \
@@ -1706,7 +1992,7 @@ FUNCAO_AUR_HELPER() {
                         break
                     fi
                     ;;
-                2)
+                2|paru)
                     msg "Instalando o paru-bin..." \
                         "Installing paru-bin..." \
                         "Instalando paru-bin..."
@@ -1719,6 +2005,9 @@ FUNCAO_AUR_HELPER() {
                        (cd "$tmp_dir/paru-bin" && makepkg -si --noconfirm); then
                         rm -rf "$tmp_dir"
                         has_paru=1
+                        msg "paru-bin instalado com sucesso." \
+                            "paru-bin successfully installed." \
+                            "paru-bin instalado con éxito."
                         break
                     else
                         msg "${RED_NEON}Falha na instalação do paru-bin.${NC}" \
@@ -1728,7 +2017,7 @@ FUNCAO_AUR_HELPER() {
                         break
                     fi
                     ;;
-                0)
+                0|exit|pular|sair|skip|salir|omitir)
                     msg "${YELLOW_NEON}Instalação de AUR helper ignorada.${NC}" \
                         "${YELLOW_NEON}AUR helper installation skipped.${NC}" \
                         "${YELLOW_NEON}Instalación de AUR helper omitida.${NC}"
@@ -1746,15 +2035,18 @@ FUNCAO_AUR_HELPER() {
         local encontrados=""
         [ $has_yay -eq 1 ] && encontrados+="yay "
         [ $has_paru -eq 1 ] && encontrados+="paru "
-
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}AUR helper(s) identificado(s): [ $encontrados]${NC}" \
             "${CYAN_NEON}AUR helper(s) identified: [ $encontrados]${NC}" \
             "${CYAN_NEON}AUR helper(s) identificado(s): [ $encontrados]${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         echo ""
         while true; do
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${CYAN_NEON}Deseja seguir apenas com o(s) atual(is) ou deseja instalar o outro?${NC}" \
                 "${CYAN_NEON}Do you want to proceed with the current one(s) or install the other?${NC}" \
                 "${CYAN_NEON}¿Desea continuar solo con el/los actual(es) o instalar el otro?${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             echo ""
             msg "1) Seguir com o(s) atual(is)" \
                 "1) Proceed with current one(s)" \
@@ -1768,7 +2060,8 @@ FUNCAO_AUR_HELPER() {
                 "0) Exit / Skip" \
                 "0) Salir / Omitir" 
             echo ""
-            read -rp "Escolha / Choice / Opción: " opcao || return 1
+            read -rp "Escolha / Choice / Opción: 1-2-0 " opcao || return 1
+            opcao="${opcao//[[:space:]]/}"; opcao="${opcao,,}"
 
             case "$opcao" in
                 1)
@@ -1791,6 +2084,9 @@ FUNCAO_AUR_HELPER() {
                            (cd "$tmp_dir/paru-bin" && makepkg -si --noconfirm); then
                             rm -rf "$tmp_dir"
                             has_paru=1
+                            msg "paru-bin instalado com sucesso." \
+                                "paru-bin successfully installed." \
+                                "paru-bin instalado con éxito."
                             break
                         else
                             msg "${RED_NEON}Falha na instalação do paru-bin complementar.${NC}" \
@@ -1809,6 +2105,9 @@ FUNCAO_AUR_HELPER() {
                            (cd "$tmp_dir/yay-bin" && makepkg -si --noconfirm); then
                             rm -rf "$tmp_dir"
                             has_yay=1
+                            msg "yay-bin instalado com sucesso." \
+                                "yay-bin successfully installed." \
+                                "yay-bin instalado con éxito."
                             break
                         else
                             msg "${RED_NEON}Falha na instalação do yay-bin complementar.${NC}" \
@@ -1837,18 +2136,33 @@ FUNCAO_AUR_HELPER() {
 
     # --- ETAPA 2: Instalação do Pamac (Executa apenas se houver helper disponível) ---
     if [ $has_yay -eq 0 ] && [ $has_paru -eq 0 ]; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${YELLOW_NEON}Nenhum AUR helper disponível no sistema. A instalação do Pamac foi ignorada.${NC}" \
             "${YELLOW_NEON}No AUR helper available on the system. Pamac installation was skipped.${NC}" \
             "${YELLOW_NEON}Ningún AUR helper disponible en el sistema. La instalación de Pamac fue omitida.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         echo ""
+        sleep 0.5
+        return 0
+    fi
+
+    if pacman -Q pamac-aur &>/dev/null || pacman -Q pamac-all &>/dev/null || pacman -T pamac &>/dev/null; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}O pamac já está instalado no sistema. Pulando esta etapa.${NC}" \
+            "${CYAN_NEON}Pamac is already installed on the system. Skipping this step.${NC}" \
+            "${CYAN_NEON}Pamac ya está instalado en el sistema. Omitiendo este paso.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+        echo ""
+        sleep 0.5
         return 0
     fi
 
     while true; do
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}Gostaria de instalar o pamac? (muito bom pra iniciante) Trata-se de um helper visual desenvolvido e mantido pela equipe do Manjaro Linux.${NC}" \
             "${CYAN_NEON}Would you like to install pamac? (great for beginners) It is a visual helper developed and maintained by the Manjaro Linux team.${NC}" \
             "${CYAN_NEON}¿Desea instalar pamac? (muy bueno para principiantes) Se trata de un helper visual desarrollado y mantenido por el equipo de Manjaro Linux.${NC}"
-        
+        sleep 0.7
         echo ""
         
         msg "1) Sim" \
@@ -1861,11 +2175,14 @@ FUNCAO_AUR_HELPER() {
             "0) No / Skip" \
             "0) No / Omitir"
         echo ""
-        read -rp "Escolha / Choice / Opción: " pamac_opt || return 1
+        read -rp "Escolha / Choice / Opción: 1-0 " pamac_opt || return 1
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        pamac_opt="${pamac_opt//[[:space:]]/}"; pamac_opt="${pamac_opt,,}"
 
         case "$pamac_opt" in
-            1)
+            1|sim|yes|si)
                 while true; do
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                     msg "${CYAN_NEON}Qual versão do pamac deseja instalar?${NC}" \
                         "${CYAN_NEON}Which version of pamac would you like to install?${NC}" \
                         "${CYAN_NEON}¿Qué versión de pamac desea instalar?${NC}"
@@ -1885,20 +2202,22 @@ FUNCAO_AUR_HELPER() {
                         "0) Back / Skip" \
                         "0) Volver / Omitir"
                     echo ""
-                    read -rp "Escolha / Choice / Opción: " pamac_ver || return 1
+                    read -rp "Escolha / Choice / Opción: 1-2-0 " pamac_ver || return 1
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    pamac_ver="${pamac_ver//[[:space:]]/}"; pamac_ver="${pamac_ver,,}"
 
                     local pkg_name=""
                     local needs_snap=0
                     case "$pamac_ver" in
-                        1) 
+                        1|pamac-aur) 
                             pkg_name="pamac-aur" 
                             needs_snap=0
                             ;;
-                        2) 
+                        2|pamac-all) 
                             pkg_name="pamac-all" 
                             needs_snap=1
                             ;;
-                        0) break 2 ;;
+                        0|voltar|pular|back|skip|volver|omitir) continue 2 ;;
                         *)
                             msg "Comando inválido! Tente novamente." \
                                 "Invalid command! Try again." \
@@ -1913,11 +2232,12 @@ FUNCAO_AUR_HELPER() {
                     if [ $has_yay -eq 1 ] && [ $has_paru -eq 1 ]; then
                         while true; do
                         echo ""
+                            echo -e "${NEON_BLUE}-------------------------------------------------------------------------------------------------${NC}"
                             msg "${CYAN_NEON}Ambos os helpers (yay e paru) estão disponíveis. Qual deseja usar para instalar o $pkg_name?${NC}" \
                                 "${CYAN_NEON}Both helpers (yay and paru) are available. Which one do you want to use to install $pkg_name?${NC}" \
                                 "${CYAN_NEON}Ambos los helpers (yay y paru) están disponibles. ¿Cuál desea usar para instalar $pkg_name?${NC}"
                             echo ""
-
+                            sleep 0.5
                             msg "1) yay" \
                                 "1) yay" \
                                 "1) yay"
@@ -1936,11 +2256,13 @@ FUNCAO_AUR_HELPER() {
                             
                             echo ""
 
-                            read -rp "Escolha / Choice / Opción: " h_choice || return 1
+                            read -rp "Escolha / Choice / Opción: 1-2-0 " h_choice || return 1
+                            echo -e "${NEON_BLUE}-------------------------------------------------------------------------------------------------${NC}"
+                            h_choice="${h_choice//[[:space:]]/}"; h_choice="${h_choice,,}"
                             case "$h_choice" in
-                                1) chosen_helper="yay"; break ;;
-                                2) chosen_helper="paru"; break ;;
-                                0) break 2 ;;
+                                1|yay) chosen_helper="yay"; break ;;
+                                2|paru) chosen_helper="paru"; break ;;
+                                0|não|no|skip|omitir|pular) break 2 ;;
                                 *)
                                     msg "Comando inválido! Tente novamente." \
                                         "Invalid command! Try again." \
@@ -1957,38 +2279,49 @@ FUNCAO_AUR_HELPER() {
 
                     # Se for o pamac-all, instala o snapd DIRETAMENTE DO AUR usando o helper escolhido e ativa o socket
                     if [ $needs_snap -eq 1 ]; then
+                        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                         msg "${CYAN_NEON}Instalando e configurando o snapd via AUR ($chosen_helper) para o pamac-all...${NC}" \
                             "${CYAN_NEON}Installing and configuring snapd via AUR ($chosen_helper) for pamac-all...${NC}" \
                             "${CYAN_NEON}Instalando y configurando snapd vía AUR ($chosen_helper) para pamac-all...${NC}"
+                        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
                         echo ""
-
-                        if "$chosen_helper" -S --needed --noconfirm snapd && sudo systemctl enable --now snapd.socket; then
+                        sleep 0.5
+                        if "$chosen_helper" -S --needed --noconfirm snapd && manage_service enable snapd.socket && manage_service start snapd.socket; then
+                            echo ""
                             msg "snapd instalado e habilitado com sucesso." \
                                 "snapd successfully installed and enabled." \
                                 "snapd instalado y habilitado con éxito."
                         else
+                            echo ""
                             msg "Falha ao instalar ou habilitar o snapd." \
                                 "Failed to install or enable snapd." \
                                 "Error al instalar o habilitar snapd."
                         fi
                     fi
-
+                    echo ""
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                     msg "Instalando $pkg_name utilizando o $chosen_helper..." \
                         "Installing $pkg_name using $chosen_helper..." \
                         "Instalando $pkg_name usando $chosen_helper..."
-
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+                    sleep 0.5
                     if "$chosen_helper" -S --needed --noconfirm "$pkg_name"; then
+                        msg "$pkg_name instalado com sucesso." \
+                            "$pkg_name successfully installed." \
+                            "$pkg_name instalado con éxito."
                         break 2
                     else
+                        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                         msg "Falha na instalação de $pkg_name. Prosseguindo com o script..." \
                             "Failed to install $pkg_name. Proceeding with the script..." \
                             "Error al instalar $pkg_name. Prosiguiendo con el script..."
+                        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
                         return 0
                     fi
                 done
                 break
                 ;;
-            0)
+            0|voltar|pular|back|skip|volver|omitir)
                 msg "Pamac ignorado, seguindo o script..." \
                     "Pamac skipped, proceeding with the script..." \
                     "Pamac omitido, prosiguiendo con el script..."
@@ -2013,70 +2346,179 @@ FUNCAO_INSTALAR_NAVEGADORES() {
     local has_yay=0
     local has_paru=0
 
+    # Tabela única de navegadores (índice 1 a 5): nome, pacote e se é AUR (1) ou repositório oficial (0)
+    local -a nav_nomes=("" "Firefox" "Vivaldi" "Google Chrome" "Brave Browser" "Zen Browser")
+    local -a nav_pkgs=("" "firefox" "vivaldi" "google-chrome" "brave-bin" "zen-browser-bin")
+    local -a nav_aur=(0 0 0 1 1 1)
+
+    local nav_opt nav_multi h_inst h_choice
+    local idx i ch pkg_name nome lista
+    local chosen_helper helper_nome helper_dep tmp_dir
+    local helper_ok aur_pode cancelado
+
     # Verifica os helpers já instalados no sistema
     command -v yay &> /dev/null && has_yay=1
     command -v paru &> /dev/null && has_paru=1
 
     while true; do
+        local -a selecionados=()
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}Selecione o navegador que deseja instalar:${NC}" \
             "${CYAN_NEON}Select the browser you want to install:${NC}" \
             "${CYAN_NEON}Seleccione el navegador que desea instalar:${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        sleep 0.7
         echo ""
 
         msg "1) Firefox (Repositório Oficial / Extra)" \
             "1) Firefox (Official Repository / Extra)" \
             "1) Firefox (Repositorio Oficial / Extra)"
-        
+
         echo ""
 
         msg "2) Vivaldi (Repositório Oficial / Extra)" \
             "2) Vivaldi (Official Repository / Extra)" \
             "2) Vivaldi (Repositorio Oficial / Extra)"
-        
+
         echo ""
 
-        msg "3) Google Chrome (AUR - Requer Helper)" \
-            "3) Google Chrome (AUR - Requires Helper)" \
-            "3) Google Chrome (AUR - Requiere Helper)"
-        
+        msg "3) Google-Chrome (AUR - Requer Helper)" \
+            "3) Google-Chrome (AUR - Requires Helper)" \
+            "3) Google-Chrome (AUR - Requiere Helper)"
+
         echo ""
 
         msg "4) Brave Browser (AUR - Requer Helper)" \
             "4) Brave Browser (AUR - Requires Helper)" \
             "4) Brave Browser (AUR - Requiere Helper)"
-        
+
+        echo ""
+
+        msg "5) Zen browser (AUR - Requer Helper)" \
+            "5) Zen browser (AUR - Requires Helper)" \
+            "5) Zen browser (AUR - Requiere Helper)"
+
+        echo ""
+
+        msg "6) Instalar multiplos navegadores" \
+            "6) Install multiple browsers" \
+            "6) Instalar múltiples navegadores"
+
         echo ""
 
         msg "0) Concluir / Seguir com o script" \
             "0) Finish / Proceed with script" \
             "0) Finalizar / Continuar con el script"
         echo ""
-        read -rp "Escolha / Choice / Opción: " nav_opt || return 1
-
-        local pkg_name=""
-        local is_aur=0
+        read -rp "Escolha / Choice / Opción: 1-2-3-4-5-6-0 " nav_opt || return 1
+        nav_opt="${nav_opt//[[:space:]]/}"
+        nav_opt="${nav_opt,,}"
 
         case "$nav_opt" in
-            1)
-                pkg_name="firefox"
-                is_aur=0
+            1|firefox)
+                selecionados=(1)
                 ;;
-            2)
-                pkg_name="vivaldi"
-                is_aur=0
+            2|vivaldi)
+                selecionados=(2)
                 ;;
-            3)
-                pkg_name="google-chrome"
-                is_aur=1
+            3|google-chrome|googlechrome|chrome)
+                selecionados=(3)
                 ;;
-            4)
-                pkg_name="brave-bin"
-                is_aur=1
+            4|brave|brave-browser|brave-bin)
+                selecionados=(4)
                 ;;
-            0)
+            5|zen|zen-browser|zenbrowser|zen-browser-bin)
+                selecionados=(5)
+                ;;
+            6|multi|multiplo|multiplos|multiple|multiples|múltiples|instalar-multiplo|install-multiple|instalar-múltiples)
+                # Seleção livre: aceita qualquer sequência de números de 1 a 5, em qualquer ordem,
+                # com qualquer separador e com repetições (ex: "1 4 2 3 4 1 2 3 4 5 5 2", "1,3,5", "245").
+                # Cada dígito 1-5 vira uma escolha; duplicados são descartados mantendo a ordem de entrada.
+                cancelado=0
+                echo ""
+                while true; do
+                    local -A vistos=()
+                    local -A rejeitados=()
+                    local -a ignorados=()
+                    selecionados=()
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    msg "${CYAN_NEON}Digite os números dos navegadores que quer instalar (de 1 a 5):${NC}" \
+                        "${CYAN_NEON}Enter the numbers of the browsers you want to install (from 1 to 5):${NC}" \
+                        "${CYAN_NEON}Introduce los números de los navegadores que quieres instalar (del 1 al 5):${NC}"
+                    echo ""
+                    msg "Exemplos: 1 4 2  |  1,3,5  |  1-2-3-4-5  |  12345  (qualquer ordem, repetidos são ignorados)" \
+                        "Examples: 1 4 2  |  1,3,5  |  1-2-3-4-5  |  12345  (any order, repeated ones are ignored)" \
+                        "Ejemplos: 1 4 2  |  1,3,5  |  1-2-3-4-5  |  12345  (cualquier orden, los repetidos se ignoran)"
+                    echo ""
+                    msg "0) Voltar ao menu" \
+                        "0) Back to menu" \
+                        "0) Volver al menú"
+                    echo ""
+                    read -rp "Escolha / Choice / Opción: " nav_multi || return 1
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    nav_multi="${nav_multi,,}"
+
+                    # Entrada só com "0" (ou palavra de cancelamento): volta ao menu principal
+                    case "${nav_multi//[[:space:]]/}" in
+                        0|cancelar|cancel|voltar|back|volver|n|no|nao|não)
+                            cancelado=1
+                            break
+                            ;;
+                    esac
+
+                    # Percorre caractere por caractere: dígitos 1-5 entram na lista (sem repetir),
+                    # separadores e conectivos (e / y / and) são ignorados em silêncio,
+                    # qualquer outra coisa é avisada ao usuário e descartada.
+                    for ((i = 0; i < ${#nav_multi}; i++)); do
+                        ch="${nav_multi:i:1}"
+                        case "$ch" in
+                            [1-5])
+                                if [ -z "${vistos[$ch]:-}" ]; then
+                                    vistos[$ch]=1
+                                    selecionados+=("$ch")
+                                fi
+                                ;;
+                            [[:space:]]|[,\;.:/+_\\\|-]|[eyand])
+                                ;;
+                            *)
+                                if [ -z "${rejeitados[$ch]:-}" ]; then
+                                    rejeitados[$ch]=1
+                                    ignorados+=("$ch")
+                                fi
+                                ;;
+                        esac
+                    done
+
+                    if [ "${#selecionados[@]}" -eq 0 ]; then
+                        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                        msg "${YELLOW_NEON}Nenhum navegador válido na entrada. Use números de 1 a 5.${NC}" \
+                            "${YELLOW_NEON}No valid browser in the input. Use numbers from 1 to 5.${NC}" \
+                            "${YELLOW_NEON}Ningún navegador válido en la entrada. Use números del 1 al 5.${NC}"
+                        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                        echo ""
+                        continue
+                    fi
+
+                    if [ "${#ignorados[@]}" -gt 0 ]; then
+                        echo ""
+                        msg "${YELLOW_NEON}[AVISO]: Entradas ignoradas (fora de 1-5): ${ignorados[*]}${NC}" \
+                            "${YELLOW_NEON}[WARNING]: Ignored entries (outside 1-5): ${ignorados[*]}${NC}" \
+                            "${YELLOW_NEON}[AVISO]: Entradas ignoradas (fuera de 1-5): ${ignorados[*]}${NC}"
+                    fi
+                    break
+                done
+
+                if [ "$cancelado" -eq 1 ]; then
+                    echo ""
+                    continue
+                fi
+                ;;
+            0|concluir|finish|finalizar)
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${CYAN_NEON}Instalação de navegadores finalizada. Prosseguindo com o script...${NC}" \
                     "${CYAN_NEON}Browser installation completed. Proceeding with the script...${NC}" \
                     "${CYAN_NEON}Instalación de navegadores finalizada. Prosiguiendo con el script...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 return 0
                 ;;
             *)
@@ -2088,185 +2530,339 @@ FUNCAO_INSTALAR_NAVEGADORES() {
                 ;;
         esac
 
-        # Instalação para pacotes do repositório oficial (Extra)
-        if [ $is_aur -eq 0 ]; then
-            msg "Instalando $pkg_name via Pacman..." \
-                "Installing $pkg_name via Pacman..." \
-                "Instalando $pkg_name vía Pacman..."
-            echo ""
+        # Fila de instalação: repositório oficial primeiro, AUR depois (o helper é resolvido uma única vez)
+        local -a aur_fila=()
+        local -a res_ok=() res_falha=() res_pulado=()
 
-            if sudo pacman -S --needed --noconfirm "$pkg_name"; then
-                msg "$pkg_name instalado com sucesso!" \
-                    "$pkg_name successfully installed!" \
-                    "¡$pkg_name instalado con éxito!"
-            else
-                msg "${RED_NEON}Falha ao instalar $pkg_name. Retornando ao menu...${NC}" \
-                    "${RED_NEON}Failed to install $pkg_name. Returning to menu...${NC}" \
-                    "${RED_NEON}Error al instalar $pkg_name. Regresando al menú...${NC}" 
-            fi
+        echo ""
+        lista=""
+        for idx in "${selecionados[@]}"; do
+            lista+="${nav_nomes[$idx]}, "
+        done
+        lista="${lista%, }"
+        if [ "${#selecionados[@]}" -gt 1 ]; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${CYAN_NEON}Navegadores selecionados: ${lista}${NC}" \
+                "${CYAN_NEON}Selected browsers: ${lista}${NC}" \
+                "${CYAN_NEON}Navegadores seleccionados: ${lista}${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             echo ""
-            continue
+            sleep 0.5
         fi
 
-        # Instalação para pacotes do AUR
-        if [ $is_aur -eq 1 ]; then
-            # Se não houver nenhum helper instalado, oferece a instalação sob demanda
-            if [ $has_yay -eq 0 ] && [ $has_paru -eq 0 ]; then
-                msg "${YELLOW_NEON}Atenção: O pacote $pkg_name está no AUR e requer um AUR helper (yay ou paru).${NC}" \
-                    "${YELLOW_NEON}Attention: The package $pkg_name is in AUR and requires an AUR helper (yay or paru).${NC}" \
-                    "${YELLOW_NEON}Atención: El paquete $pkg_name está en AUR y requiere un AUR helper (yay o paru).${NC}"
-                echo ""
+        # ---------------------------------------------------------------
+        # Etapa 1: pacotes do repositório oficial (Extra)
+        # ---------------------------------------------------------------
+        for idx in "${selecionados[@]}"; do
+            nome="${nav_nomes[$idx]}"
+            pkg_name="${nav_pkgs[$idx]}"
 
-                local helper_installed=0
+            if [ "${nav_aur[$idx]}" -eq 1 ]; then
+                aur_fila+=("$idx")
+                continue
+            fi
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "Instalando $nome ($pkg_name) via Pacman..." \
+                "Installing $nome ($pkg_name) via Pacman..." \
+                "Instalando $nome ($pkg_name) vía Pacman..."
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            echo ""
+            sleep 0.5
+
+            # Pacote inexistente derrubaria a transação inteira: verifica antes
+            if ! pacman -Si "$pkg_name" &> /dev/null; then
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"            
+                msg "${RED_NEON}Pacote $pkg_name não encontrado nos repositórios. Sincronize o pacman (pacman -Syu) e tente novamente.${NC}" \
+                    "${RED_NEON}Package $pkg_name not found in the repositories. Sync pacman (pacman -Syu) and try again.${NC}" \
+                    "${RED_NEON}Paquete $pkg_name no encontrado en los repositorios. Sincroniza pacman (pacman -Syu) e inténtalo de nuevo.${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                echo ""
+                res_falha+=("$nome")
+                continue
+            fi
+
+            if sudo pacman -S --needed --noconfirm "$pkg_name"; then
+                echo ""
+                echo -e "${NEON_BLUE}------------------------------------------------------------------${NC}"
+                msg "${CYAN_NEON}$nome instalado com sucesso!${NC}" \
+                    "${CYAN_NEON}$nome successfully installed!${NC}" \
+                    "${CYAN_NEON}¡$nome instalado con éxito!${NC}"
+                echo -e "${NEON_BLUE}------------------------------------------------------------------${NC}"    
+                sleep 0.5
+                echo ""
+                res_ok+=("$nome")
+            else
+                echo ""
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                msg "${RED_NEON}Falha ao instalar $nome.${NC}" \
+                    "${RED_NEON}Failed to install $nome.${NC}" \
+                    "${RED_NEON}Error al instalar $nome.${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                echo ""
+                res_falha+=("$nome")
+            fi
+        done
+
+        # ---------------------------------------------------------------
+        # Etapa 2: pacotes do AUR (helper resolvido uma vez para todos)
+        # ---------------------------------------------------------------
+        if [ "${#aur_fila[@]}" -gt 0 ]; then
+            aur_pode=1
+            chosen_helper=""
+
+            # makepkg/yay/paru se recusam a rodar como root
+            if [ "$(id -u)" -eq 0 ]; then
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                msg "${RED_NEON}Os pacotes do AUR não podem ser instalados como root. Execute o script com um usuário comum (com sudo).${NC}" \
+                    "${RED_NEON}AUR packages cannot be installed as root. Run the script as a regular user (with sudo).${NC}" \
+                    "${RED_NEON}Los paquetes del AUR no pueden instalarse como root. Ejecute el script con un usuario normal (con sudo).${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                echo ""
+                aur_pode=0
+            fi
+
+            # Se não houver nenhum helper instalado, oferece a instalação sob demanda
+            if [ "$aur_pode" -eq 1 ] && [ "$has_yay" -eq 0 ] && [ "$has_paru" -eq 0 ]; then
+                lista=""
+                for idx in "${aur_fila[@]}"; do
+                    lista+="${nav_nomes[$idx]}, "
+                done
+                lista="${lista%, }"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                msg "${YELLOW_NEON}Atenção: os pacotes do AUR (${lista}) requerem um AUR helper (yay ou paru).${NC}" \
+                    "${YELLOW_NEON}Attention: the AUR packages (${lista}) require an AUR helper (yay or paru).${NC}" \
+                    "${YELLOW_NEON}Atención: los paquetes del AUR (${lista}) requieren un AUR helper (yay o paru).${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                echo ""
+                sleep 0.5
+                helper_ok=0
                 while true; do
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"                
                     msg "${CYAN_NEON}Deseja instalar um AUR helper agora para prosseguir?${NC}" \
                         "${CYAN_NEON}Do you want to install an AUR helper now to proceed?${NC}" \
                         "${CYAN_NEON}¿Desea instalar un AUR helper ahora para continuar?${NC}"
-                    echo ""
+                   echo ""
 
                     msg "1) Instalar 'yay'" \
                         "1) Install 'yay'" \
                         "1) Instalar 'yay'"
-                    
+
                     echo ""
 
                     msg "2) Instalar 'paru'" \
                         "2) Install 'paru'" \
                         "2) Instalar 'paru'"
-                    
+
                     echo ""
 
-                    msg "0) Cancelar instalação de $pkg_name" \
-                        "0) Cancel $pkg_name installation" \
-                        "0) Cancelar instalación de $pkg_name"
+                    msg "0) Cancelar instalação dos pacotes do AUR" \
+                        "0) Cancel the AUR packages installation" \
+                        "0) Cancelar la instalación de los paquetes del AUR"
                     echo ""
-                    read -rp "Escolha / Choice / Opción: " h_inst || return 1
+                    read -rp "Escolha / Choice / Opción: 1-2-0 " h_inst || return 1
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    h_inst="${h_inst//[[:space:]]/}"
+                    h_inst="${h_inst,,}"
 
                     case "$h_inst" in
-                        1)
-                            msg "Instalando yay-bin..." \
-                                "Installing yay-bin..." \
-                                "Instalando yay-bin..."
-                            echo ""
-
-                            local tmp_dir
-                            tmp_dir=$(mktemp -d) || return 1
-
-                            if sudo pacman -S --needed --noconfirm git base-devel go && \
-                               git clone https://aur.archlinux.org/yay-bin.git "$tmp_dir/yay-bin" && \
-                               (cd "$tmp_dir/yay-bin" && makepkg -si --noconfirm); then
-                                rm -rf "$tmp_dir"
-                                has_yay=1
-                                helper_installed=1
-                                break
-                            else
-                                msg "Falha na instalação do yay-bin." \
-                                    "Failed to install yay-bin." \
-                                    "Error al instalar yay-bin."
-                                rm -rf "$tmp_dir"
-                            fi
+                        1|yay)
+                            helper_nome="yay"
+                            helper_dep="go"
                             ;;
-                        2)
-                            msg "Instalando paru-bin..." \
-                                "Installing paru-bin..." \
-                                "Instalando paru-bin..."
-                            echo ""
-
-                            local tmp_dir
-                            tmp_dir=$(mktemp -d) || return 1
-
-                            if sudo pacman -S --needed --noconfirm git base-devel rust && \
-                               git clone https://aur.archlinux.org/paru-bin.git "$tmp_dir/paru-bin" && \
-                               (cd "$tmp_dir/paru-bin" && makepkg -si --noconfirm); then
-                                rm -rf "$tmp_dir"
-                                has_paru=1
-                                helper_installed=1
-                                break
-                            else
-                                msg "Falha na instalação do paru-bin." \
-                                    "Failed to install paru-bin." \
-                                    "Error al instalar paru-bin."
-                                rm -rf "$tmp_dir"
-                            fi
+                        2|paru)
+                            helper_nome="paru"
+                            helper_dep="rust"
                             ;;
-                        0)
-                            msg "Instalação de $pkg_name cancelada." \
-                                "Installation of $pkg_name canceled." \
-                                "Instalación de $pkg_name cancelada."
+                        0|cancelar|cancel)
+                            msg "Instalação do AUR helper cancelada." \
+                                "AUR helper installation canceled." \
+                                "Instalación del AUR helper cancelada."
+                            echo ""
                             break
                             ;;
                         *)
                             msg "Comando inválido! Tente novamente." \
                                 "Invalid command! Try again." \
                                 "¡Comando inválido! Inténtelo de nuevo."
-                            
                             echo ""
+                            continue
                             ;;
                     esac
+
+                    msg "Instalando ${helper_nome}-bin..." \
+                        "Installing ${helper_nome}-bin..." \
+                        "Instalando ${helper_nome}-bin..."
+                    echo ""
+
+                    tmp_dir=$(mktemp -d) || {
+                        msg "${RED_NEON}Não foi possível criar o diretório temporário.${NC}" \
+                            "${RED_NEON}Could not create the temporary directory.${NC}" \
+                            "${RED_NEON}No se pudo crear el directorio temporal.${NC}"
+                        echo ""
+                        break
+                    }
+
+                    if sudo pacman -S --needed --noconfirm git base-devel "$helper_dep" && \
+                       git clone "https://aur.archlinux.org/${helper_nome}-bin.git" "$tmp_dir/${helper_nome}-bin" && \
+                       (cd "$tmp_dir/${helper_nome}-bin" && makepkg -si --noconfirm); then
+                        rm -rf "$tmp_dir"
+                        if command -v "$helper_nome" &> /dev/null; then
+                            if [ "$helper_nome" = "yay" ]; then
+                                has_yay=1
+                            else
+                                has_paru=1
+                            fi
+                            helper_ok=1
+                            echo ""
+                            msg "${CYAN_NEON}${helper_nome}-bin instalado com sucesso!${NC}" \
+                                "${CYAN_NEON}${helper_nome}-bin successfully installed!${NC}" \
+                                "${CYAN_NEON}¡${helper_nome}-bin instalado con éxito!${NC}"
+                            echo ""
+                            break
+                        fi
+                    else
+                        rm -rf "$tmp_dir"
+                    fi
+
+                    msg "${RED_NEON}Falha na instalação do ${helper_nome}-bin.${NC}" \
+                        "${RED_NEON}Failed to install ${helper_nome}-bin.${NC}" \
+                        "${RED_NEON}Error al instalar ${helper_nome}-bin.${NC}"
+                    echo ""
                 done
 
-                # Se cancelou ou falhou na instalação do helper, retorna ao menu principal
-                if [ $helper_installed -eq 0 ] && [ $has_yay -eq 0 ] && [ $has_paru -eq 0 ]; then
-                    msg "${YELLOW_NEON}Nenhum helper disponível. Cancelando $pkg_name e retornando ao menu...${NC}" \
-                        "${YELLOW_NEON}No helper available. Canceling $pkg_name and returning to menu...${NC}" \
-                        "${YELLOW_NEON}Ningún helper disponible. Cancelando $pkg_name y regresando al menú...${NC}"
+                # Cancelou ou falhou: os navegadores do AUR são pulados e o menu volta
+                if [ "$helper_ok" -eq 0 ]; then
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    msg "${YELLOW_NEON}Nenhum helper disponível. Navegadores do AUR cancelados: ${lista}.${NC}" \
+                        "${YELLOW_NEON}No helper available. AUR browsers canceled: ${lista}.${NC}" \
+                        "${YELLOW_NEON}Ningún helper disponible. Navegadores del AUR cancelados: ${lista}.${NC}"
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
                     echo ""
-                    continue
+                    aur_pode=0
                 fi
             fi
 
-            # Seleciona qual helper utilizar caso ambos estejam instalados
-            local chosen_helper=""
-            if [ $has_yay -eq 1 ] && [ $has_paru -eq 1 ]; then
-                while true; do
-                    msg "${CYAN_NEON}Ambos os helpers (yay e paru) estão instalados. Qual deseja usar para instalar $pkg_name?${NC}" \
-                        "${CYAN_NEON}Both helpers (yay and paru) are installed. Which one do you want to use to install $pkg_name?${NC}" \
-                        "${CYAN_NEON}Ambos los helpers (yay y paru) están instalados. ¿Cuál desea usar para instalar $pkg_name?${NC}"
-                    echo ""
+            # Seleciona qual helper utilizar (uma única vez) caso ambos estejam instalados
+            if [ "$aur_pode" -eq 1 ]; then
+                if [ "$has_yay" -eq 1 ] && [ "$has_paru" -eq 1 ]; then
+                    while true; do
+                        echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------------------------${NC}"
+                        msg "${CYAN_NEON}Ambos os helpers (yay e paru) estão instalados. Qual deseja usar para instalar os pacotes do AUR?${NC}" \
+                            "${CYAN_NEON}Both helpers (yay and paru) are installed. Which one do you want to use to install the AUR packages?${NC}" \
+                            "${CYAN_NEON}Ambos los helpers (yay y paru) están instalados. ¿Cuál desea usar para instalar los paquetes del AUR?${NC}"
+                        echo ""
+                        sleep 0.5
+                        msg "1) yay" \
+                            "1) yay" \
+                            "1) yay"
 
-                    msg "1) yay" \
-                        "1) yay" \
-                        "1) yay"
-                    
-                    echo ""
+                        echo ""
 
-                    msg "2) paru" \
-                        "2) paru" \
-                        "2) paru"
-                    echo ""
-                    read -rp "Escolha / Choice / Opción: " h_choice || return 1
-                    case "$h_choice" in
-                        1) chosen_helper="yay"; break ;;
-                        2) chosen_helper="paru"; break ;;
-                        *)
-                            msg "Comando inválido! Tente novamente." \
-                                "Invalid command! Try again." \
-                                "¡Comando inválido! Inténtelo de nuevo."
-                            echo ""
-                            ;;
-                    esac
-                done
-            elif [ $has_yay -eq 1 ]; then
-                chosen_helper="yay"
-            elif [ $has_paru -eq 1 ]; then
-                chosen_helper="paru"
+                        msg "2) paru" \
+                            "2) paru" \
+                            "2) paru"
+
+                        echo ""
+
+                        msg "0) Cancelar instalação dos pacotes do AUR" \
+                            "0) Cancel the AUR packages installation" \
+                            "0) Cancelar la instalación de los paquetes del AUR"
+                        echo ""
+                        read -rp "Escolha / Choice / Opción: 1-2-0 " h_choice || return 1
+                        echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------------------------${NC}"
+                        h_choice="${h_choice//[[:space:]]/}"
+                        h_choice="${h_choice,,}"
+                        case "$h_choice" in
+                            1|yay) chosen_helper="yay"; break ;;
+                            2|paru) chosen_helper="paru"; break ;;
+                            0|cancelar|cancel)
+                                msg "${YELLOW_NEON}Instalação dos pacotes do AUR cancelada.${NC}" \
+                                    "${YELLOW_NEON}AUR packages installation canceled.${NC}" \
+                                    "${YELLOW_NEON}Instalación de los paquetes del AUR cancelada.${NC}"
+                                echo ""
+                                aur_pode=0
+                                break
+                                ;;
+                            *)
+                                msg "Comando inválido! Tente novamente." \
+                                    "Invalid command! Try again." \
+                                    "¡Comando inválido! Inténtelo de nuevo."
+                                echo ""
+                                ;;
+                        esac
+                    done
+                elif [ "$has_yay" -eq 1 ]; then
+                    chosen_helper="yay"
+                elif [ "$has_paru" -eq 1 ]; then
+                    chosen_helper="paru"
+                fi
             fi
 
-            msg "Instalando $pkg_name utilizando $chosen_helper..." \
-                "Installing $pkg_name using $chosen_helper..." \
-                "Instalando $pkg_name usando $chosen_helper..."
-            echo ""    
+            # Instalação de cada navegador do AUR com o helper escolhido
+            if [ "$aur_pode" -eq 1 ] && [ -n "$chosen_helper" ]; then
+                for idx in "${aur_fila[@]}"; do
+                    nome="${nav_nomes[$idx]}"
+                    pkg_name="${nav_pkgs[$idx]}"
 
-            if "$chosen_helper" -S --needed --noconfirm "$pkg_name"; then
-                msg "${CYAN_NEON}$pkg_name instalado com sucesso via $chosen_helper!${NC}" \
-                    "${CYAN_NEON}$pkg_name successfully installed via $chosen_helper!${NC}" \
-                    "${CYAN_NEON}¡$pkg_name instalado con éxito vía $chosen_helper!${NC}"
+                    sleep 0.5
+                    msg "Instalando $nome ($pkg_name) utilizando $chosen_helper..." \
+                        "Installing $nome ($pkg_name) using $chosen_helper..." \
+                        "Instalando $nome ($pkg_name) usando $chosen_helper..."
+                    echo ""
+
+                    if "$chosen_helper" -S --needed --noconfirm "$pkg_name"; then
+                        echo ""
+                        msg "${CYAN_NEON}$nome instalado com sucesso via $chosen_helper!${NC}" \
+                            "${CYAN_NEON}$nome successfully installed via $chosen_helper!${NC}" \
+                            "${CYAN_NEON}¡$nome instalado con éxito vía $chosen_helper!${NC}"
+                        res_ok+=("$nome")
+                    else
+                        echo ""
+                        msg "${RED_NEON}Falha na instalação de $nome via $chosen_helper.${NC}" \
+                            "${RED_NEON}Failed to install $nome via $chosen_helper.${NC}" \
+                            "${RED_NEON}Error al instalar $nome vía $chosen_helper.${NC}"
+                        res_falha+=("$nome")
+                    fi
+                    echo ""
+                done
             else
-                msg "${RED_NEON}Falha na instalação de $pkg_name via $chosen_helper.${NC}" \
-                    "${RED_NEON}Failed to install $pkg_name via $chosen_helper.${NC}" \
-                    "${RED_NEON}Error al instalar $pkg_name vía $chosen_helper.${NC}"
+                for idx in "${aur_fila[@]}"; do
+                    res_pulado+=("${nav_nomes[$idx]}")
+                done
+            fi
+        fi
+
+        # ---------------------------------------------------------------
+        # Resumo (apenas quando houve mais de um navegador na seleção)
+        # ---------------------------------------------------------------
+        if [ "${#selecionados[@]}" -gt 1 ]; then
+            msg "${CYAN_NEON}Resumo da instalação:${NC}" \
+                "${CYAN_NEON}Installation summary:${NC}" \
+                "${CYAN_NEON}Resumen de la instalación:${NC}"
+            echo ""
+            if [ "${#res_ok[@]}" -gt 0 ]; then
+                printf -v lista '%s, ' "${res_ok[@]}"
+                lista="${lista%, }"
+                msg "${CYAN_NEON}Instalados: ${lista}${NC}" \
+                    "${CYAN_NEON}Installed: ${lista}${NC}" \
+                    "${CYAN_NEON}Instalados: ${lista}${NC}"
+            fi
+            if [ "${#res_falha[@]}" -gt 0 ]; then
+                printf -v lista '%s, ' "${res_falha[@]}"
+                lista="${lista%, }"
+                msg "${RED_NEON}Falharam: ${lista}${NC}" \
+                    "${RED_NEON}Failed: ${lista}${NC}" \
+                    "${RED_NEON}Fallaron: ${lista}${NC}"
+            fi
+            if [ "${#res_pulado[@]}" -gt 0 ]; then
+                printf -v lista '%s, ' "${res_pulado[@]}"
+                lista="${lista%, }"
+                msg "${YELLOW_NEON}Pulados (AUR): ${lista}${NC}" \
+                    "${YELLOW_NEON}Skipped (AUR): ${lista}${NC}" \
+                    "${YELLOW_NEON}Omitidos (AUR): ${lista}${NC}"
             fi
             echo ""
+            sleep 0.5
         fi
     done
 
@@ -2278,20 +2874,43 @@ FUNCAO_INSTALAR_NAVEGADORES() {
 #=======================================
 FUNCAO_INSTALAR_ARCH_UPDATE_FULL() {
     local resp_update=""
+    local escolha_helper=""
+    local has_yay=false
+    local has_paru=false
+    local helper_usado=""
+    local usar_git=0
+    local temp_dir=""
+    local install_status=0
+
+    # Já instalado: nada a fazer (evita perguntar e reinstalar à toa)
+    if pacman -Q arch-update-full &>/dev/null; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}O arch-update-full já está instalado no sistema. Continuando o script...${NC}" \
+            "${CYAN_NEON}Arch-update-full is already installed on the system. Continuing script...${NC}" \
+            "${CYAN_NEON}Arch-update-full ya está instalado en el sistema. Continuando el script...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        return 0
+    fi
+
     while true; do
+        echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}O arch-update-full é uma ferramenta altamente recomendada para verificar as atualizações disponíveis no sistema e deixar seu Arch sempre atualizado e limpo. Deseja instalá-la agora? (s/n):${NC}" \
             "${CYAN_NEON}Arch-update-full is a highly recommended tool to check available system updates and keep your Arch always updated and clean. Do you want to install it now? (y/n):${NC}" \
             "${CYAN_NEON}Arch-update-full es una herramienta altamente recomendada para verificar las actualizaciones disponibles en el sistema y mantener tu Arch siempre actualizado y limpio. ¿Deseas instalarla ahora? (s/n):${NC}"
+        echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
         echo ""
         if ! read -rp "Opção / Choice / Opción [s/y/n]: " resp_update; then
             return 1
         fi
+        resp_update="${resp_update//[[:space:]]/}"
+        resp_update="${resp_update,,}"
 
         case "$resp_update" in
-            [sSyY])
+            s|sim|y|yes)
                 break
                 ;;
-            [nN])
+            n|no|nao|não)
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${YELLOW_NEON}Instalação do arch-update-full ignorada. Continuando o script...${NC}" \
                     "${YELLOW_NEON}Arch-update-full installation skipped. Continuing script...${NC}" \
                     "${YELLOW_NEON}Instalación de arch-update-full omitida. Continuando el script...${NC}"
@@ -2307,75 +2926,133 @@ FUNCAO_INSTALAR_ARCH_UPDATE_FULL() {
         esac
     done
 
-    local has_yay=false
-    local has_paru=false
+    # makepkg, yay e paru se recusam a rodar como root
+    if [ "$(id -u)" -eq 0 ]; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${RED_NEON}[ERRO] Pacotes do AUR não podem ser instalados como root. Execute o script com um usuário comum (com sudo).${NC}" \
+            "${RED_NEON}[ERROR] AUR packages cannot be installed as root. Run the script as a regular user (with sudo).${NC}" \
+            "${RED_NEON}[ERROR] Los paquetes del AUR no pueden instalarse como root. Ejecuta el script con un usuario normal (con sudo).${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        return 1
+    fi
 
     command -v yay &>/dev/null && has_yay=true
     command -v paru &>/dev/null && has_paru=true
 
-    local install_status=0
-
     if [ "$has_yay" = true ] && [ "$has_paru" = true ]; then
-        local escolha_helper=""
         while true; do
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${YELLOW_NEON}Tanto o 'yay' quanto o 'paru' foram detectados. Qual helper deseja utilizar?${NC}" \
                 "${YELLOW_NEON}Both 'yay' and 'paru' detected. Which helper do you want to use?${NC}" \
                 "${YELLOW_NEON}Se detectaron tanto 'yay' como 'paru'. ¿Qué asistente deseas utilizar?${NC}"
+            
             echo ""
             echo -e "${CYAN_NEON}  [1] yay${NC}"
+            echo ""
             echo -e "${CYAN_NEON}  [2] paru${NC}"
             echo ""
-            if ! read -rp "Escolha / Choice / Opción [1/2]: " escolha_helper; then
+            msg "${CYAN_NEON}  [0] Pular instalação${NC}" \
+                "${CYAN_NEON}  [0] Skip installation${NC}" \
+                "${CYAN_NEON}  [0] Omitir instalación${NC}"
+            echo ""
+            if ! read -rp "Escolha / Choice / Opción [1/2/0]: " escolha_helper; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 return 1
             fi
-
+            escolha_helper="${escolha_helper//[[:space:]]/}"
+            escolha_helper="${escolha_helper,,}"
             case "$escolha_helper" in
-                1)
-                    msg "${GREEN_NEON}Utilizando o yay para instalar o arch-update-full...${NC}" \
-                        "${GREEN_NEON}Using yay to install arch-update-full...${NC}" \
-                        "${GREEN_NEON}Usando yay para instalar arch-update-full...${NC}"
-                    yay -S --noconfirm arch-update-full
-                    install_status=$?
+                1|yay)
+                    helper_usado="yay"
                     break
                     ;;
-                2)
-                    msg "${GREEN_NEON}Utilizando o paru para instalar o arch-update-full...${NC}" \
-                        "${GREEN_NEON}Using paru to install arch-update-full...${NC}" \
-                        "${GREEN_NEON}Usando paru para instalar arch-update-full...${NC}"
-                    paru -S --noconfirm arch-update-full
-                    install_status=$?
+                2|paru)
+                    helper_usado="paru"
                     break
+                    ;;
+                0|n|no|nao|não)
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    msg "${YELLOW_NEON}Instalação do arch-update-full ignorada. Continuando o script...${NC}" \
+                        "${YELLOW_NEON}Arch-update-full installation skipped. Continuing script...${NC}" \
+                        "${YELLOW_NEON}Instalación de arch-update-full omitida. Continuando el script...${NC}"
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    return 0
                     ;;
                 *)
-                    msg "${RED_NEON}[ERRO] Opção inválida. Digite 1 para yay ou 2 para paru.${NC}" \
-                        "${RED_NEON}[ERROR] Invalid option. Type 1 for yay or 2 for paru.${NC}" \
-                        "${RED_NEON}[ERROR] Opción inválida. Escribe 1 para yay o 2 para paru.${NC}"
+                    msg "${RED_NEON}[ERRO] Opção inválida. Digite 1 para yay, 2 para paru ou 0 para pular.${NC}" \
+                        "${RED_NEON}[ERROR] Invalid option. Type 1 for yay, 2 for paru or 0 to skip.${NC}" \
+                        "${RED_NEON}[ERROR] Opción inválida. Escribe 1 para yay, 2 para paru o 0 para omitir.${NC}"
                     echo ""
                     ;;
             esac
         done
+
+        msg "${GREEN_NEON}Utilizando o ${helper_usado} para instalar o arch-update-full...${NC}" \
+            "${GREEN_NEON}Using ${helper_usado} to install arch-update-full...${NC}" \
+            "${GREEN_NEON}Usando ${helper_usado} para instalar arch-update-full...${NC}"
+        echo ""
     elif [ "$has_yay" = true ]; then
-        msg "${GREEN_NEON}Helper 'yay' detectado. Instalando arch-update-full...${NC}" \
-            "${GREEN_NEON}Helper 'yay' detected. Installing arch-update-full...${NC}" \
-            "${GREEN_NEON}Asistente 'yay' detectado. Instalando arch-update-full...${NC}"
-        yay -S --noconfirm arch-update-full
-        install_status=$?
+        helper_usado="yay"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}Helper 'yay' detectado. Instalando arch-update-full...${NC}" \
+            "${CYAN_NEON}Helper 'yay' detected. Installing arch-update-full...${NC}" \
+            "${CYAN_NEON}Asistente 'yay' detectado. Instalando arch-update-full...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        echo ""
     elif [ "$has_paru" = true ]; then
-        msg "${GREEN_NEON}Helper 'paru' detectado. Instalando arch-update-full...${NC}" \
-            "${GREEN_NEON}Helper 'paru' detected. Installing arch-update-full...${NC}" \
-            "${GREEN_NEON}Asistente 'paru' detectado. Instalando arch-update-full...${NC}"
-        paru -S --noconfirm arch-update-full
-        install_status=$?
+        helper_usado="paru"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}Helper 'paru' detectado. Instalando arch-update-full...${NC}" \
+            "${CYAN_NEON}Helper 'paru' detected. Installing arch-update-full...${NC}" \
+            "${CYAN_NEON}Asistente 'paru' detectado. Instalando arch-update-full...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        echo ""
     else
+        usar_git=1
+        echo ""
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${YELLOW_NEON}Nenhum AUR helper detectado. Clonando e compilando via Git em diretório seguro (mktemp)...${NC}" \
             "${YELLOW_NEON}No AUR helper detected. Cloning and building via Git in a secure directory (mktemp)...${NC}" \
             "${YELLOW_NEON}Ningún asistente de AUR detectado. Clonando y compilando vía Git en un directorio seguro (mktemp)...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         echo ""
+    fi
 
-        local temp_dir
-        temp_dir=$(mktemp -d)
+    if [ -n "$helper_usado" ]; then
+        "$helper_usado" -S --needed --noconfirm arch-update-full
+        install_status=$?
+
+        if [ "$install_status" -eq 0 ] && ! pacman -Q arch-update-full &>/dev/null; then
+            install_status=1
+        fi
+
+        if [ "$install_status" -ne 0 ]; then
+            echo ""
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${YELLOW_NEON}[AVISO] A instalação via ${helper_usado} falhou. Tentando via Git + makepkg...${NC}" \
+                "${YELLOW_NEON}[WARNING] Installation via ${helper_usado} failed. Trying via Git + makepkg...${NC}" \
+                "${YELLOW_NEON}[AVISO] La instalación vía ${helper_usado} falló. Intentando vía Git + makepkg...${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            echo ""
+            usar_git=1
+        fi
+    fi
+
+    if [ "$usar_git" -eq 1 ]; then
+        install_status=1
+
+        if ! sudo pacman -S --needed --noconfirm git base-devel; then
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            msg "${RED_NEON}[ERRO] Falha ao instalar os pré-requisitos (git e base-devel).${NC}" \
+                "${RED_NEON}[ERROR] Failed to install the prerequisites (git and base-devel).${NC}" \
+                "${RED_NEON}[ERROR] Error al instalar los requisitos previos (git y base-devel).${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            return 1
+        fi
+
+        temp_dir=$(mktemp -d) || temp_dir=""
         if [ -n "$temp_dir" ] && [ -d "$temp_dir" ]; then
-            if git clone https://aur.archlinux.org/arch-update-full.git "$temp_dir/arch-update-full" &>/dev/null; then
+            if git clone --quiet https://aur.archlinux.org/arch-update-full.git "$temp_dir/arch-update-full"; then
                 if (cd "$temp_dir/arch-update-full" && makepkg -si --noconfirm); then
                     install_status=0
                 else
@@ -2383,6 +3060,7 @@ FUNCAO_INSTALAR_ARCH_UPDATE_FULL() {
                 fi
                 rm -rf "$temp_dir"
             else
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${RED_NEON}[ERRO] Falha ao clonar o repositório arch-update-full do AUR.${NC}" \
                     "${RED_NEON}[ERROR] Failed to clone arch-update-full repository from AUR.${NC}" \
                     "${RED_NEON}[ERROR] Error al clonar el repositorio arch-update-full de AUR.${NC}"
@@ -2391,6 +3069,7 @@ FUNCAO_INSTALAR_ARCH_UPDATE_FULL() {
                 return 1
             fi
         else
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             msg "${RED_NEON}[ERRO] Falha ao criar diretório temporário para build.${NC}" \
                 "${RED_NEON}[ERROR] Failed to create temporary directory for build.${NC}" \
                 "${RED_NEON}[ERROR] Error al crear el directorio temporal para la compilación.${NC}"
@@ -2399,24 +3078,51 @@ FUNCAO_INSTALAR_ARCH_UPDATE_FULL() {
         fi
     fi
 
+    if [ "$install_status" -eq 0 ] && ! pacman -Q arch-update-full &>/dev/null; then
+        install_status=1
+    fi
+
     echo ""
-    if [ $install_status -eq 0 ]; then
-        msg "${GREEN_NEON}[SUCESSO] Arch Update Full instalado e integrado com sucesso ao sistema!${NC}" \
-            "${GREEN_NEON}[SUCCESS] Arch Update Full successfully installed and integrated!${NC}" \
-            "${GREEN_NEON}[ÉXITO] Arch Update Full instalado e integrado con éxito.${NC}"
+    if [ "$install_status" -eq 0 ]; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}[SUCESSO] Arch Update Full instalado e integrado com sucesso ao sistema!${NC}" \
+            "${CYAN_NEON}[SUCCESS] Arch Update Full successfully installed and integrated!${NC}" \
+            "${CYAN_NEON}[ÉXITO] Arch Update Full instalado e integrado con éxito.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     else
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${RED_NEON}[ERRO] A instalação do Arch Update Full falhou durante o processo.${NC}" \
             "${RED_NEON}[ERROR] Arch Update Full installation failed during the process.${NC}" \
             "${RED_NEON}[ERROR] La instalación de Arch Update Full falló durante el proceso.${NC}"
+            echo ""
+        msg "${YELLOW_NEON}Você pode instalar manualmente depois com: yay -S arch-update-full (ou paru -S arch-update-full)${NC}" \
+            "${YELLOW_NEON}You can install it manually later with: yay -S arch-update-full (or paru -S arch-update-full)${NC}" \
+            "${YELLOW_NEON}Puedes instalarlo manualmente después con: yay -S arch-update-full (o paru -S arch-update-full)${NC}"
         echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         return 1
     fi
     echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    return 0
 }
 
 FUNCAO_INSTALAR_WALLPAPERS() {
     local resp_wall=""
+    local zip_nome="wallpapers personalizados.zip"
+    local zip_url="https://raw.githubusercontent.com/GustavoGianeli/post-install-arch-full/main/wallpapers%20personalizados.zip"
+    local alvo_user=""
+    local alvo_home=""
+    local img_dir=""
+    local target_folder=""
+    local script_dir=""
+    local candidato=""
+    local zip_usar=""
+    local zip_temp=""
+    local qtd_imgs=0
+    local -a candidatos=()
+    local -a como_user=()
+
     while true; do
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         msg "${CYAN_NEON}Deseja instalar os wallpapers personalizados do Projeto Odin? (s/n):${NC}" \
             "${CYAN_NEON}Do you want to install Project Odin's custom wallpapers? (y/n):${NC}" \
             "${CYAN_NEON}¿Deseas instalar los fondos de pantalla personalizados del Proyecto Odin? (s/n):${NC}"
@@ -2424,12 +3130,14 @@ FUNCAO_INSTALAR_WALLPAPERS() {
         if ! read -rp "Opção / Choice / Opción [s/y/n]: " resp_wall; then
             return 1
         fi
+        resp_wall="${resp_wall//[[:space:]]/}"
+        resp_wall="${resp_wall,,}"
 
         case "$resp_wall" in
-            [sSyY])
+            s|sim|y|yes)
                 break
                 ;;
-            [nN])
+            n|no|nao|não)
                 msg "${YELLOW_NEON}Instalação de wallpapers ignorada. Continuando o script...${NC}" \
                     "${YELLOW_NEON}Wallpapers installation skipped. Continuing script...${NC}" \
                     "${YELLOW_NEON}Instalación de fondos de pantalla omitida. Continuando el script...${NC}"
@@ -2444,66 +3152,183 @@ FUNCAO_INSTALAR_WALLPAPERS() {
                 ;;
         esac
     done
-
-    msg "${GREEN_NEON}Baixando e instalando wallpapers personalizados...${NC}" \
-        "${GREEN_NEON}Downloading and installing custom wallpapers...${NC}" \
-        "${GREEN_NEON}Descargando e instalando fondos de pantalla personalizados...${NC}"
     echo ""
 
-    local img_dir
-    img_dir="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Imagens")"
-    local target_folder="$img_dir/wallpapers personalizados"
-    mkdir -p "$target_folder"
+    
+    
+    if [ "$(id -u)" -eq 0 ] && [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
+        alvo_user="$SUDO_USER"
+        alvo_home="$(getent passwd "$alvo_user" | cut -d: -f6)"
+        como_user=(sudo -u "$alvo_user")
+    else
+        alvo_home="$HOME"
+    fi
 
-    local temp_zip
-    temp_zip=$(mktemp --suffix=.zip)
-    if [ -z "$temp_zip" ]; then
-        msg "${RED_NEON}[ERRO] Falha ao criar arquivo temporário para o download.${NC}" \
-            "${RED_NEON}[ERROR] Failed to create temporary file for download.${NC}" \
-            "${RED_NEON}[ERROR] Error al crear el archivo temporal para la descarga.${NC}"
+    if [ -z "$alvo_home" ] || [ ! -d "$alvo_home" ]; then
+        msg "${RED_NEON}[ERRO] Não foi possível localizar a pasta pessoal do usuário.${NC}" \
+            "${RED_NEON}[ERROR] Could not locate the user's home folder.${NC}" \
+            "${RED_NEON}[ERROR] No se pudo localizar la carpeta personal del usuario.${NC}"
         echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         return 1
     fi
 
-    local zip_url="https://raw.githubusercontent.com/GustavoGianeli/post-install-arch-full/main/wallpapers%20personalizados.zip"
-
-    # Utiliza -f (fail) para que erros HTTP (como 404) retornem código de erro real
-    if curl -fL -o "$temp_zip" "$zip_url" &>/dev/null; then
-        if command -v unzip &>/dev/null; then
-            # A flag -j (junk paths) extrai apenas os arquivos direto para a pasta destino, sem recriar subpastas
-            if unzip -q -j "$temp_zip" -d "$target_folder"; then
-                rm -f "$temp_zip"
-                msg "${CYAN_NEON}[SUCESSO] Wallpapers instalados com sucesso em: $target_folder${NC}" \
-                    "${CYAN_NEON}[SUCCESS] Wallpapers successfully installed at: $target_folder${NC}" \
-                    "${CYAN_NEON}[ÉXITO] Fondos de pantalla instalados con éxito en: $target_folder${NC}"
-            else
-                rm -f "$temp_zip"
-                msg "${RED_NEON}[ERRO] Falha ao descompactar o pacote de wallpapers.${NC}" \
-                    "${RED_NEON}[ERROR] Failed to extract the wallpapers package.${NC}" \
-                    "${RED_NEON}[ERROR] Error al descomprimir el paquete de fondos de pantalla.${NC}"
-                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
-                return 1
-            fi
+    if command -v xdg-user-dir &>/dev/null; then
+        img_dir="$(env -u XDG_CONFIG_HOME HOME="$alvo_home" xdg-user-dir PICTURES 2>/dev/null)"
+    fi
+    if [ -z "$img_dir" ] || [ "$img_dir" = "$alvo_home" ]; then
+        if [ -d "$alvo_home/Imagens" ]; then
+            img_dir="$alvo_home/Imagens"
+        elif [ -d "$alvo_home/Pictures" ]; then
+            img_dir="$alvo_home/Pictures"
+        elif [ "${IDIOMA_SISTEMA:-}" = "PT_BR" ]; then
+            img_dir="$alvo_home/Imagens"
         else
-            rm -f "$temp_zip"
-            msg "${RED_NEON}[ERRO] O comando 'unzip' não foi encontrado. Por favor, instale o pacote unzip.${NC}" \
-                "${RED_NEON}[ERROR] The 'unzip' command was not found. Please install the unzip package.${NC}" \
-                "${RED_NEON}[ERROR] No se encontró el comando 'unzip'. Por favor, instale el paquete unzip.${NC}"
+            img_dir="$alvo_home/Pictures"
+        fi
+    fi
+    target_folder="$img_dir/wallpapers personalizados"
+
+    # ---------------------------------------------------------------
+    # 2) unzip é indispensável (inclusive para validar o zip); instala se faltar
+    # ---------------------------------------------------------------
+    if ! command -v unzip &>/dev/null; then
+        msg "${YELLOW_NEON}O comando 'unzip' não foi encontrado. Instalando o pacote unzip...${NC}" \
+            "${YELLOW_NEON}The 'unzip' command was not found. Installing the unzip package...${NC}" \
+            "${YELLOW_NEON}No se encontró el comando 'unzip'. Instalando el paquete unzip...${NC}"
+        echo ""
+        if ! sudo pacman -S --needed --noconfirm unzip || ! command -v unzip &>/dev/null; then
+            msg "${RED_NEON}[ERRO] Não foi possível instalar o 'unzip'. Instale o pacote unzip e tente novamente.${NC}" \
+                "${RED_NEON}[ERROR] Could not install 'unzip'. Install the unzip package and try again.${NC}" \
+                "${RED_NEON}[ERROR] No se pudo instalar 'unzip'. Instala el paquete unzip e inténtalo de nuevo.${NC}"
             echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
             return 1
         fi
+        echo ""
+    fi
+
+    # ---------------------------------------------------------------
+    # 3) Procura primeiro um zip local (git clone / instalação com o zip incluso); só baixa se não achar
+    # ---------------------------------------------------------------
+    if [ -n "${BASH_SOURCE[0]:-}" ]; then
+        script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd -P)"
+    fi
+    [ -n "$script_dir" ] && candidatos+=("$script_dir/$zip_nome")
+    candidatos+=(
+        "$PWD/$zip_nome"
+        "$alvo_home/post-install-arch-full/$zip_nome"
+        "/usr/share/post-install-arch-full/$zip_nome"
+    )
+
+    msg "${CYAN_NEON}Procurando o pacote de wallpapers neste computador...${NC}" \
+        "${CYAN_NEON}Looking for the wallpapers package on this computer...${NC}" \
+        "${CYAN_NEON}Buscando el paquete de fondos de pantalla en este equipo...${NC}"
+    echo ""
+
+    for candidato in "${candidatos[@]}"; do
+        [ -f "$candidato" ] || continue
+        if unzip -tq "$candidato" &>/dev/null; then
+            zip_usar="$candidato"
+            break
+        fi
+        msg "${YELLOW_NEON}[AVISO] Zip encontrado em '$candidato', mas está corrompido ou incompleto. Ignorando...${NC}" \
+            "${YELLOW_NEON}[WARNING] Zip found at '$candidato', but it is corrupted or incomplete. Ignoring...${NC}" \
+            "${YELLOW_NEON}[AVISO] Zip encontrado en '$candidato', pero está dañado o incompleto. Ignorando...${NC}"
+        echo ""
+    done
+
+    if [ -n "$zip_usar" ]; then
+        msg "${CYAN_NEON}Pacote local encontrado: $zip_usar (download não necessário).${NC}" \
+            "${CYAN_NEON}Local package found: $zip_usar (no download needed).${NC}" \
+            "${CYAN_NEON}Paquete local encontrado: $zip_usar (no es necesario descargar).${NC}"
+        echo ""
     else
-        rm -f "$temp_zip"
-        msg "${RED_NEON}[ERRO] Falha ao baixar o pacote de wallpapers do repositório.${NC}" \
-            "${RED_NEON}[ERROR] Failed to download wallpapers package from the repository.${NC}" \
-            "${RED_NEON}[ERROR] Error al descargar el paquete de fondos de pantalla del repositorio.${NC}"
+        # -------------------------------------------------------------
+        # 4) Não achou local: baixa do GitHub para um arquivo temporário
+        # -------------------------------------------------------------
+        msg "${CYAN_NEON}Nenhum pacote local encontrado. Baixando do GitHub...${NC}" \
+            "${CYAN_NEON}No local package found. Downloading from GitHub...${NC}" \
+            "${CYAN_NEON}No se encontró ningún paquete local. Descargando desde GitHub...${NC}"
+        echo ""
+
+        if ! command -v curl &>/dev/null; then
+            msg "${YELLOW_NEON}O comando 'curl' não foi encontrado. Instalando o pacote curl...${NC}" \
+                "${YELLOW_NEON}The 'curl' command was not found. Installing the curl package...${NC}" \
+                "${YELLOW_NEON}No se encontró el comando 'curl'. Instalando el paquete curl...${NC}"
+            echo ""
+            if ! sudo pacman -S --needed --noconfirm curl || ! command -v curl &>/dev/null; then
+                msg "${RED_NEON}[ERRO] Não foi possível instalar o 'curl'. Instale o pacote curl e tente novamente.${NC}" \
+                    "${RED_NEON}[ERROR] Could not install 'curl'. Install the curl package and try again.${NC}" \
+                    "${RED_NEON}[ERROR] No se pudo instalar 'curl'. Instala el paquete curl e inténtalo de nuevo.${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                return 1
+            fi
+            echo ""
+        fi
+
+        zip_temp="$(mktemp --suffix=.zip)" || zip_temp=""
+        if [ -z "$zip_temp" ] || [ ! -f "$zip_temp" ]; then
+            msg "${RED_NEON}[ERRO] Falha ao criar arquivo temporário para o download.${NC}" \
+                "${RED_NEON}[ERROR] Failed to create temporary file for download.${NC}" \
+                "${RED_NEON}[ERROR] Error al crear el archivo temporal para la descarga.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            return 1
+        fi
+        chmod 644 "$zip_temp"
+
+        if ! curl -fL --progress-bar --connect-timeout 15 --max-time 600 --retry 2 -o "$zip_temp" "$zip_url"; then
+            rm -f "$zip_temp"
+            echo ""
+            msg "${RED_NEON}[ERRO] Falha ao baixar o pacote de wallpapers do repositório. Verifique sua conexão com a internet.${NC}" \
+                "${RED_NEON}[ERROR] Failed to download wallpapers package from the repository. Check your internet connection.${NC}" \
+                "${RED_NEON}[ERROR] Error al descargar el paquete de fondos de pantalla del repositorio. Verifica tu conexión a internet.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            return 1
+        fi
+        echo ""
+
+        if ! unzip -tq "$zip_temp" &>/dev/null; then
+            rm -f "$zip_temp"
+            msg "${RED_NEON}[ERRO] O arquivo baixado está corrompido ou incompleto.${NC}" \
+                "${RED_NEON}[ERROR] The downloaded file is corrupted or incomplete.${NC}" \
+                "${RED_NEON}[ERROR] El archivo descargado está dañado o incompleto.${NC}"
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+            return 1
+        fi
+        zip_usar="$zip_temp"
+    fi
+
+  
+    msg "${CYAN_NEON}Instalando wallpapers personalizados em: $target_folder${NC}" \
+        "${CYAN_NEON}Installing custom wallpapers at: $target_folder${NC}" \
+        "${CYAN_NEON}Instalando fondos de pantalla personalizados en: $target_folder${NC}"
+    echo ""
+
+    if ! "${como_user[@]}" mkdir -p "$target_folder"; then
+        [ -n "$zip_temp" ] && rm -f "$zip_temp"
+        msg "${RED_NEON}[ERRO] Não foi possível criar a pasta de destino: $target_folder${NC}" \
+            "${RED_NEON}[ERROR] Could not create the destination folder: $target_folder${NC}" \
+            "${RED_NEON}[ERROR] No se pudo crear la carpeta de destino: $target_folder${NC}"
         echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
         return 1
     fi
 
-    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
-}
+    if "${como_user[@]}" unzip -q -o -j "$zip_usar" -d "$target_folder"; then
+        [ -n "$zip_temp" ] && rm -f "$zip_temp"
+        qtd_imgs=$(find "$target_folder" -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) 2>/dev/null | wc -l)
+        msg "${CYAN_NEON}[SUCESSO] Wallpapers instalados com sucesso em: $target_folder ($qtd_imgs imagens)${NC}" \
+            "${CYAN_NEON}[SUCCESS] Wallpapers successfully installed at: $target_folder ($qtd_imgs images)${NC}" \
+            "${CYAN_NEON}[ÉXITO] Fondos de pantalla instalados con éxito en: $target_folder ($qtd_imgs imágenes)${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        return 0
+    fi
 
+    [ -n "$zip_temp" ] && rm -f "$zip_temp"
+    msg "${RED_NEON}[ERRO] Falha ao descompactar o pacote de wallpapers.${NC}" \
+        "${RED_NEON}[ERROR] Failed to extract the wallpapers package.${NC}" \
+        "${RED_NEON}[ERROR] Error al descomprimir el paquete de fondos de pantalla.${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    return 1
+}
 #====================================
 #ENCERRAMENTO DOS PERSONALIZADOS
 #===================================
@@ -2562,9 +3387,9 @@ MENU_AVANCADO() {
             "${YELLOW_NEON} [0] Volver / Salir         - Volver al menú principal${NC}"
         echo ""
        
-        msg "${CYAN_NEON}Deseja baixar pacotes especializados para Jogos (bibliotecas 32-bit, Steam, Lutris, Heroic, Proton), Desenvolvimento (Dev) ou Pentest? Por favor, utilize o modo 3 nas funções pré-definidas.${NC}" \
-            "${CYAN_NEON}Do you want to download specialized packages for Gaming (32-bit libraries, Steam, Lutris, Heroic, Proton), Development (Dev), or Pentest? Please use mode 3 in the predefined functions.${NC}" \
-            "${CYAN_NEON}¿Deseas descargar paquetes especializados para Juegos (bibliotecas de 32-bit, Steam, Lutris, Heroic, Proton), Desarrollo (Dev) o Pentest? Por favor, utiliza el modo 3 en las funciones predefinidas.${NC}"
+        msg "${CYAN_NEON}Deseja baixar pacotes especializados para Jogos (bibliotecas 32-bit, Steam, Lutris, Heroic, Proton), \nDesenvolvimento (Dev) ou Pentest? Por favor, utilize o modo 3 nas funções pré-definidas.${NC}" \
+            "${CYAN_NEON}Do you want to download specialized packages for Gaming (32-bit libraries, Steam, Lutris, Heroic, Proton), \nDevelopment (Dev), or Pentest? Please use mode 3 in the predefined functions.${NC}" \
+            "${CYAN_NEON}¿Deseas descargar paquetes especializados para Juegos (bibliotecas de 32-bit, Steam, Lutris, Heroic, Proton), \nDesarrollo (Dev) o Pentest? Por favor, utiliza el modo 3 en las funciones predefinidas.${NC}"
 
         msg "${NEON_BLUE}======================================================================================${NC}" \
             "${NEON_BLUE}======================================================================================${NC}" \
@@ -2583,6 +3408,7 @@ MENU_AVANCADO() {
                 echo ""
                 FUNCAO_CORE
                 MENSAGEM_FINAL
+                PERGUNTAR_REINICIAR
                 ;;
             2)
                 msg "${GREEN_NEON}Iniciando as otimizações de hardware (FUNCAO_OTIMIZACAO)...${NC}" \
@@ -2591,6 +3417,7 @@ MENU_AVANCADO() {
                 echo ""
                 FUNCAO_OTIMIZACAO
                 MENSAGEM_FINAL
+                PERGUNTAR_REINICIAR
                 ;;
             3)
                 msg "${GREEN_NEON}Iniciando a instalação de codecs multimídia (CODECS_MULTIMIDIA_CORE)...${NC}" \
@@ -2646,6 +3473,7 @@ MENU_AVANCADO() {
 #===============================================
 
 PERGUNTAR_REINICIAR() {
+    
     echo ""
     msg "${CYAN_NEON} [?] Recomendo reiniciar o sistema para aplicar todas as alterações.${NC}" \
         "${CYAN_NEON} [?] Recommended to reboot the system to apply all changes.${NC}" \
@@ -2701,9 +3529,7 @@ PERGUNTAR_REINICIAR() {
 #===========================================================================================
 
 MENSAGEM_FINAL() {
-
-    LIMPAR_ORFAOS
-
+    sleep 0.5
     msg "" "" ""
     msg "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
@@ -2730,16 +3556,16 @@ MENSAGEM_FINAL() {
     echo -e "                       \\\\______________/"
     echo -e "${NC}"
 
-    msg " ${WHITE_NEON}​​© By: Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}" \
-        " ${WHITE_NEON}​© By: Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}" \
-        " ${WHITE_NEON}​© By: Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)🐧${NC}"
+    msg " ${WHITE_NEON}​​© By: Gustavo Gianeli (𝕿𝖍𝖊 𝑺𝖊𝖛𝖊𝖓𝖙𝖍) 🐧${NC}" \
+        " ${WHITE_NEON}​© By: Gustavo Gianeli (𝕿𝖍𝖊 𝑺𝖊𝖛𝖊𝖓𝖙𝖍) 🐧${NC}" \
+        " ${WHITE_NEON}​© By: Gustavo Gianeli (𝕿𝖍𝖊 𝑺𝖊𝖛𝖊𝖓𝖙𝖍) 🐧${NC}"
 
     msg "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     msg "" "" ""
-
-    PERGUNTAR_REINICIAR
+    sleep 0.7
+    
 }
 
 #===========================================================================================
@@ -2758,7 +3584,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}[MODO PRINCIPIANTE]${NC} Ejecutando instalación estándar..."
     echo -e "${NEON_BLUE}===========================================================================================${NC}" 
         echo ""
-    sleep 0.5
+    sleep 1.5
 
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
     msg "${NEON_BLUE}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 25 GB)...${NC}" \
@@ -2767,7 +3593,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
         VERIFICAR_CONECTIVIDADE
         CHECK_DISK_SPACE
-    sleep 0.5
+    sleep 1.5
     echo ""    
 
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
@@ -2776,7 +3602,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}Ejecutando función CORE para establecer la fundación del sistema...${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
     echo ""  
-    sleep 0.5 
+    sleep 1.5
         FUNCAO_CORE
     echo ""
 
@@ -2785,7 +3611,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}Executing hardware optimization function to improve the system with specific libraries for your hardware...${NC}" \
         "${CYAN_NEON}Ejecutando la función de optimización de hardware para mejorar el sistema con bibliotecas específicas para su hardware..${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 0.5
+    sleep 1.5
         FUNCAO_OTIMIZACAO
     echo ""    
 
@@ -2794,7 +3620,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}Executing CODECS function to install multimedia codecs...${NC}" \
         "${CYAN_NEON}Ejecutando función CODECS para instalar códecs multimedia...${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"    
-    sleep 0.5    
+    sleep 1.5    
         CODECS_MULTIMIDIA_CORE
     echo "" 
 
@@ -2803,7 +3629,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}Starting function to install an AUR helper, extremely important and necessary to download packages from AUR...${NC}" \
         "${CYAN_NEON}Iniciando función para instalar un AUR helper, extremadamente importante y necesario para descargar paquetes de AUR...${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 0.5
+    sleep 1.5
         FUNCAO_AUR_HELPER
     echo ""
 
@@ -2812,7 +3638,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}Loading browser installation module. Now you can, if you want, install a highly recommended internet browser to browse the web...${NC}" \
         "${CYAN_NEON}Cargando módulo de instalación de navegador. Ahora puedes, si lo deseas, instalar un navegador de internet altamente recomendado para navegar por la red...${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 0.5
+    sleep 1.5
         FUNCAO_INSTALAR_NAVEGADORES
     echo ""    
 
@@ -2821,12 +3647,16 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}The Arch base has been configured. Would you like to install a tool to always keep your system updated and clean? And custom wallpapers?${NC}" \
         "${CYAN_NEON}La base de Arch ha sido configurada. ¿Te gustaría instalar una herramienta para mantener siempre tu sistema actualizado y limpio? ¿Y fondos de pantalla personalizados?${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 0.5
+    sleep 1.5
         FUNCAO_INSTALAR_ARCH_UPDATE_FULL
         FUNCAO_INSTALAR_WALLPAPERS
     echo ""
-    sleep 0.5
+    sleep 0.7
+    LIMPAR_ORFAOS
+    sleep 0.7
     MENSAGEM_FINAL
+    sleep 1.5
+    PERGUNTAR_REINICIAR
 }
 
 OPCAO_INTERMEDIARIO_AVANCADO_SCRIPT() {
@@ -2839,12 +3669,13 @@ OPCAO_INTERMEDIARIO_AVANCADO_SCRIPT() {
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
         VERIFICAR_CONECTIVIDADE
         CHECK_DISK_SPACE
-    sleep 0.5
+    sleep 1
     echo "" 
 
     msg "${CYAN_NEON}[MODO AVANÇADO]${NC} Carregando lista de blocos..." \
         "${CYAN_NEON}[ADVANCED MODE]${NC} Loading block list..." \
         "${CYAN_NEON}[MODO AVANZADO]${NC} Cargando lista de bloques..."
+        sleep 1
         echo ""
         MENU_AVANCADO
 
