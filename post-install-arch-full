@@ -190,7 +190,7 @@ MENU_CABECALHO() {
     msg "${CYAN_NEON}Bem-vindo ao Odin -  Pós-Instalação Arch Linux 🐧${NC}"\
         "${CYAN_NEON}Welcome to Odin - Post-Installation Arch Linux Installer 🐧${NC}" \
         "${CYAN_NEON}Bienvenido a Odin - Post-Instalación Arch Linux 🐧${NC}"
-    sleep 0.7
+    sleep 1.5
     echo -e "                                                        \e[38;5;32m▗\e[38;5;81m▄▄\e[38;5;25m▄\e[0m"
     echo -e "                                                    \e[38;5;38m▄\e[38;5;81m▄\e[48;5;38m \e[48;5;45m▀ \e[38;5;38;48;5;25m▐▀\e[38;5;45;48;5;32m▐\e[48;5;81m▄▄\e[38;5;32;49m▙\e[38;5;81m▄\e[0m"
     echo -e "                                                 \e[38;5;38m▄\e[38;5;81m▟\e[48;5;45m▀ \e[38;5;25m▄\e[38;5;18;48;5;32m▄\e[38;5;19;48;5;25m▄\e[48;5;18m▄▄█\e[48;5;25m▙▄\e[38;5;38;48;5;18m▘\e[38;5;25;48;5;45m▄\e[38;5;38m▖\e[38;5;81m▝\e[38;5;32m▀\e[38;5;81;49m▄\e[0m"
@@ -228,7 +228,7 @@ MENU_CABECALHO() {
     echo -e "${RED_NEON}By: 𝕿𝖍𝖊 𝑺𝖊𝖛𝖊𝖓𝖙𝖍 🐧 ${NC}"
     echo -e "${RED_NEON}--------------------------------${NC}"
     echo ""
-    sleep 1.5
+    sleep 1.7
 }
 
 
@@ -243,31 +243,32 @@ CHAMAR_MENU_OPCOES() {
             "${CYAN_NEON}1) - Script Principiante Estándar:${NC}\n   Instala todo lo que tu arch necesita por defecto para que puedas usarlo\n   (como códecs multimedia, lectura de archivos, optimización de hardware).\n"
         
         echo ""
-        sleep 0.2    
+        sleep 0.3    
       
         msg "${CYAN_NEON}2) - Para Avançados/Intermediários:${NC}\n   Chama blocos para você escolher o que quer instalar dentro da lista disponível.\n" \
             "${CYAN_NEON}2) - For Advanced/Intermediate:${NC}\n   Calls blocks for you to choose what to install from the available list.\n" \
             "${CYAN_NEON}2) - Para Avanzados/Intermedios:${NC}\n   Llama bloques para que elijas qué instalar dentro de la lista disponible.\n"
         
         echo ""
-        sleep 0.2    
+        sleep 0.3    
       
-        msg "${CYAN_NEON}3) - Opções Pré-definidas:${NC}\n    Escolha uma opção pré-definida para deixar seu arch pronto para um dos propósitos:\n   ${YELLOW_NEON}GAME${NC}   : Deixa seu arch pronto para jogos com instalação de pacotes e bibliotecas próprias\n            para jogar com opção de baixar kernel-zen para baixa latência.\n   ${YELLOW_NEON}DEV${NC}    : Baixa e deixa pronto seu arch para programação baixando as principais\n            linguagens, compiladores e VMs.\n   ${RED_NEON}HACKER${NC} : (Opção instável) Habilita os repositórios do black arch e baixa as\n            principais ferramentas deixando seu arch pronto para pentest.\n" \
-            "${CYAN_NEON}3) - Pre-defined Options:${NC}\n    Choose a pre-defined option to ready your arch for one of these purposes:\n   ${YELLOW_NEON}GAME${NC}   : Gets your arch ready for gaming by installing specific packages and\n            libraries, with an option to download kernel-zen for low latency.\n   ${YELLOW_NEON}DEV${NC}    : Readies your arch for programming by downloading the main languages,\n            compilers, and VMs.\n   ${RED_NEON}HACKER${NC} : (Unstable option) Enables black arch repos and downloads the main\n            tools, leaving your arch ready for pentesting.\n" \
-            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n    Elija una opción predefinida para preparar su arch para uno de estos propósitos:\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu arch para juegos instalando paquetes y librerías propias,\n            con la opción de descargar kernel-zen para baja latencia.\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de black arch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
+        msg "${CYAN_NEON}3) - Opções Pré-definidas:${NC}\n    Escolha uma opção pré-definida para deixar seu Arch pronto para um propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Deixa seu Arch pronto para jogos com instalação de pacotes e bibliotecas próprias\n            para jogar, com opção de baixar o kernel-zen para baixa latência.\n\n   ${YELLOW_NEON}DEV${NC}    : Baixa e deixa pronto seu Arch para programação, instalando as principais\n            linguagens, compiladores e VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opção instável) Habilita os repositórios do BlackArch e baixa as\n            principais ferramentas, deixando seu Arch pronto para pentest.\n" \
+            "${CYAN_NEON}3) - Pre-defined Options:${NC}\n    Choose a pre-defined option to ready your Arch for a specific purpose:\n\n   ${YELLOW_NEON}GAME${NC}   : Gets your Arch ready for gaming by installing specific packages and\n            libraries, with an option to download the zen-kernel for low latency.\n\n   ${YELLOW_NEON}DEV${NC}    : Readies your Arch for programming by downloading the main languages,\n            compilers, and VMs.\n\n   ${RED_NEON}HACKER${NC} : (Unstable option) Enables BlackArch repos and downloads the main\n            tools, leaving your Arch ready for pentesting.\n" \
+            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n    Elija una opción predefinida para preparar su Arch para un propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu Arch para juegos instalando paquetes y librerías propias,\n            con la opción de descargar el kernel-zen para baja latencia.\n\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu Arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de BlackArch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
         
         echo ""
-        sleep 0.2
+        sleep 0.3
      
         msg "${RED_NEON}4) - Sair do script${NC}" \
             "${RED_NEON}4) - Exit script${NC}" \
             "${RED_NEON}4) - Salir del script${NC}"
 
         echo -e "${NEON_BLUE}-----------------------------------------------------------------------------------------${NC}"
-        
-        msg "\nEscolha uma opção [1-2-3-4]:" \
-            "\nChoose an option [1-2-3-4]:" \
-            "\nElija una opción [1-2-3-4]:"
+        echo ""
+        msg "Escolha uma opção [1-2-3-4]:" \
+            "Choose an option [1-2-3-4]:" \
+            "Elija una opción [1-2-3-4]:"
+        echo ""    
         read -rp ">> " opcao || exit 0
 
         case "$opcao" in
@@ -285,6 +286,7 @@ CHAMAR_MENU_OPCOES() {
                 msg "${YELLOW_NEON}Gostaria de encerrar o projeto Odin e gerar seu log de sessão?${NC}\n[1] Sim, encerra   [2] Não, volta para as opções" \
                     "${YELLOW_NEON}Would you like to close Project Odin and generate your session log?${NC}\n[1] Yes, exit      [2] No, return to options" \
                     "${YELLOW_NEON}¿Te gustaría cerrar el proyecto Odin y generar tu registro de sesión?${NC}\n[1] Sí, cerrar     [2] No, volver a las opciones"
+                echo ""
                 read -rp ">> " opcao_sair
                 
                 case "$opcao_sair" in
@@ -292,6 +294,7 @@ CHAMAR_MENU_OPCOES() {
                         echo ""
                         # Loop de contagem regressiva de 5 a 0
                         MENSAGEM_FINAL
+                        sleep 2
                         for i in {5..0}; do
                             msg "Encerrando em $i..." "Exiting in $i..." "Cerrando en $i..."
                             sleep 1
@@ -1058,7 +1061,6 @@ FUNCAO_CORE(){
 OTIMIZAR_HARDWARE() {
 
     local rc=0
-    echo ""
     echo -e "${NEON_BLUE}===============================================================${NC}"
     msg "${CYAN_NEON}Investigando o hardware do sistema...${NC}" \
         "${CYAN_NEON}Investigating system hardware...${NC}" \
@@ -1469,7 +1471,7 @@ FUNCAO_OTIMIZACAO() {
 #========================================
 
 VERIFICAR_CONECTIVIDADE() {
-    local TEXTO_NET=" ESTABLISHING UPLINK: CHECKING SECTOR NETWORK"
+    local TEXTO_NET="ESTABLISHING UPLINK: CHECKING SECTOR NETWORK"
     : "${LARGURA_BOX:=60}" # Fallback de segurança caso a largura não esteja definida
     local TAM_TEXTO=${#TEXTO_NET}
     local ESPACOS=$((LARGURA_BOX - TAM_TEXTO - 2))
@@ -1479,9 +1481,9 @@ VERIFICAR_CONECTIVIDADE() {
     local PING_RES
     local LATENCY
 
-    msg "${NEON_BLUE}Verificando conectividade de rede...${NC}" \
-        "${NEON_BLUE}Checking network connectivity...${NC}" \
-        "${NEON_BLUE}Verificando la conectividad de red...${NC}"
+    msg "${CYAN_NEON}Verificando conectividade de rede...${NC}" \
+        "${CYAN_NEON}Checking network connectivity...${NC}" \
+        "${CYAN_NEON}Verificando la conectividad de red...${NC}"
     echo ""
    
     echo -e "${NEON_BLUE}╔$(printf '═%.0s' $(seq 1 $((LARGURA_BOX-2))))╗${NC}"
@@ -1731,8 +1733,6 @@ LIMPAR_ORFAOS() {
 
 CODECS_MULTIMIDIA_CORE() {
         local pacote
-
-        echo ""
         echo -e "${NEON_BLUE}\n------------------------------------------------------------${NC}"
         echo ""
         echo -e "${NEON_BLUE}===========================================================================================${NC}"
@@ -3329,16 +3329,15 @@ FUNCAO_INSTALAR_WALLPAPERS() {
     echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     return 1
 }
-#====================================
+#===================================
 #ENCERRAMENTO DOS PERSONALIZADOS
 #===================================
 MENU_AVANCADO() {
     local opcao=""
     while true; do
-        echo ""
-        msg "${NEON_BLUE}======================================================================================${NC}" \
-            "${NEON_BLUE}======================================================================================${NC}" \
-            "${NEON_BLUE}======================================================================================${NC}"
+        msg "${NEON_BLUE}==================================================================================================================${NC}" \
+            "${NEON_BLUE}==================================================================================================================${NC}" \
+            "${NEON_BLUE}==================================================================================================================${NC}"
 
         msg "${CYAN_NEON} [1] FUNCAO_CORE            - Configuração base e pacotes essenciais do sistema${NC}" \
             "${CYAN_NEON} [1] FUNCAO_CORE            - Base configuration and essential system packages${NC}" \
@@ -3391,64 +3390,97 @@ MENU_AVANCADO() {
             "${CYAN_NEON}Do you want to download specialized packages for Gaming (32-bit libraries, Steam, Lutris, Heroic, Proton), \nDevelopment (Dev), or Pentest? Please use mode 3 in the predefined functions.${NC}" \
             "${CYAN_NEON}¿Deseas descargar paquetes especializados para Juegos (bibliotecas de 32-bit, Steam, Lutris, Heroic, Proton), \nDesarrollo (Dev) o Pentest? Por favor, utiliza el modo 3 en las funciones predefinidas.${NC}"
 
-        msg "${NEON_BLUE}======================================================================================${NC}" \
-            "${NEON_BLUE}======================================================================================${NC}" \
-            "${NEON_BLUE}======================================================================================${NC}"
+        msg "${NEON_BLUE}==================================================================================================================${NC}" \
+            "${NEON_BLUE}==================================================================================================================${NC}" \
+            "${NEON_BLUE}==================================================================================================================${NC}"
         echo ""
-
-        if ! read -rp "Escolha / Choice / Opción [1-7, 0]: " opcao; then
+        msg "Escolha uma opção [1-2-3-4-5-6-7-0]:" \
+            "Choose an option [1-2-3-4-5-6-7-0]:" \
+            "Elija una opción [1-2-3-4-5-6-7-0]:"
+        echo ""    
+        
+        if ! read -rp ">>  " opcao; then
             return 1
         fi
 
         case "$opcao" in
             1)
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${GREEN_NEON}Iniciando a configuração base do sistema (FUNCAO_CORE)...${NC}" \
                     "${GREEN_NEON}Starting base system configuration (FUNCAO_CORE)...${NC}" \
                     "${GREEN_NEON}Iniciando la configuración base del sistema (FUNCAO_CORE)...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 echo ""
+                sleep 1
                 FUNCAO_CORE
+                sleep 1
+                echo ""
                 MENSAGEM_FINAL
                 PERGUNTAR_REINICIAR
                 ;;
             2)
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${GREEN_NEON}Iniciando as otimizações de hardware (FUNCAO_OTIMIZACAO)...${NC}" \
                     "${GREEN_NEON}Starting hardware optimizations (FUNCAO_OTIMIZACAO)...${NC}" \
                     "${GREEN_NEON}Iniciando las optimizaciones de hardware (FUNCAO_OTIMIZACAO)...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 echo ""
+                sleep 1
                 FUNCAO_OTIMIZACAO
+                sleep 1
+                echo ""
                 MENSAGEM_FINAL
                 PERGUNTAR_REINICIAR
                 ;;
             3)
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${GREEN_NEON}Iniciando a instalação de codecs multimídia (CODECS_MULTIMIDIA_CORE)...${NC}" \
                     "${GREEN_NEON}Starting multimedia codecs installation (CODECS_MULTIMIDIA_CORE)...${NC}" \
                     "${GREEN_NEON}Iniciando la instalación de códecs multimedia (CODECS_MULTIMIDIA_CORE)...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 echo ""
+                sleep 1
                 CODECS_MULTIMIDIA_CORE
+                sleep 1
+                echo ""
                 MENSAGEM_FINAL
                 ;;
             4)
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${GREEN_NEON}Iniciando o gerenciador de AUR Helper (FUNCAO_AUR_HELPER)...${NC}" \
                     "${GREEN_NEON}Starting AUR Helper manager (FUNCAO_AUR_HELPER)...${NC}" \
                     "${GREEN_NEON}Iniciando el administrador de AUR Helper (FUNCAO_AUR_HELPER)...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 echo ""
+                sleep 1
                 FUNCAO_AUR_HELPER
+                sleep 1
+                echo ""
                 MENSAGEM_FINAL
                 ;;
             5)
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 msg "${GREEN_NEON}Iniciando o instalador de navegadores (FUNCAO_INSTALAR_NAVEGADORES)...${NC}" \
                     "${GREEN_NEON}Starting browsers installer (FUNCAO_INSTALAR_NAVEGADORES)...${NC}" \
                     "${GREEN_NEON}Iniciando el instalador de navegadores (FUNCAO_INSTALAR_NAVEGADORES)...${NC}"
+                echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
                 echo ""
+                sleep 1
                 FUNCAO_INSTALAR_NAVEGADORES
+                sleep 1
+                echo ""
                 MENSAGEM_FINAL
                 ;;
-            6)
+            6)  
                 FUNCAO_INSTALAR_ARCH_UPDATE_FULL
+                sleep 1
+                echo ""
                 MENSAGEM_FINAL
                 ;;
             7)
                 FUNCAO_INSTALAR_WALLPAPERS
+                sleep 1
+                echo ""
                 MENSAGEM_FINAL
                 ;;
             0)
@@ -3456,6 +3488,8 @@ MENU_AVANCADO() {
                     "${YELLOW_NEON}Returning to Project Odin's main menu...${NC}" \
                     "${YELLOW_NEON}Volviendo al menú principal del Proyecto Odin...${NC}"
                 echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                clear
+                MENU_CABECALHO
                 return 0
                 ;;
             *)
@@ -3470,11 +3504,23 @@ MENU_AVANCADO() {
 
 #==============================================
 # ENCERRAMENTO DO MENU AVANÇADO
-#===============================================
+#==============================================
+
+#=========================================================
+#Inicio modo pre definidos 
+#=========================================================
+
+
+
+
+
+
+
+#=======================================================
+#fim dos modos pre definidos
+#=======================================================
 
 PERGUNTAR_REINICIAR() {
-    
-    echo ""
     msg "${CYAN_NEON} [?] Recomendo reiniciar o sistema para aplicar todas as alterações.${NC}" \
         "${CYAN_NEON} [?] Recommended to reboot the system to apply all changes.${NC}" \
         "${CYAN_NEON} [?] Se recomienda reiniciar el sistema para aplicar todos los cambios.${NC}"
@@ -3529,20 +3575,14 @@ PERGUNTAR_REINICIAR() {
 #===========================================================================================
 
 MENSAGEM_FINAL() {
-    sleep 0.5
     msg "" "" ""
     msg "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-    msg "${CYAN_NEON} [✓] Instalação concluída com sucesso! O teu Arch está afiado.${NC}" \
-        "${CYAN_NEON} [✓] Installation successfully completed! Your Arch is ready for battle.${NC}" \
-        "${CYAN_NEON} [✓] ¡Instalación completada con éxito! Tu Arch está listo.${NC}"
-    echo ""
-
-    msg "${WHITE_NEON}Obrigado por usar o Pós-Instalação Odin!${NC}" \
-        "${WHITE_NEON}Thank you for using Odin Post-Installation!${NC}" \
-        "${WHITE_NEON}¡Gracias por usar Odin Post-Instalación!${NC}"
+    msg "${CYAN_NEON}Obrigado por usar o Pós-Instalação Odin!${NC}" \
+        "${CYAN_NEON}Thank you for using Odin Post-Installation!${NC}" \
+        "${CYAN_NEON}¡Gracias por usar Odin Post-Instalación!${NC}"
 
     echo ""
     echo -e "${CYAN_NEON}"
@@ -3564,7 +3604,8 @@ MENSAGEM_FINAL() {
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" \
         "${NEON_BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     msg "" "" ""
-    sleep 0.7
+    echo ""
+    sleep 0.5
     
 }
 
@@ -3575,6 +3616,7 @@ MENSAGEM_FINAL() {
 #===========================================================================================
 #FUNÇÕES DE CADA OPÇÃO DO MENU // FUNCTIONS OF EACH MENU OPTION
 #===========================================================================================
+#+++++++++++++++++++++++++++++++++++++++++++++
 
 OPCAO_INICIANTE_SCRIPT_PADRAO() {
     MENU_CABECALHO
@@ -3586,12 +3628,16 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         echo ""
     sleep 1.5
 
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    msg "${NEON_BLUE}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 25 GB)...${NC}" \
-        "${NEON_BLUE}Executing security blocks: checking internet connectivity and available disk space (minimum 25 GB)...${NC}" \
-        "${NEON_BLUE}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 25 GB)...${NC}"
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    echo -e "${NEON_BLUE}==============================================================================================================================${NC}"
+    msg "${CYAN_NEON}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 15 GB)...${NC}" \
+        "${CYAN_NEON}Executing security blocks: checking internet connectivity and available disk space (minimum 15 GB)...${NC}" \
+        "${CYAN_NEON}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 15 GB)...${NC}"
+    echo -e "${NEON_BLUE}==============================================================================================================================${NC}"
+    echo ""
+    sleep 1
         VERIFICAR_CONECTIVIDADE
+        seleep 1
+        echo ""
         CHECK_DISK_SPACE
     sleep 1.5
     echo ""    
@@ -3602,16 +3648,17 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}Ejecutando función CORE para establecer la fundación del sistema...${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"
     echo ""  
-    sleep 1.5
+    sleep 2
         FUNCAO_CORE
     echo ""
 
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    echo -e "${NEON_BLUE}===========================================================================================================================${NC}"
     msg "${CYAN_NEON}Executando a função de otimização de hardware para melhorar o sistema com bibliotecas específicas para o seu hardware...${NC}" \
         "${CYAN_NEON}Executing hardware optimization function to improve the system with specific libraries for your hardware...${NC}" \
         "${CYAN_NEON}Ejecutando la función de optimización de hardware para mejorar el sistema con bibliotecas específicas para su hardware..${NC}"
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 1.5
+    echo -e "${NEON_BLUE}============================================================================================================================${NC}"
+    sleep 2
+    echo ""
         FUNCAO_OTIMIZACAO
     echo ""    
 
@@ -3620,54 +3667,66 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         "${CYAN_NEON}Executing CODECS function to install multimedia codecs...${NC}" \
         "${CYAN_NEON}Ejecutando función CODECS para instalar códecs multimedia...${NC}"
     echo -e "${NEON_BLUE}===========================================================================================${NC}"    
-    sleep 1.5    
+    sleep 2 
+    echo ""  
         CODECS_MULTIMIDIA_CORE
     echo "" 
 
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    echo -e "${NEON_BLUE}==========================================================================================================================${NC}"
     msg "${CYAN_NEON}Iniciando função para instalar um AUR helper, extremamente importante e necessário para baixar pacotes do AUR...${NC}" \
         "${CYAN_NEON}Starting function to install an AUR helper, extremely important and necessary to download packages from AUR...${NC}" \
         "${CYAN_NEON}Iniciando función para instalar un AUR helper, extremadamente importante y necesario para descargar paquetes de AUR...${NC}"
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 1.5
+    echo -e "${NEON_BLUE}==========================================================================================================================${NC}"
+    sleep 2
+    echo ""
         FUNCAO_AUR_HELPER
     echo ""
 
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    echo -e "${NEON_BLUE}======================================================================================================================================================================${NC}"
     msg "${CYAN_NEON}Carregando módulo de instalação de navegador. Agora você pode, se quiser, instalar um navegador de internet altamente recomendado para poder navegar na rede...${NC}" \
         "${CYAN_NEON}Loading browser installation module. Now you can, if you want, install a highly recommended internet browser to browse the web...${NC}" \
         "${CYAN_NEON}Cargando módulo de instalación de navegador. Ahora puedes, si lo deseas, instalar un navegador de internet altamente recomendado para navegar por la red...${NC}"
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 1.5
+    echo -e "${NEON_BLUE}======================================================================================================================================================================${NC}"
+    sleep 2
+    echo ""
         FUNCAO_INSTALAR_NAVEGADORES
     echo ""    
 
-    echo -e "${NEON_BLUE}===========================================================================================${NC}" 
+    echo -e "${NEON_BLUE}======================================================================================================================================================================${NC}" 
     msg "${CYAN_NEON}A base do Arch foi configurada. Gostaria de instalar uma ferramenta para sempre deixar seu sistema atualizado e limpo? E wallpapers personalizados?${NC}" \
         "${CYAN_NEON}The Arch base has been configured. Would you like to install a tool to always keep your system updated and clean? And custom wallpapers?${NC}" \
         "${CYAN_NEON}La base de Arch ha sido configurada. ¿Te gustaría instalar una herramienta para mantener siempre tu sistema actualizado y limpio? ¿Y fondos de pantalla personalizados?${NC}"
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    sleep 1.5
+    echo -e "${NEON_BLUE}======================================================================================================================================================================${NC}"
+    sleep 2
+    echo ""
         FUNCAO_INSTALAR_ARCH_UPDATE_FULL
+        sleep 1
+        echo ""
         FUNCAO_INSTALAR_WALLPAPERS
     echo ""
     sleep 0.7
     LIMPAR_ORFAOS
     sleep 0.7
+    echo ""
     MENSAGEM_FINAL
-    sleep 1.5
+    sleep 2
     PERGUNTAR_REINICIAR
 }
 
+#+++++++++++++++++++++++++++++++++++++++++++++
+
 OPCAO_INTERMEDIARIO_AVANCADO_SCRIPT() {
     MENU_CABECALHO
-
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    msg "${NEON_BLUE}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 25 GB)...${NC}" \
-        "${NEON_BLUE}Executing security blocks: checking internet connectivity and available disk space (minimum 25 GB)...${NC}" \
-        "${NEON_BLUE}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 25 GB)...${NC}"
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    echo -e "${NEON_BLUE}============================================================================================================================${NC}"
+    msg "${CYAN_NEON}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 15 GB)...${NC}" \
+        "${CYAN_NEON}Executing security blocks: checking internet connectivity and available disk space (minimum 15 GB)...${NC}" \
+        "${CYAN_NEON}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 15 GB)...${NC}"
+    echo -e "${NEON_BLUE}============================================================================================================================${NC}"
+    sleep 1
+    echo ""
         VERIFICAR_CONECTIVIDADE
+        echo ""
+        sleep 1
         CHECK_DISK_SPACE
     sleep 1
     echo "" 
@@ -3681,31 +3740,122 @@ OPCAO_INTERMEDIARIO_AVANCADO_SCRIPT() {
 
 }
 
+#+++++++++++++++++++++++++++++++++++++++++++++
+
 OPCAO_PRE_DEFINIDAS_SCRIPTS() {
     MENU_CABECALHO
-
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
-    msg "${NEON_BLUE}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 25 GB)...${NC}" \
-        "${NEON_BLUE}Executing security blocks: checking internet connectivity and available disk space (minimum 25 GB)...${NC}" \
-        "${NEON_BLUE}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 25 GB)...${NC}"
-    echo -e "${NEON_BLUE}===========================================================================================${NC}"
+    echo -e "${NEON_BLUE}============================================================================================================================${NC}"
+    msg "${CYAN_NEON}Executando blocos de segurança: verificando conectividade com a internet e espaço de disco disponível (mínimo de 15 GB)...${NC}" \
+        "${CYAN_NEON}Executing security blocks: checking internet connectivity and available disk space (minimum 15 GB)...${NC}" \
+        "${CYAN_NEON}Ejecutando bloques de seguridad: verificando la conectividad a internet y el espacio de disco disponible (mínimo de 15 GB)...${NC}"
+    echo -e "${NEON_BLUE}============================================================================================================================${NC}"
+    sleep 1
+    echo ""   
         VERIFICAR_CONECTIVIDADE
+        sleep 1
+        echo ""
         CHECK_DISK_SPACE
-    sleep 0.5
+    sleep 1
     echo "" 
-
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
     msg "${CYAN_NEON}[MODO PRÉ-DEFINIDO]${NC} Carregando perfis (GAME, DEV, HACKER)..." \
         "${CYAN_NEON}[PRE-DEFINED MODE]${NC} Loading profiles (GAME, DEV, HACKER)..." \
         "${CYAN_NEON}[MODO PREDEFINIDO]${NC} Cargando perfiles (GAME, DEV, HACKER)..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+    echo ""
+    sleep 1
+    echo ""
+
+    echo -e "${NEON_BLUE}===================================================================================================${NC}"
+    msg "${CYAN_NEON}1) Modo Pré-definido: Gamer${NC} 
+    Instala todos os pacotes necessários para deixar seu Arch pronto para jogar via Steam, Lutris e Heroic.
+
+    ${CYAN_NEON}2) Modo Pré-definido: Dev${NC} 
+    Instala as principais linguagens de programação, compiladores e o editor de sua preferência (VS Code, Code - OSS, Zed).
+
+    ${CYAN_NEON}3) Modo Pré-definido: Hacker/Pentest ${NC} 
+    Prepara o sistema para testes de invasão, habilita o repositório do BlackArch e instala as principais ferramentas.
+
+    ${CYAN_NEON}4) Voltar ao menu principal${NC}" \
+        "${CYAN_NEON}1) Preset Mode: Gamer ${NC} 
+    Installs all necessary packages to get your Arch ready for gaming via Steam, Lutris, and Heroic.
+
+    ${CYAN_NEON}2) Preset Mode: Dev ${NC} 
+    Installs the main programming languages, compilers, and your preferred editor (VS Code, Code - OSS, Zed).
+
+    ${CYAN_NEON}3) Preset Mode: Hacker/Pentest ${NC} 
+    Prepares the system for penetration testing, enables BlackArch repositories, and installs top tools.
+
+    ${CYAN_NEON}4) Return to main menu${NC}" \
+        "${CYAN_NEON}1) Modo Predefinido: Gamer ${NC} 
+    Instala todos los paquetes necesarios para dejar tu Arch listo para jugar vía Steam, Lutris y Heroic.
+
+    ${CYAN_NEON}2) Modo Predefinido: Dev ${NC} 
+    Instala los principales lenguajes de programación, compiladores y el editor de tu preferencia (VS Code, Code - OSS, Zed).
+
+    ${CYAN_NEON}3) Modo Predefinido: Hacker/Pentest ${NC} 
+    Prepara el sistema para pentesting, habilita los repositorios de BlackArch e instala las herramientas principales.
+
+    ${CYAN_NEON}4) Volver al menú principal${NC}"
+    echo ""
+    msg "\nEscolha uma opção [1-2-3-4]:" \
+        "\nChoose an option [1-2-3-4]:" \
+        "\nElija una opción [1-2-3-4]:"
+    echo ""
+    read -rp ">>  " opcao_modo
+    echo ""
+    echo -e "${NEON_BLUE}===================================================================================================${NC}"
+    opcao_modo="${opcao_modo,,}"
+
+    case "$opcao_modo" in
+        1|gamer|game|jogo|jogos)
+            # Lógica do Modo Game entrará aqui
+            ;;
+        2|dev|desenvolvedor|developer)
+            # Lógica do Modo Dev entrará aqui
+            ;;
+        3|hacker|pentest|blackarch)
+            # Lógica do Modo Hacker/Pentest entrará aqui
+            ;;
+        4|voltar|back|regresar)
         echo ""
-    
-
-
-
-    msg "${CYAN_NEON} Pressione ENTER para voltar ao menu...${NC}" \
-        "${CYAN_NEON} Press ENTER to return to menu...${NC}" \
-        "${CYAN_NEON} Presione ENTER para volver al menú...${NC}"
-    
+        msg "${YELLOW_NEON}Gostaria de encerrar o projeto Odin e gerar seu log de sessão?${NC}\n[1] Sim, encerra   [2] Não, volta para as opções" \
+            "${YELLOW_NEON}Would you like to close Project Odin and generate your session log?${NC}\n[1] Yes, exit      [2] No, return to options" \
+            "${YELLOW_NEON}¿Te gustaría cerrar el proyecto Odin y generar tu registro de sesión?${NC}\n[1] Sí, cerrar     [2] No, volver a las opciones"
+        echo ""
+        read -rp ">>  " opcao_sair
+        
+        case "$opcao_sair" in
+            1|sim|yes|si)
+                echo ""
+                MENSAGEM_FINAL
+                sleep 2
+                for i in {5..0}; do
+                    msg "Encerrando em $i..." "Exiting in $i..." "Cerrando en $i..."
+                    sleep 1
+                done
+                exit 0
+                ;;
+            2|nao|no|não)
+                clear
+                MENU_CABECALHO
+                return 0
+                ;;
+            *)
+                msg "\n${RED_NEON}[ERRO] Opção inválida! Retornando ao menu principal...${NC}" \
+                    "\n${RED_NEON}[ERROR] Invalid option! Returning to main menu...${NC}" \
+                    "\n${RED_NEON}[ERROR] ¡Opción inválida! Volviendo al menú principal...${NC}"
+                sleep 2
+                ;;
+        esac
+        ;;
+        *)
+            msg "\n${RED_NEON}[ERRO] Opção inválida! Tente novamente...${NC}" \
+                "\n${RED_NEON}[ERROR] Invalid option! Try again...${NC}" \
+                "\n${RED_NEON}[ERROR] ¡Opción inválida! Intente de nuevo...${NC}"
+            sleep 1.5
+            ;;
+    esac    
 
 }
 
