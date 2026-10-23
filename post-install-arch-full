@@ -252,9 +252,9 @@ CHAMAR_MENU_OPCOES() {
         echo ""
         sleep 0.3    
       
-        msg "${CYAN_NEON}3) - Opções Pré-definidas:${NC}\n    Escolha uma opção pré-definida para deixar seu Arch pronto para um propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Deixa seu Arch pronto para jogos com instalação de pacotes e bibliotecas próprias\n            para jogar, com opção de baixar o kernel-zen para baixa latência.\n\n   ${YELLOW_NEON}DEV${NC}    : Baixa e deixa pronto seu Arch para programação, instalando as principais\n            linguagens, compiladores e VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opção instável) Habilita os repositórios do BlackArch e baixa as\n            principais ferramentas, deixando seu Arch pronto para pentest.\n" \
-            "${CYAN_NEON}3) - Pre-defined Options:${NC}\n    Choose a pre-defined option to ready your Arch for a specific purpose:\n\n   ${YELLOW_NEON}GAME${NC}   : Gets your Arch ready for gaming by installing specific packages and\n            libraries, with an option to download the zen-kernel for low latency.\n\n   ${YELLOW_NEON}DEV${NC}    : Readies your Arch for programming by downloading the main languages,\n            compilers, and VMs.\n\n   ${RED_NEON}HACKER${NC} : (Unstable option) Enables BlackArch repos and downloads the main\n            tools, leaving your Arch ready for pentesting.\n" \
-            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n    Elija una opción predefinida para preparar su Arch para un propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu Arch para juegos instalando paquetes y librerías propias,\n            con la opción de descargar el kernel-zen para baja latencia.\n\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu Arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de BlackArch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
+        msg "${CYAN_NEON}3) - Opções Pré-definidas:${NC}\n    Escolha uma opção pré-definida para deixar seu Arch pronto para um propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Deixa seu Arch pronto para jogos com instalação de pacotes e bibliotecas próprias para jogar.\n\n   ${YELLOW_NEON}DEV${NC}    : Baixa e deixa pronto seu Arch para programação, instalando as principais\n            linguagens, compiladores e VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opção instável) Habilita os repositórios do BlackArch e baixa as\n            principais ferramentas, deixando seu Arch pronto para pentest.\n" \
+            "${CYAN_NEON}3) - Pre-defined Options:${NC}\n    Choose a pre-defined option to ready your Arch for a specific purpose:\n\n   ${YELLOW_NEON}GAME${NC}   : Gets your Arch ready for gaming by installing specific packages and libraries for games. .\n\n   ${YELLOW_NEON}DEV${NC}    : Readies your Arch for programming by downloading the main languages,\n            compilers, and VMs.\n\n   ${RED_NEON}HACKER${NC} : (Unstable option) Enables BlackArch repos and downloads the main\n            tools, leaving your Arch ready for pentesting.\n" \
+            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n    Elija una opción predefinida para preparar su Arch para un propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu Arch para juegos instalando paquetes y librerías propias for games.\n\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu Arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de BlackArch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
         
         echo ""
         sleep 0.3
@@ -3510,6 +3510,578 @@ MENU_AVANCADO() {
 #Inicio modo pre definidos 
 #=========================================================
 
+GAME_MODE() {
+    local falhas_criticas=0
+    local falhas_opcionais=0
+    local chosen_helper=""
+    local tmp_dir=""
+    local opcao_h=""
+    local resp_mangohud=""
+    local pacote=""
+    local app_id=""
+    local vpkg=""
+    local heroic_pendente=0
+    local flatpak_ok=0
+    local wine_pkg="wine-staging"
+    local gpu_amd="${HAS_AMD_GPU:-0}" gpu_intel="${HAS_INTEL_GPU:-0}" gpu_nvidia="${HAS_NVIDIA_GPU:-0}"
+    local pci_gpus=""
+    local game_sep="${NEON_BLUE}============================================================================================================================${NC}"
+    local game_linha="${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    local -a pacotes_oficiais=()
+    local -a pacotes_aur=()
+    local -a pacotes_validos_aur=()
+    local -a pacotes_instalados=()
+    local -a pkgs_virtuais=()
+    local -a apps_flatpak=()
+    local -a lote_falhou=()
+
+    game_pacman_tolerante() {
+        local p
+        local -a ignorados=() pendentes=() ja=()
+        lote_falhou=()
+        for p in "$@"; do
+            if ! pacman -Si "$p" &>/dev/null; then
+                ignorados+=("$p")
+            elif pacman -Q "$p" &>/dev/null; then
+                ja+=("$p")
+            else
+                pendentes+=("$p")
+            fi
+        done
+
+        if [ "${#ignorados[@]}" -gt 0 ]; then
+            falhas_opcionais=$((falhas_opcionais + ${#ignorados[@]}))
+            msg "${YELLOW_NEON}[AVISO] Pacotes não encontrados nos repositórios (ignorados): ${ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[WARNING] Packages not found in the repositories (skipped): ${ignorados[*]}${NC}" \
+                "${YELLOW_NEON}[AVISO] Paquetes no encontrados en los repositorios (omitidos): ${ignorados[*]}${NC}"
+        fi
+        if [ "${#ja[@]}" -gt 0 ]; then
+            pacotes_instalados+=("${ja[@]}")
+        fi
+        lote_falhou+=("${ignorados[@]}")
+
+        [ "${#pendentes[@]}" -eq 0 ] && return 0
+
+        if sudo pacman -S --needed --noconfirm "${pendentes[@]}"; then
+            return 0
+        fi
+
+        echo -e "$game_linha"
+        msg "${YELLOW_NEON}[AVISO] A instalação em bloco falhou. Tentando os pacotes um a um...${NC}" \
+            "${YELLOW_NEON}[WARNING] Bulk installation failed. Trying the packages one by one...${NC}" \
+            "${YELLOW_NEON}[AVISO] La instalación en bloque falló. Probando los paquetes uno a uno...${NC}"
+        echo -e "$game_linha"
+        for p in "${pendentes[@]}"; do
+            if ! sudo pacman -S --needed --noconfirm "$p"; then
+                lote_falhou+=("$p")
+                falhas_opcionais=$((falhas_opcionais + 1))
+            fi
+        done
+        [ "${#lote_falhou[@]}" -eq 0 ]
+    }
+
+    echo -e "$game_sep"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}[MODO GAME]${NC} Iniciando protocolo de preparação para jogos..." \
+        "${CYAN_NEON}[GAME MODE]${NC} Starting gaming preparation protocol..." \
+        "${CYAN_NEON}[MODO JUEGO]${NC} Iniciando protocolo de preparación para juegos..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+    echo -e "$game_sep"
+    sleep 1
+    echo ""
+
+    # ── 1. Validação do multilib ───────────────────────────────────────────────────────
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}Verificando repositório multilib...${NC}" \
+        "${CYAN_NEON}Checking multilib repository...${NC}" \
+        "${CYAN_NEON}Verificando repositorio multilib...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    sleep 1    
+    echo ""
+
+    if [[ ! -f /etc/pacman.conf.bak-game ]]; then
+        sudo cp /etc/pacman.conf /etc/pacman.conf.bak-game
+    fi
+
+    if grep -q '^\[multilib\]' /etc/pacman.conf; then
+        msg "${CYAN_NEON}[OK] Repositório multilib já está ativo.${NC}" \
+            "${CYAN_NEON}[OK] Multilib repository is already enabled.${NC}" \
+            "${CYAN_NEON}[OK] Repositorio multilib ya está activo.${NC}"
+    else
+        sudo sed -i '/^#\[multilib\]/{N;s/#//g}' /etc/pacman.conf
+        sudo sed -i '/^\[multilib\]/{n;s/^#//}' /etc/pacman.conf 2>/dev/null || true
+        if grep -q '^\[multilib\]' /etc/pacman.conf; then
+            msg "${CYAN_NEON}Repositório multilib ativado com sucesso.${NC}" \
+                "${CYAN_NEON}Multilib repository enabled successfully.${NC}" \
+                "${CYAN_NEON}Repositorio multilib activado con éxito.${NC}"
+        else
+            # Sem multilib não existe Steam nem lib32-*: não há como seguir
+            msg "${RED_NEON}[ERRO] Não foi possível ativar o multilib em /etc/pacman.conf. O modo Game precisa dele (Steam e bibliotecas 32 bits).${NC}" \
+                "${RED_NEON}[ERROR] Could not enable multilib in /etc/pacman.conf. Game Mode needs it (Steam and 32-bit libraries).${NC}" \
+                "${RED_NEON}[ERROR] No se pudo activar multilib en /etc/pacman.conf. El modo juego lo necesita (Steam y bibliotecas de 32 bits).${NC}"
+            echo -e "$game_sep"
+            return 1
+        fi
+    fi
+    echo ""
+
+    # ── 2. Sincronização e atualização do sistema ──────────────────────────────────────
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}Sincronizando repositórios e atualizando o sistema...${NC}" \
+        "${CYAN_NEON}Synchronizing repositories and updating the system...${NC}" \
+        "${CYAN_NEON}Sincronizando repositorios y actualizando el sistema...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+    echo ""
+    sleep 1
+    if sudo pacman -Syyu --noconfirm; then
+        msg "${CYAN_NEON}[OK] Sistema sincronizado com sucesso.${NC}" \
+            "${CYAN_NEON}[OK] System successfully synchronized.${NC}" \
+            "${CYAN_NEON}[OK] Sistema sincronizado con éxito.${NC}"
+    else
+        msg "${RED_NEON}[ERRO] Falha ao sincronizar o sistema.${NC}" \
+            "${RED_NEON}[ERROR] Failed to synchronize the system.${NC}" \
+            "${RED_NEON}[ERROR] Error al sincronizar el sistema.${NC}"
+        echo -e "$game_sep"
+        return 1
+    fi
+    if ! pacman -Si steam &>/dev/null; then
+        msg "${RED_NEON}[ERRO] O pacote 'steam' continua indisponível após sincronizar. Verifique o [multilib] em /etc/pacman.conf.${NC}" \
+            "${RED_NEON}[ERROR] The 'steam' package is still unavailable after syncing. Check [multilib] in /etc/pacman.conf.${NC}" \
+            "${RED_NEON}[ERROR] El paquete 'steam' sigue sin estar disponible tras sincronizar. Revise [multilib] en /etc/pacman.conf.${NC}"
+        echo -e "$game_sep"
+        return 1
+    fi
+    echo ""
+
+    # ── 3. Gerenciamento inteligente do AUR Helper ────────────────────────────────────
+    msg "${CYAN_NEON}Verificando AUR helpers disponíveis...${NC}" \
+        "${CYAN_NEON}Checking available AUR helpers...${NC}" \
+        "${CYAN_NEON}Verificando AUR helpers disponibles...${NC}"
+    echo ""
+
+    if [ "$(id -u)" -eq 0 ]; then
+        # makepkg/yay/paru se recusam a rodar como root
+        falhas_opcionais=$((falhas_opcionais + 1))
+        msg "${YELLOW_NEON}[AVISO] Executando como root: o AUR será ignorado (yay/paru/makepkg não rodam como root). Use um usuário comum com sudo.${NC}" \
+            "${YELLOW_NEON}[WARNING] Running as root: AUR will be skipped (yay/paru/makepkg do not run as root). Use a regular user with sudo.${NC}" \
+            "${YELLOW_NEON}[AVISO] Ejecutando como root: el AUR se omitirá (yay/paru/makepkg no funcionan como root). Use un usuario normal con sudo.${NC}"
+    elif command -v yay &>/dev/null && command -v paru &>/dev/null; then
+        while true; do
+            msg "${YELLOW_NEON}[AVISO] Ambos os AUR helpers (yay e paru) foram detectados. Escolha digitando o número [1 ou 2] ou o nome [yay ou paru]:${NC}\n[1] yay\n[2] paru" \
+                "${YELLOW_NEON}[WARNING] Both AUR helpers (yay and paru) were detected. Choose by typing the number [1 or 2] or name [yay or paru]:${NC}\n[1] yay\n[2] paru" \
+                "${YELLOW_NEON}[AVISO] Ambos los AUR helpers (yay y paru) fueron detectados. Elija escribiendo el número [1 o 2] o el nombre [yay o paru]:${NC}\n[1] yay\n[2] paru"
+            read -rp ">> " opcao_h || return 1
+            opcao_h="${opcao_h//[[:space:]]/}"
+            opcao_h="${opcao_h,,}"
+            case "$opcao_h" in
+                1|yay) chosen_helper="yay"; break ;;
+                2|paru) chosen_helper="paru"; break ;;
+                *)
+                    msg "${RED_NEON}[ERRO] Opção inválida! Digite [1] para yay ou [2] para paru.${NC}" \
+                        "${RED_NEON}[ERROR] Invalid option! Type [1] for yay or [2] for paru.${NC}" \
+                        "${RED_NEON}[ERROR] ¡Opción inválida! Escriba [1] para yay o [2] para paru.${NC}"
+                    sleep 1.5
+                    ;;
+            esac
+        done
+    elif command -v yay &>/dev/null; then
+        chosen_helper="yay"
+    elif command -v paru &>/dev/null; then
+        chosen_helper="paru"
+    else
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}[AVISO] Nenhum AUR helper detectado. Instalando o 'yay-bin' automaticamente...${NC}" \
+            "${YELLOW_NEON}[WARNING] No AUR helper detected. Installing 'yay-bin' automatically...${NC}" \
+            "${YELLOW_NEON}[AVISO] Ningún AUR helper detectado. Instalando 'yay-bin' automáticamente...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        echo ""
+        sleep 1    
+        tmp_dir=$(mktemp -d) || tmp_dir=""
+        if [ -n "$tmp_dir" ] && \
+           sudo pacman -S --needed --noconfirm git base-devel go && \
+           git clone --depth=1 https://aur.archlinux.org/yay-bin.git "$tmp_dir/yay-bin" && \
+           (cd "$tmp_dir/yay-bin" && makepkg -si --noconfirm) && \
+           command -v yay &>/dev/null; then
+            rm -rf -- "$tmp_dir"
+            chosen_helper="yay"
+            msg "${CYAN_NEON}[OK] yay-bin instalado com sucesso.${NC}" \
+                "${CYAN_NEON}[OK] yay-bin successfully installed.${NC}" \
+                "${CYAN_NEON}[OK] yay-bin instalado con éxito.${NC}"
+        else
+            [ -n "$tmp_dir" ] && rm -rf -- "$tmp_dir"
+            falhas_opcionais=$((falhas_opcionais + 1))
+            msg "${YELLOW_NEON}[AVISO] Não foi possível instalar o yay-bin automaticamente. Etapa AUR ignorada.${NC}" \
+                "${YELLOW_NEON}[WARNING] Could not install yay-bin automatically. AUR step skipped.${NC}" \
+                "${YELLOW_NEON}[AVISO] No se pudo instalar yay-bin automáticamente. Se omite la etapa AUR.${NC}"
+        fi
+    fi
+    echo ""
+
+    # ── 3.1 Dependências "virtuais" (driver Vulkan 64/32 bits, fonte, portal) ─────────
+    # Sem elas, o pacman --noconfirm escolhe sozinho o 1º provedor da lista (ex.: driver Vulkan de outro fabricante).
+    msg "${CYAN_NEON}Verificando driver Vulkan (64/32 bits), fontes e portal de desktop exigidos pelo Steam...${NC}" \
+        "${CYAN_NEON}Checking Vulkan driver (64/32-bit), fonts and desktop portal required by Steam...${NC}" \
+        "${CYAN_NEON}Verificando driver Vulkan (64/32 bits), fuentes y portal de escritorio requeridos por Steam...${NC}"
+    echo ""
+
+    # Se a otimização de hardware não rodou, detecta a GPU aqui
+    if [ "$gpu_amd" -eq 0 ] && [ "$gpu_intel" -eq 0 ] && [ "$gpu_nvidia" -eq 0 ] && command -v lspci &>/dev/null; then
+        pci_gpus=$(lspci -nn 2>/dev/null | grep -E "VGA|3D|Display")
+        echo "$pci_gpus" | grep -qi "\[1002:" && gpu_amd=1
+        echo "$pci_gpus" | grep -qi "\[8086:" && gpu_intel=1
+        echo "$pci_gpus" | grep -qi "\[10de:" && gpu_nvidia=1
+    fi
+
+    # Cada GPU detectada recebe o seu driver (64 + 32 bits); em híbrido (iGPU + NVIDIA) os dois lados são cobertos.
+    [ "$gpu_amd" -eq 1 ] && pkgs_virtuais+=(vulkan-radeon lib32-vulkan-radeon)
+    [ "$gpu_intel" -eq 1 ] && pkgs_virtuais+=(vulkan-intel lib32-vulkan-intel)
+    if [ "$gpu_nvidia" -eq 1 ]; then
+        if pacman -Q nvidia-utils &>/dev/null; then
+            pkgs_virtuais+=(lib32-nvidia-utils)
+        elif pacman -Q vulkan-nouveau &>/dev/null; then
+            # NVK (driver aberto): respeita o que já está instalado e completa só a parte 32 bits
+            pkgs_virtuais+=(lib32-vulkan-nouveau)
+        else
+            falhas_opcionais=$((falhas_opcionais + 1))
+            msg "${YELLOW_NEON}[AVISO] GPU NVIDIA sem driver proprietário instalado. Rode a otimização de hardware (NVIDIA) para jogar com desempenho total.${NC}" \
+                "${YELLOW_NEON}[WARNING] NVIDIA GPU without the proprietary driver installed. Run the hardware optimization (NVIDIA) to play at full performance.${NC}" \
+                "${YELLOW_NEON}[AVISO] GPU NVIDIA sin el driver propietario instalado. Ejecute la optimización de hardware (NVIDIA) para jugar con el máximo rendimiento.${NC}"
+        fi
+    fi
+
+    if [ "$gpu_amd" -eq 0 ] && [ "$gpu_intel" -eq 0 ] && [ "$gpu_nvidia" -eq 0 ]; then
+        # Sem GPU reconhecida (ex.: máquina virtual): o renderizador por software entra só para o lado (64 ou 32 bits) que ainda não tem driver Vulkan
+        if pacman -T vulkan-driver &>/dev/null && pacman -T lib32-vulkan-driver &>/dev/null; then
+            msg "${CYAN_NEON}[OK] Driver Vulkan de 64 e 32 bits já instalado.${NC}" \
+                "${CYAN_NEON}[OK] 64-bit and 32-bit Vulkan driver already installed.${NC}" \
+                "${CYAN_NEON}[OK] Driver Vulkan de 64 y 32 bits ya instalado.${NC}"
+        else
+            pacman -T vulkan-driver &>/dev/null || pkgs_virtuais+=(vulkan-swrast)
+            pacman -T lib32-vulkan-driver &>/dev/null || pkgs_virtuais+=(lib32-vulkan-swrast)
+        fi
+    fi
+
+    if ! pacman -T ttf-font &>/dev/null; then
+        pkgs_virtuais+=(ttf-liberation)
+    fi
+
+    if ! pacman -T xdg-desktop-portal-impl &>/dev/null; then
+        case "${XDG_CURRENT_DESKTOP^^}" in
+            *KDE*|*PLASMA*)         pkgs_virtuais+=(xdg-desktop-portal-kde) ;;
+            *GNOME*)                pkgs_virtuais+=(xdg-desktop-portal-gnome) ;;
+            *HYPRLAND*)             pkgs_virtuais+=(xdg-desktop-portal-hyprland xdg-desktop-portal-gtk) ;;
+            *SWAY*|*RIVER*|*LABWC*) pkgs_virtuais+=(xdg-desktop-portal-wlr xdg-desktop-portal-gtk) ;;
+            *LXQT*)                 pkgs_virtuais+=(xdg-desktop-portal-lxqt) ;;
+            *)                      pkgs_virtuais+=(xdg-desktop-portal-gtk) ;;
+        esac
+    fi
+
+    if [ "${#pkgs_virtuais[@]}" -gt 0 ]; then
+        msg "${CYAN_NEON}Instalando dependências base: ${pkgs_virtuais[*]}${NC}" \
+            "${CYAN_NEON}Installing base dependencies: ${pkgs_virtuais[*]}${NC}" \
+            "${CYAN_NEON}Instalando dependencias base: ${pkgs_virtuais[*]}${NC}"
+        echo ""
+        sudo -v 2>/dev/null || true
+        for vpkg in "${pkgs_virtuais[@]}"; do
+            game_pacman_tolerante "$vpkg" || true
+        done
+    fi
+    echo ""
+
+    # ── 4. Filtragem e instalação dos pacotes principais (Oficiais + AUR) ──────────────
+    msg "${CYAN_NEON}Verificando pacotes de jogos, Steam, Lutris e dependências (Wine/Vulkan)...${NC}" \
+        "${CYAN_NEON}Checking gaming packages, Steam, Lutris, and dependencies (Wine/Vulkan)...${NC}" \
+        "${CYAN_NEON}Verificando paquetes de juegos, Steam, Lutris y dependencias (Wine/Vulkan)...${NC}"
+    echo ""
+
+    # wine e wine-staging conflitam (wine-staging fornece 'wine'): nunca os dois. Se já existe 'wine', ele é mantido.
+    if pacman -Q wine &>/dev/null; then
+        wine_pkg="wine"
+        msg "${YELLOW_NEON}[AVISO] O pacote 'wine' já está instalado e será mantido (conflita com o 'wine-staging').${NC}" \
+            "${YELLOW_NEON}[WARNING] The 'wine' package is already installed and will be kept (it conflicts with 'wine-staging').${NC}" \
+            "${YELLOW_NEON}[AVISO] El paquete 'wine' ya está instalado y se mantendrá (entra en conflicto con 'wine-staging').${NC}"
+        echo ""
+    fi
+
+    pacotes_oficiais=(
+        steam lutris gamescope gamemode lib32-gamemode
+        vulkan-icd-loader lib32-vulkan-icd-loader vulkan-tools
+        "$wine_pkg" winetricks wine-mono wine-gecko protontricks umu-launcher
+        vkd3d lib32-vkd3d
+        lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-openal
+        lib32-giflib lib32-libjpeg-turbo lib32-libpng lib32-libva lib32-mpg123
+        lib32-gtk3 lib32-sqlite lib32-libxcomposite lib32-libxinerama
+        lib32-gst-plugins-base-libs lib32-ocl-icd
+        giflib libjpeg-turbo libpng libva mpg123 gst-plugins-base-libs
+        lib32-fontconfig lib32-gcc-libs lib32-glibc lib32-libxss lib32-libxrandr
+        lib32-dbus lib32-libldap lib32-gnutls gnutls
+    )
+
+    # dxvk não existe nos repositórios oficiais (só AUR)
+    pacotes_aur=(
+        dxvk-bin
+    )
+
+    sudo -v 2>/dev/null || true
+    if ! game_pacman_tolerante "${pacotes_oficiais[@]}"; then
+        msg "${YELLOW_NEON}[AVISO] Não instalados (opcionais, o modo Game continua): ${lote_falhou[*]}${NC}" \
+            "${YELLOW_NEON}[WARNING] Not installed (optional, Game Mode continues): ${lote_falhou[*]}${NC}" \
+            "${YELLOW_NEON}[AVISO] No instalados (opcionales, el modo juego continúa): ${lote_falhou[*]}${NC}"
+    fi
+
+    # Steam é o único item essencial do modo Game
+    if ! pacman -Q steam &>/dev/null; then
+        falhas_criticas=$((falhas_criticas + 1))
+        msg "${RED_NEON}[ERRO] Falha ao instalar o Steam (pacote essencial do modo Game).${NC}" \
+            "${RED_NEON}[ERROR] Failed to install Steam (essential package of Game Mode).${NC}" \
+            "${RED_NEON}[ERROR] Falló la instalación de Steam (paquete esencial del modo juego).${NC}"
+    else
+        msg "${CYAN_NEON}[OK] Pacotes oficiais de jogos processados.${NC}" \
+            "${CYAN_NEON}[OK] Official gaming packages processed.${NC}" \
+            "${CYAN_NEON}[OK] Paquetes oficiales de juegos procesados.${NC}"
+    fi
+    if [ "${#pacotes_instalados[@]}" -gt 0 ]; then
+        msg "${CYAN_NEON}[OK] ${#pacotes_instalados[@]} pacotes já instalados foram preservados.${NC}" \
+            "${CYAN_NEON}[OK] ${#pacotes_instalados[@]} already installed packages were preserved.${NC}" \
+            "${CYAN_NEON}[OK] Se conservaron ${#pacotes_instalados[@]} paquetes ya instalados.${NC}"
+    fi
+
+    # Pacotes do AUR
+    if [ -n "$chosen_helper" ]; then
+        for pacote in "${pacotes_aur[@]}"; do
+            if pacman -Q "$pacote" &>/dev/null; then
+                pacotes_instalados+=("$pacote")
+            elif ! "$chosen_helper" -Si "$pacote" &>/dev/null; then
+                falhas_opcionais=$((falhas_opcionais + 1))
+                msg "${YELLOW_NEON}[AVISO] Pacote AUR indisponível: ${pacote}. Ignorando.${NC}" \
+                    "${YELLOW_NEON}[WARNING] AUR package unavailable: ${pacote}. Skipping.${NC}" \
+                    "${YELLOW_NEON}[AVISO] Paquete AUR no disponible: ${pacote}. Omitiendo.${NC}"
+            else
+                pacotes_validos_aur+=("$pacote")
+            fi
+        done
+        if [ "${#pacotes_validos_aur[@]}" -gt 0 ]; then
+            if "$chosen_helper" -S --needed --noconfirm "${pacotes_validos_aur[@]}"; then
+                msg "${CYAN_NEON}[OK] Pacotes AUR de jogos instalados.${NC}" \
+                    "${CYAN_NEON}[OK] AUR gaming packages installed.${NC}" \
+                    "${CYAN_NEON}[OK] Paquetes AUR de juegos instalados.${NC}"
+            else
+                falhas_opcionais=$((falhas_opcionais + 1))
+                msg "${YELLOW_NEON}[AVISO] Falha ao instalar pacotes AUR de jogos. Continuando.${NC}" \
+                    "${YELLOW_NEON}[WARNING] Failed to install AUR gaming packages. Continuing.${NC}" \
+                    "${YELLOW_NEON}[AVISO] Falló la instalación de paquetes AUR de juegos. Continuando.${NC}"
+            fi
+        fi
+    fi
+    echo ""
+
+    
+    while true; do
+        echo -e "${NEON_BLUE}---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}Deseja instalar o MangoHud e lib32-mangohud para monitoramento de FPS e desempenho? Digite [1] para Sim ou [2] para Não (ou digite sim/não):${NC}\n[1] Sim / Yes\n[2] Não / No" \
+            "${YELLOW_NEON}Do you want to install MangoHud and lib32-mangohud for FPS and performance monitoring? Type [1] for Yes or [2] for No (or yes/no):${NC}\n[1] Sim / Yes\n[2] Não / No" \
+            "${YELLOW_NEON}¿Deseas instalar MangoHud y lib32-mangohud para monitoreo de FPS y rendimiento? Escribe [1] para Sí o [2] para No (o sim/no):${NC}\n[1] Sim / Yes\n[2] Não / No"
+        echo -e "${NEON_BLUE}---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------${NC}"
+        echo ""
+        read -rp ">> " resp_mangohud || return 1
+        resp_mangohud="${resp_mangohud//[[:space:]]/}"
+        resp_mangohud="${resp_mangohud,,}"
+
+        case "$resp_mangohud" in
+            1|s|sim|y|yes|si)
+                if pacman -Q mangohud &>/dev/null && pacman -Q lib32-mangohud &>/dev/null; then
+                    msg "${CYAN_NEON}[OK] MangoHud já está instalado.${NC}" \
+                        "${CYAN_NEON}[OK] MangoHud is already installed.${NC}" \
+                        "${CYAN_NEON}[OK] MangoHud ya está instalado.${NC}"
+                else
+                    msg "${CYAN_NEON}Instalando MangoHud...${NC}" \
+                        "${CYAN_NEON}Installing MangoHud...${NC}" \
+                        "${CYAN_NEON}Instalando MangoHud...${NC}"
+                    echo ""
+                    if game_pacman_tolerante mangohud lib32-mangohud; then
+                        msg "${CYAN_NEON}[OK] MangoHud instalado com sucesso.${NC}" \
+                            "${CYAN_NEON}[OK] MangoHud successfully installed.${NC}" \
+                            "${CYAN_NEON}[OK] MangoHud instalado con éxito.${NC}"
+                    else
+                        msg "${YELLOW_NEON}[AVISO] MangoHud não foi instalado por completo (${lote_falhou[*]}). Continuando.${NC}" \
+                            "${YELLOW_NEON}[WARNING] MangoHud was not fully installed (${lote_falhou[*]}). Continuing.${NC}" \
+                            "${YELLOW_NEON}[AVISO] MangoHud no se instaló por completo (${lote_falhou[*]}). Continuando.${NC}"
+                    fi
+                fi
+                break
+                ;;
+            2|n|nao|no|não)
+                msg "${CYAN_NEON}[i] Instalação do MangoHud ignorada.${NC}" \
+                    "${CYAN_NEON}[i] MangoHud installation skipped.${NC}" \
+                    "${CYAN_NEON}[i] Instalación de MangoHud omitida.${NC}"
+                break
+                ;;
+            *)
+                msg "${RED_NEON}[ERRO] Opção inválida! Digite [1] para sim ou [2] para não.${NC}" \
+                    "${RED_NEON}[ERROR] Invalid option! Type [1] for yes or [2] for no.${NC}" \
+                    "${RED_NEON}[ERROR] ¡Opción inválida! Escriba [1] para sí o [2] para no.${NC}"
+                sleep 1.5
+                ;;
+        esac
+    done
+    echo ""
+
+    # ── 6. Heroic Games Launcher via AUR (se não der, tenta o Flatpak na etapa 8) ─────
+    if [ -n "$chosen_helper" ]; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}Instalando Heroic Games Launcher via AUR ($chosen_helper)...${NC}" \
+            "${CYAN_NEON}Installing Heroic Games Launcher via AUR ($chosen_helper)...${NC}" \
+            "${CYAN_NEON}Instalando Heroic Games Launcher vía AUR ($chosen_helper)...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        echo ""
+        sleep 1
+        if pacman -Q heroic-games-launcher-bin &>/dev/null; then
+            msg "${CYAN_NEON}[OK] Heroic Games Launcher já está instalado.${NC}" \
+                "${CYAN_NEON}[OK] Heroic Games Launcher is already installed.${NC}" \
+                "${CYAN_NEON}[OK] Heroic Games Launcher ya está instalado.${NC}"
+        else
+            sudo -v 2>/dev/null || true
+            if "$chosen_helper" -S --needed --noconfirm heroic-games-launcher-bin && pacman -Q heroic-games-launcher-bin &>/dev/null; then
+                msg "${CYAN_NEON}[OK] Heroic Games Launcher instalado com sucesso.${NC}" \
+                    "${CYAN_NEON}[OK] Heroic Games Launcher successfully installed.${NC}" \
+                    "${CYAN_NEON}[OK] Heroic Games Launcher instalado con éxito.${NC}"
+            else
+                heroic_pendente=1
+                msg "${YELLOW_NEON}[AVISO] Falha ao instalar o Heroic via AUR. Será tentado via Flatpak.${NC}" \
+                    "${YELLOW_NEON}[WARNING] Failed to install Heroic via AUR. Flatpak will be tried instead.${NC}" \
+                    "${YELLOW_NEON}[AVISO] Falló la instalación de Heroic vía AUR. Se intentará vía Flatpak.${NC}"
+            fi
+        fi
+    else
+        heroic_pendente=1
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}[AVISO] Sem AUR helper ativo. O Heroic será tentado via Flatpak.${NC}" \
+            "${YELLOW_NEON}[WARNING] No active AUR helper. Heroic will be tried via Flatpak.${NC}" \
+            "${YELLOW_NEON}[AVISO] Sin AUR helper activo. Heroic se intentará vía Flatpak.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"    
+    fi
+    echo ""
+
+    # ── 7. Flatpak e Flathub ──────────────────────────────────────────────────────────
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}Verificando Flatpak e repositório Flathub...${NC}" \
+        "${CYAN_NEON}Checking Flatpak and Flathub repository...${NC}" \
+        "${CYAN_NEON}Verificando Flatpak y repositorio Flathub...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    echo ""
+    sleep 1
+    if ! command -v flatpak &>/dev/null; then
+        msg "${CYAN_NEON}Flatpak não encontrado. Instalando via Pacman...${NC}" \
+            "${CYAN_NEON}Flatpak not found. Installing via Pacman...${NC}" \
+            "${CYAN_NEON}Flatpak no encontrado. Instalando vía Pacman...${NC}"
+        game_pacman_tolerante flatpak || true
+    else
+        echo ""
+        msg "${CYAN_NEON}[OK] Flatpak já está instalado.${NC}" \
+            "${CYAN_NEON}[OK] Flatpak is already installed.${NC}" \
+            "${CYAN_NEON}[OK] Flatpak ya está instalado.${NC}"
+        echo ""
+    fi
+
+    if command -v flatpak &>/dev/null; then
+        if ! flatpak remote-list 2>/dev/null | grep -q "flathub"; then
+            msg "${CYAN_NEON}Adicionando repositório Flathub...${NC}" \
+                "${CYAN_NEON}Adding Flathub repository...${NC}" \
+                "${CYAN_NEON}Agregando repositorio Flathub...${NC}"
+            sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+        else
+            echo ""
+            msg "${CYAN_NEON}[OK] Repositório Flathub já está ativo.${NC}" \
+                "${CYAN_NEON}[OK] Flathub repository is already active.${NC}" \
+                "${CYAN_NEON}[OK] Repositorio Flathub ya está activo.${NC}"
+            echo ""
+        fi
+        if flatpak remote-list 2>/dev/null | grep -q "flathub"; then
+            flatpak_ok=1
+        fi
+    fi
+    if [ "$flatpak_ok" -eq 0 ]; then
+        sleep 1
+        falhas_opcionais=$((falhas_opcionais + 1))
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}[AVISO] Flatpak/Flathub indisponível. Os itens via Flatpak serão ignorados.${NC}" \
+            "${YELLOW_NEON}[WARNING] Flatpak/Flathub unavailable. Flatpak items will be skipped.${NC}" \
+            "${YELLOW_NEON}[AVISO] Flatpak/Flathub no disponible. Los elementos vía Flatpak se omitirán.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    fi
+    echo ""
+
+    # ── 8. ProtonPlus e ProtonUp-Qt via Flatpak (+ Heroic se o AUR não deu certo) ──────
+    if [ "$flatpak_ok" -eq 1 ]; then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}Instalando ProtonPlus e ProtonUp-Qt via Flatpak (Flathub)...${NC}" \
+            "${CYAN_NEON}Installing ProtonPlus and ProtonUp-Qt via Flatpak (Flathub)...${NC}" \
+            "${CYAN_NEON}Instalando ProtonPlus y ProtonUp-Qt vía Flatpak (Flathub)...${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        echo ""
+        sleep 1
+        apps_flatpak=(
+            "com.vysp3r.ProtonPlus"
+            "net.davidotek.pupgui2"
+        )
+        [ "$heroic_pendente" -eq 1 ] && apps_flatpak+=("com.heroicgameslauncher.hgl")
+
+        sudo -v 2>/dev/null || true
+        for app_id in "${apps_flatpak[@]}"; do
+            if flatpak info "$app_id" &>/dev/null; then
+                msg "${CYAN_NEON}[OK] ${app_id} já está instalado.${NC}" \
+                    "${CYAN_NEON}[OK] ${app_id} is already installed.${NC}" \
+                    "${CYAN_NEON}[OK] ${app_id} ya está instalado.${NC}"
+            else
+                # --system + sudo: evita o prompt do polkit e instala para todos os usuários
+                if sudo flatpak install -y --noninteractive --system flathub "$app_id"; then
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    msg "${CYAN_NEON}[OK] ${app_id} instalado com sucesso.${NC}" \
+                        "${CYAN_NEON}[OK] ${app_id} successfully installed.${NC}" \
+                        "${CYAN_NEON}[OK] ${app_id} instalado con éxito.${NC}"
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                else
+                    falhas_opcionais=$((falhas_opcionais + 1))
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                    msg "${YELLOW_NEON}[AVISO] Falha ao instalar ${app_id}. Continuando.${NC}" \
+                        "${YELLOW_NEON}[WARNING] Failed to install ${app_id}. Continuing.${NC}" \
+                        "${YELLOW_NEON}[AVISO] Falló la instalación de ${app_id}. Continuando.${NC}"
+                    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+                fi
+            fi
+        done
+    fi
+    echo ""
+
+    # ── 9. Relatório Final do Modo Game ───────────────────────────────────────────────
+    echo -e "$game_sep"
+    sleep 1
+    if ((falhas_criticas > 0)); then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${RED_NEON}[CONCLUÍDO COM ERROS] O modo Game encontrou falhas em etapas principais.${NC}" \
+            "${RED_NEON}[COMPLETED WITH ERRORS] Game Mode encountered failures in core steps.${NC}" \
+            "${RED_NEON}[COMPLETADO CON ERRORES] El modo juego encontró fallos en etapas principales.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        echo -e "$game_sep"
+        return 1
+    elif ((falhas_opcionais > 0)); then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}[CONCLUÍDO COM AVISOS] A preparação principal terminou, mas houve etapas opcionais ignoradas ou com falha.${NC}" \
+            "${YELLOW_NEON}[COMPLETED WITH WARNINGS] Core preparation finished, but some optional steps were skipped or failed.${NC}" \
+            "${YELLOW_NEON}[COMPLETADO CON AVISOS] La preparación principal terminó, pero algunas etapas opcionales se omitieron o fallaron.${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------------------------------------${NC}"
+    else
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}[SUCESSO] Modo Game configurado e otimizado com sucesso!${NC}" \
+            "${CYAN_NEON}[SUCCESS] Game Mode successfully configured and optimized!${NC}" \
+            "${CYAN_NEON}[ÉXITO] ¡Modo Game configurado y optimizado con éxito!${NC}"
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    fi
+    echo -e "$game_sep"
+    echo ""
+    sleep 2
+    return 0
+}
 
 
 
@@ -3636,7 +4208,7 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
     echo ""
     sleep 1
         VERIFICAR_CONECTIVIDADE
-        seleep 1
+        sleep 1
         echo ""
         CHECK_DISK_SPACE
     sleep 1.5
@@ -3809,13 +4381,64 @@ OPCAO_PRE_DEFINIDAS_SCRIPTS() {
 
     case "$opcao_modo" in
         1|gamer|game|jogo|jogos)
-            # Lógica do Modo Game entrará aqui
+            echo ""
+            clear
+            MENU_CABECALHO
+            echo ""
+            msg "${CYAN_NEON}[MODO GAME]${NC} Iniciando protocolo de preparação para jogos..." \
+                "${CYAN_NEON}[GAME MODE]${NC} Starting gaming preparation protocol..." \
+                "${CYAN_NEON}[MODO JUEGO]${NC} Iniciando protocolo de preparación para juegos..."
+            sleep 2
+            echo ""    
+            FUNCAO_CORE
+            sleep 1
+            echo ""
+            FUNCAO_OTIMIZACAO
+            sleep 1
+            echo ""
+            GAME_MODE
+            sleep 1
+            echo ""
+            FUNCAO_INSTALAR_NAVEGADORES
+            echo ""
+            sleep 1
+            FUNCAO_INSTALAR_ARCH_UPDATE_FULL
+            sleep 1
+            echo ""
+            FUNCAO_INSTALAR_WALLPAPERS
+            echo ""
+            sleep 1
+            LIMPAR_ORFAOS
+            sleep 1
+            echo ""
+            MENSAGEM_FINAL
+            sleep 1
+            echo ""
+            PERGUNTAR_REINICIAR
             ;;
         2|dev|desenvolvedor|developer)
-            # Lógica do Modo Dev entrará aqui
+            echo ""
+            clear
+            MENU_CABECALHO
+            echo ""
+            FUNCAO_CORE
+            sleep 1
+            echo ""
+            FUNCAO_OTIMIZACAO
+            sleep 1
+            echo ""
             ;;
         3|hacker|pentest|blackarch)
-            # Lógica do Modo Hacker/Pentest entrará aqui
+            echo ""
+            clear
+            MENU_CABECALHO
+            echo ""
+            FUNCAO_CORE
+            sleep 1
+            echo ""
+            FUNCAO_OTIMIZACAO
+            sleep 1
+            echo ""
             ;;
         4|voltar|back|regresar)
         echo ""
