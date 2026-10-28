@@ -4083,6 +4083,7 @@ GAME_MODE() {
     return 0
 }
 
+#++++++++++++++++
 
 
 
@@ -4394,6 +4395,9 @@ OPCAO_PRE_DEFINIDAS_SCRIPTS() {
             sleep 1
             echo ""
             FUNCAO_OTIMIZACAO
+            sleep 1
+            echo ""
+            CODECS_MULTIMIDIA_CORE
             sleep 1
             echo ""
             GAME_MODE
