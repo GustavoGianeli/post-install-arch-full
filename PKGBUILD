@@ -1,13 +1,15 @@
 # Maintainer: The_Seventh <gustavo.gianeli13@gmail.com>
 pkgname=post-install-arch-full
 pkgver=0.1
-pkgrel=1
+pkgrel=3
 pkgdesc="Advanced Arch Linux post-installation automation, intelligent multimedia codecs detection, and system setup."
 arch=('any')
 url="https://github.com/GustavoGianeli/post-install-arch-full"
 license=('GPL3')
 depends=('bash' 'pacman' 'git' 'debugedit' 'base-devel' 'curl' 'unzip' 'pciutils' 'enscript' 'ghostscript' 'glibc')
-
+optdepends=('yay: AUR package installation helper'
+            'paru: Alternative AUR package installation helper'
+            'flatpak: Support for installing and managing Flatpak applications')
 
 # --- ADICIONADO O ÍCONE NO SOURCE // The icon has been added to the source. ---
 source=(
@@ -19,7 +21,7 @@ source=(
 
 # Use 'updpkgsums' para preencher isso automaticamente // Use 'updpkgsums' to automatically fill this in.
 
-sha256sums=('97c1df8f57a3bdfcdb57d3a1eb3a9e9976e6b12cb9e8d9f24800700c55207138'
+sha256sums=('03c5e5735a930aad6481c11e7582142e0cfab70c6a504ef3290f30ec92cc1f4d'
             '3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986'
             '2eaa3fadd7b41d9395bca2dc5ebdc9bd3e206a842a7ee441d0d7be04deb77c59'
             '8529b988d4e3e6ef611ad5ef2124fafa2cbe416b78698c9596845d5471d93651')

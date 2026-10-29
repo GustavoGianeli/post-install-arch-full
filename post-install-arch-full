@@ -238,9 +238,9 @@ CHAMAR_MENU_OPCOES() {
 
     while true; do
         
-        msg "${CYAN_NEON}1) - Script Iniciantes Padrão:${NC}\n   Instala tudo por padrão que seu arch precisa para você poder sair usando\n   como (codecs de multimídia, leitura de arquivos, otimização de hardware).\n" \
-            "${CYAN_NEON}1) - Standard Beginner Script:${NC}\n   Installs everything your arch needs out of the box so you can start using it\n   (such as multimedia codecs, file readers, hardware optimization).\n" \
-            "${CYAN_NEON}1) - Script Principiante Estándar:${NC}\n   Instala todo lo que tu arch necesita por defecto para que puedas usarlo\n   (como códecs multimedia, lectura de archivos, optimización de hardware).\n"
+        msg "${CYAN_NEON}1) - Script Iniciantes / Padrão:${NC}\n   Instala tudo por padrão que seu arch precisa para você poder sair usando\n   como (codecs de multimídia, leitura de arquivos, otimização de hardware).\n" \
+            "${CYAN_NEON}1) - Standard / Beginner Script:${NC}\n   Installs everything your arch needs out of the box so you can start using it\n   (such as multimedia codecs, file readers, hardware optimization).\n" \
+            "${CYAN_NEON}1) - Script Principiante / Estándar:${NC}\n   Instala todo lo que tu arch necesita por defecto para que puedas usarlo\n   (como códecs multimedia, lectura de archivos, optimización de hardware).\n"
         
         echo ""
         sleep 0.3    
@@ -254,7 +254,7 @@ CHAMAR_MENU_OPCOES() {
       
         msg "${CYAN_NEON}3) - Opções Pré-definidas:${NC}\n    Escolha uma opção pré-definida para deixar seu Arch pronto para um propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Deixa seu Arch pronto para jogos com instalação de pacotes e bibliotecas próprias para jogar.\n\n   ${YELLOW_NEON}DEV${NC}    : Baixa e deixa pronto seu Arch para programação, instalando as principais\n            linguagens, compiladores e VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opção instável) Habilita os repositórios do BlackArch e baixa as\n            principais ferramentas, deixando seu Arch pronto para pentest.\n" \
             "${CYAN_NEON}3) - Pre-defined Options:${NC}\n    Choose a pre-defined option to ready your Arch for a specific purpose:\n\n   ${YELLOW_NEON}GAME${NC}   : Gets your Arch ready for gaming by installing specific packages and libraries for games. .\n\n   ${YELLOW_NEON}DEV${NC}    : Readies your Arch for programming by downloading the main languages,\n            compilers, and VMs.\n\n   ${RED_NEON}HACKER${NC} : (Unstable option) Enables BlackArch repos and downloads the main\n            tools, leaving your Arch ready for pentesting.\n" \
-            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n    Elija una opción predefinida para preparar su Arch para un propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu Arch para juegos instalando paquetes y librerías propias for games.\n\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu Arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de BlackArch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
+            "${CYAN_NEON}3) - Opciones Predefinidas:${NC}\n    Elija una opción predefinida para preparar su Arch para un propósito:\n\n   ${YELLOW_NEON}GAME${NC}   : Prepara tu Arch para juegos instalando paquetes y librerías propias for game.\n\n   ${YELLOW_NEON}DEV${NC}    : Prepara tu Arch para programación descargando los lenguajes principales,\n            compiladores y VMs.\n\n   ${RED_NEON}HACKER${NC} : (Opción inestable) Habilita los repositorios de BlackArch y descarga\n            las herramientas principales, dejándolo listo para pentest.\n"
         
         echo ""
         sleep 0.3
@@ -3381,22 +3381,28 @@ MENU_AVANCADO() {
         
         echo ""
         
+        msg "${CYAN_NEON} [8]${NC} Instalar Meta-pacotes   -${YELLOW_NEON}(Escolha os meta-pacotes de Jogos, Dev ou Ambos)${NC}" \
+            "${CYAN_NEON} [8]${NC} Install Meta-packages   -${YELLOW_NEON}(Choose Games, Dev, or Both meta-packages)${NC}" \
+            "${CYAN_NEON} [8]${NC} Instalar Meta-paquetes  -${YELLOW_NEON}(Elija los meta-paquetes de Juegos, Dev o Ambos)${NC}"
+        
+        echo ""
+        
         msg "${YELLOW_NEON} [0] Voltar / Sair          - Retornar ao menu principal${NC}" \
             "${YELLOW_NEON} [0] Back / Exit            - Return to main menu${NC}" \
             "${YELLOW_NEON} [0] Volver / Salir         - Volver al menú principal${NC}"
         echo ""
        
-        msg "${CYAN_NEON}Deseja baixar pacotes especializados para Jogos (bibliotecas 32-bit, Steam, Lutris, Heroic, Proton), \nDesenvolvimento (Dev) ou Pentest? Por favor, utilize o modo 3 nas funções pré-definidas.${NC}" \
-            "${CYAN_NEON}Do you want to download specialized packages for Gaming (32-bit libraries, Steam, Lutris, Heroic, Proton), \nDevelopment (Dev), or Pentest? Please use mode 3 in the predefined functions.${NC}" \
-            "${CYAN_NEON}¿Deseas descargar paquetes especializados para Juegos (bibliotecas de 32-bit, Steam, Lutris, Heroic, Proton), \nDesarrollo (Dev) o Pentest? Por favor, utiliza el modo 3 en las funciones predefinidas.${NC}"
+        msg "${CYAN_NEON}Deseja baixar pacotes especializados para Pentest? Por favor, utilize o modo 3 nas funções pré-definidas.${NC}" \
+            "${CYAN_NEON}Do you want to download specialized packages for Pentest? Please use mode 3 in the predefined functions.${NC}" \
+            "${CYAN_NEON}¿Deseas descargar paquetes especializados para Pentest? Por favor, utiliza el modo 3 en las funciones predefinidas.${NC}"
 
         msg "${NEON_BLUE}==================================================================================================================${NC}" \
             "${NEON_BLUE}==================================================================================================================${NC}" \
             "${NEON_BLUE}==================================================================================================================${NC}"
         echo ""
-        msg "Escolha uma opção [1-2-3-4-5-6-7-0]:" \
-            "Choose an option [1-2-3-4-5-6-7-0]:" \
-            "Elija una opción [1-2-3-4-5-6-7-0]:"
+        msg "Escolha uma opção [1-2-3-4-5-6-7-8-0]:" \
+            "Choose an option [1-2-3-4-5-6-7-8-0]:" \
+            "Elija una opción [1-2-3-4-5-6-7-8-0]:"
         echo ""    
         
         if ! read -rp ">>  " opcao; then
@@ -3483,6 +3489,11 @@ MENU_AVANCADO() {
                 echo ""
                 MENSAGEM_FINAL
                 ;;
+
+            8)
+                ESCOLHA_ENTRE_MODOS
+                ;;
+
             0)
                 msg "${YELLOW_NEON}Retornando ao menu principal do Projeto Odin...${NC}" \
                     "${YELLOW_NEON}Returning to Project Odin's main menu...${NC}" \
@@ -3501,6 +3512,161 @@ MENU_AVANCADO() {
         esac
     done
 }
+
+#++++++++++++++++++++++++++++
+
+ESCOLHA_ENTRE_MODOS() {
+    local opcao_metapacote=""
+    local opcao_escolha=""
+
+    while true; do
+        echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"
+        msg "${CYAN_NEON}[PERGUNTA]${NC} Gostaria de instalar um meta-pacote de Jogos ou Desenvolvimento no seu sistema?" \
+            "${CYAN_NEON}[QUESTION]${NC} Would you like to install a Games or Development meta-package on your system?" \
+            "${CYAN_NEON}[PREGUNTA]${NC} ¿Le gustaría instalar un meta-paquete de Juegos o Desarrollo en su sistema?"
+        echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"    
+        echo ""
+
+        msg "${WHITE_NEON}[1] Sim / Yes / Sí${NC}" \
+            "${WHITE_NEON}[1] Yes / Sim / Sí${NC}" \
+            "${WHITE_NEON}[1] Sí / Sim / Yes${NC}"
+        echo ""
+
+        msg "${WHITE_NEON}[2] Não / No${NC}" \
+            "${WHITE_NEON}[2] No / Não${NC}" \
+            "${WHITE_NEON}[2] No / Não${NC}"
+        echo ""
+
+        msg "${WHITE_NEON}Digite a opção desejada [1 ou 2]:${NC}" \
+            "${WHITE_NEON}Type your choice [1 or 2]:${NC}" \
+            "${WHITE_NEON}Escriba la opción deseada [1 o 2]:${NC}"
+        echo ""
+
+        read -rp ">> " opcao_metapacote || return 1
+        echo ""
+
+        opcao_metapacote="${opcao_metapacote//[[:space:]]/}"
+        opcao_metapacote="${opcao_metapacote,,}"
+
+        case "$opcao_metapacote" in
+            1|s|sim|y|yes|si|sí)
+                break
+                ;;
+            2|n|nao|não|no)
+                msg "${YELLOW_NEON}[PULADO] Instalação de meta-pacotes ignorada pelo usuário.${NC}" \
+                    "${YELLOW_NEON}[SKIPPED] Meta-package installation skipped by user.${NC}" \
+                    "${YELLOW_NEON}[OMITIDO] Instalación de meta-paquetes omitida por el usuario.${NC}"
+                return 0
+                ;;
+            *)
+                msg "${RED_NEON}[ERRO DE DIGITAÇÃO] Opção inválida: '${opcao_metapacote}'!${NC}\n${YELLOW_NEON}Por favor, digite [1] para Sim ou [2] para Não.${NC}" \
+                    "${RED_NEON}[TYPING ERROR] Invalid option: '${opcao_metapacote}'!${NC}\n${YELLOW_NEON}Please type [1] for Yes or [2] for No.${NC}" \
+                    "${RED_NEON}[ERROR DE ESCRITURA] ¡Opción inválida: '${opcao_metapacote}'!${NC}\n${YELLOW_NEON}Por favor, escriba [1] para Sí o [2] para No.${NC}"
+                echo ""
+                sleep 2
+                ;;
+        esac
+    done
+
+    # --------------------------------------------------------------------------
+    # PERGUNTA 2: Qual meta-pacote instalar? (Menu 1 a 3 ou 0 para pular)
+    # --------------------------------------------------------------------------
+    while true; do
+        echo -e "${NEON_BLUE}============================================================================================================================${NC}"
+        msg "${CYAN_NEON}                     [ MENU DE SELEÇÃO DE META-PACOTES ]                     ${NC}" \
+            "${CYAN_NEON}                     [ META-PACKAGE SELECTION MENU ]                     ${NC}" \
+            "${CYAN_NEON}                     [ MENÚ DE SELECCIÓN DE META-PAQUETES ]                     ${NC}"
+        echo -e "${NEON_BLUE}============================================================================================================================${NC}"
+        echo ""
+
+        msg "${CYAN_NEON}[1]${NC} - Game ${WHITE_NEON}(Instala tudo e deixa seu Arch pronto para jogos)${NC}" \
+            "${CYAN_NEON}[1]${NC} - Game ${WHITE_NEON}(Installs everything and gets your Arch ready for gaming)${NC}" \
+            "${CYAN_NEON}[1]${NC} - Game ${WHITE_NEON}(Instala todo y deja tu Arch listo para juegos)${NC}"
+        echo ""
+
+        msg "${CYAN_NEON}[2]${NC} - Dev  ${WHITE_NEON}(Instala as principais linguagens e compiladores para programar e desenvolver)${NC}" \
+            "${CYAN_NEON}[2]${NC} - Dev  ${WHITE_NEON}(Installs the main languages and compilers to code and develop)${NC}" \
+            "${CYAN_NEON}[2]${NC} - Dev  ${WHITE_NEON}(Instala los lenguajes principales y compiladores para programar y desarrollar)${NC}"
+        echo ""
+
+        msg "${CYAN_NEON}[3]${NC} - Instalar Ambos Pacotes ${YELLOW_NEON}(Game + Dev: instala tudo o que está listado acima)${NC}" \
+            "${CYAN_NEON}[3]${NC} - Install Both Packages ${YELLOW_NEON}(Game + Dev: installs everything listed above)${NC}" \
+            "${CYAN_NEON}[3]${NC} - Instalar Ambos Paquetes ${YELLOW_NEON}(Game + Dev: instala todo lo listado arriba)${NC}"
+        echo ""
+
+        msg "${RED_NEON}[0]${NC} - Pular / Exit / Skip / Não Instalar ${YELLOW_NEON}(Continuar sem instalar nenhum meta-pacote)${NC}" \
+            "${RED_NEON}[0]${NC} - Skip / Exit / Do Not Install ${YELLOW_NEON}(Continue without installing any meta-package)${NC}" \
+            "${RED_NEON}[0]${NC} - Omitir / Salir / No Instalar ${YELLOW_NEON}(Continuar sin instalar ningún meta-paquete)${NC}"
+        echo ""
+
+        echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"
+        msg "${WHITE_NEON}Escolha uma opção de ${YELLOW_NEON}1 a 3${WHITE_NEON} ou ${RED_NEON}0${WHITE_NEON} para pular:${NC}" \
+            "${WHITE_NEON}Choose an option from ${YELLOW_NEON}1 to 3${WHITE_NEON} or ${RED_NEON}0${WHITE_NEON} to skip:${NC}" \
+            "${WHITE_NEON}Elija una opción del ${YELLOW_NEON}1 al 3${WHITE_NEON} o ${RED_NEON}0${WHITE_NEON} para omitir:${NC}"
+        echo ""
+
+        read -rp ">> " opcao_escolha || return 1
+        echo ""
+
+        opcao_escolha="${opcao_escolha//[[:space:]]/}"
+        opcao_escolha="${opcao_escolha,,}"
+
+        case "$opcao_escolha" in
+            1|game|games|jogos)
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"
+                msg "${CYAN_NEON}[INICIANDO]${NC} Preparando e executando a instalação do meta-pacote Game..." \
+                    "${CYAN_NEON}[STARTING]${NC} Preparing and running the Game meta-package installation..." \
+                    "${CYAN_NEON}[INICIANDO]${NC} Preparando y ejecutando la instalación del meta-paquete Game..."
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"    
+                echo ""
+                sleep 1
+                GAME_MODE
+                break
+                ;;
+            2|dev|developer|desenvolvimento)
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"
+                msg "${CYAN_NEON}[INICIANDO]${NC} Preparando e executando a instalação do meta-pacote Dev..." \
+                    "${CYAN_NEON}[STARTING]${NC} Preparing and running the Dev meta-package installation..." \
+                    "${CYAN_NEON}[INICIANDO]${NC} Preparando y ejecutando la instalación del meta-paquete Dev..."
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"    
+                DEV_MODE
+                break
+                ;;
+            3|ambos|both|todos|all)
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"
+                msg "${CYAN_NEON}[INICIANDO]${NC} Preparando a instalação completa dos pacotes Game e Dev..." \
+                    "${CYAN_NEON}[STARTING]${NC} Preparing complete installation for both Game and Dev packages..." \
+                    "${CYAN_NEON}[INICIANDO]${NC} Preparando la instalación completa de los paquetes Game y Dev..."
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"    
+                echo ""
+                sleep 1
+                GAME_MODE
+                echo ""
+                sleep 1
+                DEV_MODE
+                break
+                ;;
+            0|pular|Pular|skip|Skip|exit|Exit|sair|Sair|omitir|Omitir|none)
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"
+                msg "${YELLOW_NEON}[PULADO] NENHUM meta-pacote foi selecionado. Prosseguindo...${NC}" \
+                    "${YELLOW_NEON}[SKIPPED] NO meta-package was selected. Proceeding...${NC}" \
+                    "${YELLOW_NEON}[OMITIDO] NINGÚN meta-paquete fue seleccionado. Continuando...${NC}"
+                echo -e "${NEON_BLUE}----------------------------------------------------------------------------------------------------------------------------${NC}"    
+                break
+                ;;
+            *)
+                msg "${RED_NEON}[ERRO DE DIGITAÇÃO] Opção inválida: '${opcao_escolha}'!${NC}\n${YELLOW_NEON}Por favor, preste atenção nas opções e digite de 1 a 3 ou 0 para pular.${NC}" \
+                    "${RED_NEON}[TYPING ERROR] Invalid option: '${opcao_escolha}'!${NC}\n${YELLOW_NEON}Please pay attention to the options and type 1 to 3 or 0 to skip.${NC}" \
+                    "${RED_NEON}[ERROR DE ESCRITURA] ¡Opción inválida: '${opcao_escolha}'!${NC}\n${YELLOW_NEON}Por favor preste atención a las opciones y escriba del 1 al 3 o 0 para omitir.${NC}"
+                echo ""
+                sleep 2.5
+                ;;
+        esac
+    done
+
+    return 0
+}
+export -f ESCOLHA_ENTRE_MODOS
 
 #==============================================
 # ENCERRAMENTO DO MENU AVANÇADO
@@ -4085,7 +4251,902 @@ GAME_MODE() {
 
 #++++++++++++++++
 
+DEV_MODE() {
+    # --------------------------------------------------------------------------
+    # Estado do módulo (nada se perde: o resumo final usa estas estruturas)
+    # --------------------------------------------------------------------------
+    local IFS=$' \t\n'
+    local -a SUDO=()
+    local -a INSTALADOS=() JA_INSTALADOS=() FALHARAM=() INDISPONIVEIS=() VALIDACAO_FALHOU=()
+    local -a AVISOS=() CRITICOS=()
+    local -a fila_aur=() lote=() toks=() words=()
+    local -a sel_editores=() ed_itens=() ed_oficial=() ed_aur=()
+    local -A status_val=()
 
+    local helper="" helper_ok=0 aur_permitido=1 bloqueado=0
+    local has_yay=0 has_paru=0 helper_novo=0
+    local CLS_KIND="" CLS_PKG="" editor_id=""
+    local tmp_base="${TMPDIR:-/tmp}" tmp_dir=""
+    local pacman_lock="/var/lib/pacman/db.lck"
+    local pacman_sync="/var/lib/pacman/sync"
+    local dev_sep="${NEON_BLUE}============================================================================================================================${NC}"
+    local rec="" label="" rest="" tok="" opcao_h="" opcao_ed="" ed_multi="" word="" ed=""
+    local espera=0
+    local ka_pid=""
+    local traps_set=0 old_int="" old_term=""
+
+    # Stacks: "Rótulo|comando:flag,comando:flag". `pkg:NOME` valida o pacote.
+    local -a STACKS=(
+        "C|gcc:--version"
+        "C++|g++:--version"
+        "Rust|rustc:--version,cargo:--version"
+        "Python|python:--version,pip:--version"
+        "Java|java:--version,javac:--version"
+        "C#|dotnet:--version"
+        "JavaScript|node:--version,npm:--version"
+        "TypeScript|tsc:--version"
+        "PHP|php:--version"
+        "Go|go:version"
+        "SQL|sqlite3:--version"
+        "Bash/Shell|bash:--version"
+        "PowerShell|pwsh:--version"
+        "Kotlin|kotlinc:-version"
+        "Lua|lua:-v"
+        "Node.js|node:--version,npm:--version"
+        ".NET|dotnet:--version"
+    )
+    local -a FERRAMENTAS=(
+        "Git|git:--version"
+        "GitHub CLI|gh:--version"
+        "OpenSSH|ssh:-V"
+        "Make|make:--version"
+        "CMake|cmake:--version"
+        "Ninja|ninja:--version"
+        "GDB|gdb:--version"
+        "pkgconf|pkgconf:--version"
+        "base-devel|pkg:base-devel"
+        "debugedit|pkg:debugedit"
+    )
+
+    # Grupos lógicos de instalação: uma falha fica isolada dentro do seu grupo.
+    local -a GRUPOS=(
+        "Base de build e ferramentas|base-devel gcc binutils make cmake ninja pkgconf gdb debugedit git github-cli openssh"
+        "Linguagens e runtimes|rust python python-pip jdk-openjdk nodejs npm typescript php go sqlite bash kotlin lua powershell:powershell-bin"
+        "Plataforma .NET|dotnet-sdk"
+    )
+
+    # --------------------------------------------------------------------------
+    # Auxiliares aninhados
+    # --------------------------------------------------------------------------
+    _dev_safe() {
+        local s="${1//[^[:alnum:]._+@-]/?}"
+        printf '%s' "${s:0:24}"
+    }
+
+    _dev_trim() {
+        local s="$1"
+        s="${s#"${s%%[![:space:]]*}"}"
+        s="${s%"${s##*[![:space:]]}"}"
+        printf '%s' "$s"
+    }
+
+    _dev_instalado() {
+        local n="$1" m
+        local -a g=()
+        pacman -Q "$n" &>/dev/null && return 0
+        pacman -T "$n" &>/dev/null && return 0
+        mapfile -t g < <(pacman -Sgq "$n" 2>/dev/null)
+        (( ${#g[@]} > 0 )) || return 1
+        for m in "${g[@]}"; do
+            pacman -Q "$m" &>/dev/null || return 1
+        done
+        return 0
+    }
+
+    _dev_ja() {
+        [[ " ${INSTALADOS[*]} " == *" $1 "* ]] || JA_INSTALADOS+=("$1")
+    }
+
+    _dev_classificar() {
+        local nome="${1%%:*}" alt=""
+        [[ "$1" == *:* ]] && alt="${1#*:}"
+        CLS_KIND="none"
+        CLS_PKG="${nome:-$alt}"
+
+        if [[ -n "$nome" ]]; then
+            if pacman -Q "$nome" &>/dev/null; then CLS_KIND="installed"; return 0; fi
+            if _dev_instalado "$nome"; then CLS_KIND="provided"; return 0; fi
+            if pacman -Si "$nome" &>/dev/null || [[ -n "$(pacman -Sgq "$nome" 2>/dev/null)" ]]; then
+                CLS_KIND="official"
+                return 0
+            fi
+        fi
+        if [[ -n "$alt" ]]; then
+            CLS_PKG="$alt"
+            if pacman -Q "$alt" &>/dev/null; then
+                CLS_KIND="installed"
+            elif (( helper_ok )) && "$helper" -Si "$alt" &>/dev/null; then
+                CLS_KIND="aur"
+            fi
+        fi
+        return 0
+    }
+
+    _dev_instalar_lote() {
+        local tipo="$1"; shift
+        local -a pacotes=("$@") cmd=()
+        local p consecutivas=0
+        (( ${#pacotes[@]} > 0 )) || return 0
+
+        if [[ "$tipo" == "aur" ]]; then
+            cmd=("$helper" -S --needed --noconfirm)
+        else
+            cmd=("${SUDO[@]}" pacman -S --needed --noconfirm)
+        fi
+
+        if "${cmd[@]}" "${pacotes[@]}"; then
+            for p in "${pacotes[@]}"; do
+                if _dev_instalado "$p"; then INSTALADOS+=("$p"); else FALHARAM+=("$p"); fi
+            done
+            return 0
+        fi
+
+        msg "${YELLOW_NEON}[AVISO] O lote falhou (${pacotes[*]}). Tentando um por um...${NC}" \
+            "${YELLOW_NEON}[WARNING] The batch failed (${pacotes[*]}). Trying one by one...${NC}" \
+            "${YELLOW_NEON}[AVISO] El lote falló (${pacotes[*]}). Intentando uno por uno...${NC}"
+        for p in "${pacotes[@]}"; do
+            if (( consecutivas >= 3 )); then
+                FALHARAM+=("$p")
+                continue
+            fi
+            if _dev_instalado "$p"; then
+                INSTALADOS+=("$p")
+                consecutivas=0
+            elif "${cmd[@]}" "$p" && _dev_instalado "$p"; then
+                INSTALADOS+=("$p")
+                consecutivas=0
+            else
+                FALHARAM+=("$p")
+                consecutivas=$((consecutivas + 1))
+                if (( consecutivas == 3 )); then
+                    AVISOS+=("falhas-consecutivas")
+                    msg "${RED_NEON}[ERRO] 3 falhas seguidas: provável problema de rede/mirror/repositório. Interrompendo as tentativas restantes deste lote.${NC}" \
+                        "${RED_NEON}[ERROR] 3 failures in a row: likely a network/mirror/repository problem. Stopping the remaining attempts of this batch.${NC}" \
+                        "${RED_NEON}[ERROR] 3 fallos seguidos: probable problema de red/mirror/repositorio. Se detienen los intentos restantes de este lote.${NC}"
+                fi
+            fi
+        done
+        return 1
+    }
+
+    _dev_conflita() {
+        local outro=""
+        case "$1" in
+            code) outro="visual-studio-code-bin" ;;
+            visual-studio-code-bin) outro="code" ;;
+            *) return 1 ;;
+        esac
+        pacman -Q "$outro" &>/dev/null && return 0
+        [[ " ${ed_oficial[*]} ${ed_aur[*]} " == *" $outro "* ]]
+    }
+
+    _dev_editor_id() {
+        editor_id=""
+        case "$1" in
+            1|kate) editor_id=1 ;;
+            2|code|vscode-oss|oss) editor_id=2 ;;
+            3|vscode|vscode-bin|visual-studio-code|visual-studio-code-bin|microsoft) editor_id=3 ;;
+            4|insiders|vscode-insiders|visual-studio-code-insiders-bin) editor_id=4 ;;
+            5|zed|zed-bin) editor_id=5 ;;
+        esac
+    }
+
+    _dev_construir_yay() {
+        local base="yay-bin" rc=1 p
+        local -a tmo=() faltavam=()
+        if pacman -Q yay &>/dev/null && ! pacman -Q yay-bin &>/dev/null; then
+            base="yay"
+        fi
+
+        for p in base-devel git go; do
+            _dev_instalado "$p" || faltavam+=("$p")
+        done
+        if ! "${SUDO[@]}" pacman -S --needed --noconfirm base-devel git go; then
+            msg "${YELLOW_NEON}[AVISO] Não foi possível instalar os pré-requisitos do yay (base-devel, git, go).${NC}" \
+                "${YELLOW_NEON}[WARNING] Could not install the yay prerequisites (base-devel, git, go).${NC}" \
+                "${YELLOW_NEON}[AVISO] No se pudieron instalar los requisitos de yay (base-devel, git, go)."
+            return 1
+        fi
+        for p in "${faltavam[@]}"; do
+            _dev_instalado "$p" && INSTALADOS+=("$p")
+        done
+        if ! command -v git &>/dev/null || ! command -v makepkg &>/dev/null; then
+            msg "${YELLOW_NEON}[AVISO] git ou makepkg indisponível após instalar os pré-requisitos.${NC}" \
+                "${YELLOW_NEON}[WARNING] git or makepkg is unavailable after installing the prerequisites.${NC}" \
+                "${YELLOW_NEON}[AVISO] git o makepkg no está disponible tras instalar los requisitos."
+            return 1
+        fi
+        tmp_dir=$(mktemp -d "${tmp_base%/}/odin-dev-yay.XXXXXX") || tmp_dir=""
+        if [[ -z "$tmp_dir" ]]; then
+            msg "${YELLOW_NEON}[AVISO] Não foi possível criar o diretório temporário para compilar o yay.${NC}" \
+                "${YELLOW_NEON}[WARNING] Could not create the temporary directory to build yay.${NC}" \
+                "${YELLOW_NEON}[AVISO] No se pudo crear el directorio temporal para compilar yay."
+            return 1
+        fi
+
+        command -v timeout &>/dev/null && tmo=(timeout 180)
+        if GIT_TERMINAL_PROMPT=0 "${tmo[@]}" git clone --depth=1 "https://aur.archlinux.org/${base}.git" "$tmp_dir/$base" \
+            && chown -R nobody:nobody "$tmp_dir/$base" 2>/dev/null || true \
+            && ( cd "$tmp_dir/$base" && sudo -u nobody makepkg --syncdeps --install --noconfirm ); then
+            hash -r
+            if command -v yay &>/dev/null && yay --version &>/dev/null; then
+                rc=0
+            fi
+        fi
+
+        if [[ "$tmp_dir" == "${tmp_base%/}"/odin-dev-yay.* && -d "$tmp_dir" ]]; then
+            rm -rf -- "${tmp_dir:?}"
+        fi
+        tmp_dir=""
+        return "$rc"
+    }
+
+    _dev_cmd_ok() {
+        local exe="$1" flag="$2"
+        local -a tmo=()
+        if [[ "$exe" == "pkg" ]]; then
+            _dev_instalado "$flag"
+            return
+        fi
+        command -v "$exe" &>/dev/null || return 1
+        command -v timeout &>/dev/null && tmo=(timeout 25)
+        DOTNET_NOLOGO=1 DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+            "${tmo[@]}" "$exe" "$flag" >/dev/null 2>&1 && return 0
+        sleep 1
+        DOTNET_NOLOGO=1 DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+            "${tmo[@]}" "$exe" "$flag" >/dev/null 2>&1
+    }
+
+    _dev_validar_rec() {
+        local lbl="${1%%|*}" specs="${1#*|}" spec="" all_ok=1
+        local -a lst=()
+        IFS=',' read -r -a lst <<< "$specs"
+        for spec in "${lst[@]}"; do
+            _dev_cmd_ok "${spec%%:*}" "${spec#*:}" || all_ok=0
+        done
+        if (( all_ok )); then
+            status_val["$lbl"]="OK"
+        else
+            status_val["$lbl"]="FALHA"
+            VALIDACAO_FALHOU+=("$lbl")
+        fi
+    }
+
+    _dev_linha() {
+        local lbl="$1" st="$2"
+        if [[ "$st" == "OK" ]]; then
+            msg "${GREEN_NEON}[OK]${NC}    $lbl" \
+                "${GREEN_NEON}[OK]${NC}    $lbl" \
+                "${GREEN_NEON}[OK]${NC}    $lbl"
+        else
+            msg "${RED_NEON}[FALHA]${NC} $lbl" \
+                "${RED_NEON}[FAIL]${NC}  $lbl" \
+                "${RED_NEON}[FALLO]${NC} $lbl"
+        fi
+    }
+
+    _dev_ka_iniciar() {
+        local pai=$$
+        (
+            while kill -0 "$pai" 2>/dev/null; do
+                sudo -n true 2>/dev/null
+                sleep 45
+            done
+        ) >/dev/null 2>&1 &
+        ka_pid=$!
+        disown "$ka_pid" 2>/dev/null
+        return 0
+    }
+
+    _dev_encerrar() {
+        if [[ -n "$ka_pid" ]]; then
+            kill "$ka_pid" 2>/dev/null || true
+            ka_pid=""
+        fi
+        if [[ -n "$tmp_dir" && -d "$tmp_dir" && "$tmp_dir" == "${tmp_base%/}"/odin-dev-yay.* ]]; then
+            rm -rf -- "${tmp_dir:?}"
+        fi
+        tmp_dir=""
+        if (( traps_set )); then
+            if [[ -n "$old_int" ]]; then eval "$old_int"; else trap - INT; fi
+            if [[ -n "$old_term" ]]; then eval "$old_term"; else trap - TERM; fi
+            traps_set=0
+        fi
+        unset -f _dev_safe _dev_trim _dev_instalado _dev_ja _dev_classificar \
+            _dev_instalar_lote _dev_conflita _dev_editor_id \
+            _dev_construir_yay _dev_cmd_ok _dev_validar_rec _dev_linha _dev_ka_iniciar _dev_interrompido _dev_encerrar
+        return 0
+    }
+
+    # shellcheck disable=SC2329
+    _dev_interrompido() {
+        local sinal="$1"
+        echo ""
+        msg "${YELLOW_NEON}[AVISO] MODO DEV interrompido. Limpando temporários...${NC}" \
+            "${YELLOW_NEON}[WARNING] DEV MODE interrupted. Cleaning up temporary files...${NC}" \
+            "${YELLOW_NEON}[AVISO] MODO DEV interrumpido. Limpiando archivos temporales..."
+        _dev_encerrar
+        kill -s "$sinal" $$
+        [[ "$sinal" == "INT" ]] && exit 130
+        exit 143
+    }
+
+    if ! command -v pacman &>/dev/null; then
+        msg "${RED_NEON}[ERRO CRÍTICO] pacman não foi encontrado. O MODO DEV não pode continuar.${NC}" \
+            "${RED_NEON}[CRITICAL ERROR] pacman was not found. DEV MODE cannot continue.${NC}" \
+            "${RED_NEON}[ERROR CRÍTICO] No se encontró pacman. El MODO DEV no puede continuar."
+        _dev_encerrar
+        return 1
+    fi
+
+    old_int=$(trap -p INT)
+    old_term=$(trap -p TERM)
+    trap '_dev_interrompido INT' INT
+    trap '_dev_interrompido TERM' TERM
+    traps_set=1
+
+    echo -e "$dev_sep"
+    msg "${CYAN_NEON}[MODO DEV]${NC} Iniciando protocolo profissional de preparação para Desenvolvimento..." \
+        "${CYAN_NEON}[DEV MODE]${NC} Starting professional development environment setup..." \
+        "${CYAN_NEON}[MODO DEV]${NC} Iniciando protocolo profesional de preparación para Desarrollo..."
+    echo -e "$dev_sep"
+    sleep 1.5
+    echo ""
+
+    # ==========================================================================
+    # [1/5] Ambiente: privilégios (sudo) e trava do pacman
+    # ==========================================================================
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}[1/5] Verificando privilégios (sudo) e o estado do pacman...${NC}" \
+        "${CYAN_NEON}[1/5] Checking privileges (sudo) and the pacman state...${NC}" \
+        "${CYAN_NEON}[1/5] Verificando privilegios (sudo) y el estado de pacman..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    echo ""
+    sleep 1
+    if (( EUID != 0 )); then
+        SUDO=(sudo)
+        if ! command -v sudo &>/dev/null; then
+            msg "${RED_NEON}[ERRO CRÍTICO] sudo não foi encontrado.${NC}" \
+                "${RED_NEON}[CRITICAL ERROR] sudo was not found.${NC}" \
+                "${RED_NEON}[ERROR CRÍTICO] No se encontró sudo."
+            CRITICOS+=("sudo")
+            bloqueado=1
+        elif ! sudo -n true 2>/dev/null && ! sudo -v; then
+            msg "${RED_NEON}[ERRO CRÍTICO] Não foi possível obter privilégios de administrador (sudo).${NC}" \
+                "${RED_NEON}[CRITICAL ERROR] Could not obtain administrator privileges (sudo).${NC}" \
+                "${RED_NEON}[ERROR CRÍTICO] No se pudieron obtener privilegios de administrador (sudo)."
+            CRITICOS+=("sudo")
+            bloqueado=1
+        else
+            _dev_ka_iniciar
+        fi
+    fi
+
+    if [[ -e "$pacman_lock" ]]; then
+        while [[ -e "$pacman_lock" ]] && pgrep -x pacman &>/dev/null && (( espera < 30 )); do
+            if (( espera == 0 )); then
+                msg "${YELLOW_NEON}[AVISO] Há outro pacman em execução. Aguardando ele terminar...${NC}" \
+                    "${YELLOW_NEON}[WARNING] Another pacman is running. Waiting for it to finish...${NC}" \
+                    "${YELLOW_NEON}[AVISO] Hay otro pacman en ejecución. Esperando a que termine..."
+            fi
+            sleep 2
+            espera=$((espera + 1))
+        done
+        if [[ -e "$pacman_lock" ]]; then
+            msg "${RED_NEON}[ERRO CRÍTICO] O banco do pacman está travado ($pacman_lock). Remova a trava se nenhum pacman estiver rodando.${NC}" \
+                "${RED_NEON}[CRITICAL ERROR] The pacman database is locked ($pacman_lock). Remove the lock if no pacman is running.${NC}" \
+                "${RED_NEON}[ERROR CRÍTICO] La base de datos de pacman está bloqueada ($pacman_lock). Elimine el bloqueo si no hay pacman ejecutándose."
+            CRITICOS+=("db.lck")
+            bloqueado=1
+        fi
+    fi
+
+    # Verificação robusta e segura de bases sincronizadas do pacman
+    if [[ ! -d "$pacman_sync" ]] || ! find "$pacman_sync" -maxdepth 1 -name "*.db" -print -quit | grep -q .; then
+        msg "${RED_NEON}[ERRO CRÍTICO] Nenhuma base de dados do pacman foi encontrada em $pacman_sync. Atualize o sistema antes do MODO DEV.${NC}" \
+            "${RED_NEON}[CRITICAL ERROR] No pacman databases found in $pacman_sync. Update the system before DEV MODE.${NC}" \
+            "${RED_NEON}[ERROR CRÍTICO] No se encontraron bases de datos de pacman en $pacman_sync. Actualice el sistema antes del MODO DEV."
+        CRITICOS+=("bases-pacman")
+        bloqueado=1
+    fi
+
+    if (( bloqueado )); then
+        msg "${YELLOW_NEON}[AVISO] As instalações foram interrompidas por falha crítica no ambiente. Apenas a validação será executada.${NC}" \
+            "${YELLOW_NEON}[WARNING] Installations were halted by a critical environment failure. Only validation will run.${NC}" \
+            "${YELLOW_NEON}[AVISO] Las instalaciones se detuvieron por un fallo crítico del entorno. Solo se ejecutará la validación."
+    else
+        msg "${GREEN_NEON}[OK] Ambiente verificado.${NC}" \
+            "${GREEN_NEON}[OK] Environment verified.${NC}" \
+            "${GREEN_NEON}[OK] Entorno verificado."
+    fi
+    echo ""
+    sleep 1
+
+    # ==========================================================================
+    # [2/5] AUR helper (detectar / escolher / preparar). Nunca como root.
+    # ==========================================================================
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}[2/5] Detectando e configurando o AUR helper (yay/paru)...${NC}" \
+        "${CYAN_NEON}[2/5] Detecting and configuring the AUR helper (yay/paru)...${NC}" \
+        "${CYAN_NEON}[2/5] Detectando y configurando el AUR helper (yay/paru)...${NC}"
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    echo ""
+    sleep 1
+    if (( bloqueado )); then
+        msg "${YELLOW_NEON}[PULADO] Etapa ignorada por falha crítica anterior.${NC}" \
+            "${YELLOW_NEON}[SKIPPED] Step skipped due to an earlier critical failure.${NC}" \
+            "${YELLOW_NEON}[OMITIDO] Paso omitido por un fallo crítico anterior.${NC}"
+    elif (( EUID == 0 )); then
+        aur_permitido=0
+        AVISOS+=("root-sem-aur")
+        msg "${YELLOW_NEON}[AVISO] Executando como root: o AUR será ignorado.${NC}" \
+            "${YELLOW_NEON}[WARNING] Running as root: AUR will be skipped.${NC}" \
+            "${YELLOW_NEON}[AVISO] Ejecutando como root: se omitirá AUR."
+    else
+        command -v yay &>/dev/null && yay --version &>/dev/null && has_yay=1
+        command -v paru &>/dev/null && paru --version &>/dev/null && has_paru=1
+
+        if (( has_yay && has_paru )); then
+            while true; do
+                echo -e "$dev_sep"
+                msg "${CYAN_NEON}                                    AUR HELPER${NC}" \
+                    "${CYAN_NEON}                                    AUR HELPER${NC}" \
+                    "${CYAN_NEON}                                    AUR HELPER${NC}"
+                echo -e "$dev_sep"
+                msg "${YELLOW_NEON}Ambos os AUR helpers (yay e paru) foram detectados. Escolha qual deseja utilizar:${NC}\n${GREEN_NEON}[1]${NC} yay\n${GREEN_NEON}[2]${NC} paru" \
+                    "${YELLOW_NEON}Both AUR helpers (yay and paru) were detected. Choose which one to use:${NC}\n${GREEN_NEON}[1]${NC} yay\n${GREEN_NEON}[2]${NC} paru" \
+                    "${YELLOW_NEON}Se detectaron ambos AUR helpers (yay y paru). Elija cuál utilizar:${NC}\n${GREEN_NEON}[1]${NC} yay\n${GREEN_NEON}[2]${NC} paru"
+                if ! IFS= read -r -p ">> " opcao_h; then
+                    msg "${RED_NEON}[ERRO] A escolha do AUR helper é obrigatória.${NC}" \
+                        "${RED_NEON}[ERROR] Choosing an AUR helper is required.${NC}" \
+                        "${RED_NEON}[ERROR] Es obligatorio elegir un AUR helper."
+                    _dev_encerrar
+                    return 1
+                fi
+                opcao_h="${opcao_h//[[:space:]]/}"
+                opcao_h="${opcao_h,,}"
+                case "$opcao_h" in
+                    1|yay)  helper="yay";  break ;;
+                    2|paru) helper="paru"; break ;;
+                    *)
+                        msg "${RED_NEON}[ERRO] Opção inválida! Digite [1] para yay ou [2] para paru.${NC}" \
+                            "${RED_NEON}[ERROR] Invalid option! Type [1] for yay or [2] for paru.${NC}" \
+                            "${RED_NEON}[ERROR] ¡Opción inválida! Escriba [1] para yay o [2] para paru."
+                        sleep 1
+                        ;;
+                esac
+            done
+            JA_INSTALADOS+=("$helper")
+        elif (( has_yay )); then
+            helper="yay"
+            JA_INSTALADOS+=("yay")
+        elif (( has_paru )); then
+            helper="paru"
+            JA_INSTALADOS+=("paru")
+        else
+            msg "${CYAN_NEON}Nenhum AUR helper utilizável foi encontrado. Preparando o yay automaticamente...${NC}" \
+                "${CYAN_NEON}No usable AUR helper was found. Preparing yay automatically...${NC}" \
+                "${CYAN_NEON}No se encontró ningún AUR helper utilizable. Preparando yay automáticamente..."
+            echo ""
+            if _dev_construir_yay; then
+                helper="yay"
+                helper_novo=1
+                INSTALADOS+=("yay")
+                msg "${GREEN_NEON}[OK] yay foi compilado, instalado e validado.${NC}" \
+                    "${GREEN_NEON}[OK] yay was built, installed and validated.${NC}" \
+                    "${GREEN_NEON}[OK] yay se compiló, instaló y validó."
+            else
+                AVISOS+=("yay")
+                msg "${YELLOW_NEON}[AVISO] Falha ao preparar o yay. Os pacotes do AUR serão ignorados.${NC}" \
+                    "${YELLOW_NEON}[WARNING] Failed to prepare yay. AUR packages will be skipped.${NC}" \
+                    "${YELLOW_NEON}[AVISO] Error al preparar yay. Los paquetes del AUR se omitirán."
+            fi
+        fi
+
+        if [[ -n "$helper" ]]; then
+            helper_ok=1
+            if (( ! helper_novo )); then
+                msg "${GREEN_NEON}[OK] AUR helper em uso: $helper${NC}" \
+                    "${GREEN_NEON}[OK] AUR helper in use: $helper${NC}" \
+                    "${GREEN_NEON}[OK] AUR helper en uso: $helper${NC}"
+            fi
+        fi
+    fi
+    echo ""
+    sleep 1
+
+    # ==========================================================================
+    # [3/5] Pacotes de desenvolvimento (oficial -> pacman | AUR -> helper)
+    # ==========================================================================
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}[3/5] Instalando pacotes de desenvolvimento e toolchains...${NC}" \
+        "${CYAN_NEON}[3/5] Installing development packages and toolchains...${NC}" \
+        "${CYAN_NEON}[3/5] Instalando paquetes de desarrollo y toolchains..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    echo ""
+    sleep 1
+    if (( bloqueado )); then
+        msg "${YELLOW_NEON}[PULADO] Etapa ignorada por falha crítica anterior.${NC}" \
+            "${YELLOW_NEON}[SKIPPED] Step skipped due to an earlier critical failure.${NC}" \
+            "${YELLOW_NEON}[OMITIDO] Paso omitido por un fallo crítico anterior.${NC}"
+    else
+        for rec in "${GRUPOS[@]}"; do
+            label="${rec%%|*}"
+            rest="${rec#*|}"
+            read -r -a toks <<< "$rest"
+            lote=()
+
+            msg "${NEON_BLUE}>>${NC} ${CYAN_NEON}$label${NC}" \
+                "${NEON_BLUE}>>${NC} ${CYAN_NEON}$label${NC}" \
+                "${NEON_BLUE}>>${NC} ${CYAN_NEON}$label${NC}"
+
+            for tok in "${toks[@]}"; do
+                _dev_classificar "$tok"
+                case "$CLS_KIND" in
+                    installed)
+                        _dev_ja "$CLS_PKG"
+                        ;;
+                    provided)
+                        _dev_ja "$CLS_PKG"
+                        msg "${CYAN_NEON}[INFO] $CLS_PKG já é fornecido por outro pacote instalado.${NC}" \
+                            "${CYAN_NEON}[INFO] $CLS_PKG is already provided by another installed package.${NC}" \
+                            "${CYAN_NEON}[INFO] $CLS_PKG ya lo proporciona otro paquete instalado."
+                        ;;
+                    official)
+                        lote+=("$CLS_PKG")
+                        ;;
+                    aur)
+                        fila_aur+=("$CLS_PKG")
+                        ;;
+                    *)
+                        INDISPONIVEIS+=("$CLS_PKG")
+                        msg "${YELLOW_NEON}[AVISO] Pacote indisponível nesta execução: $CLS_PKG${NC}" \
+                            "${YELLOW_NEON}[WARNING] Package unavailable in this run: $CLS_PKG${NC}" \
+                            "${YELLOW_NEON}[AVISO] Paquete no disponible en esta ejecución: $CLS_PKG${NC}"
+                        ;;
+                esac
+            done
+
+            if (( ${#lote[@]} > 0 )); then
+                _dev_instalar_lote official "${lote[@]}"
+            fi
+        done
+
+        if (( ${#fila_aur[@]} > 0 )); then
+            msg "${NEON_BLUE}>>${NC} ${CYAN_NEON}AUR (${fila_aur[*]})${NC}" \
+                "${NEON_BLUE}>>${NC} ${CYAN_NEON}AUR (${fila_aur[*]})${NC}" \
+                "${NEON_BLUE}>>${NC} ${CYAN_NEON}AUR (${fila_aur[*]})${NC}"
+            _dev_instalar_lote aur "${fila_aur[@]}"
+        fi
+        if (( ! helper_ok )); then
+            msg "${YELLOW_NEON}[AVISO] Sem AUR helper utilizável: pacotes do AUR não foram instalados.${NC}" \
+                "${YELLOW_NEON}[WARNING] No usable AUR helper: AUR packages were not installed.${NC}" \
+                "${YELLOW_NEON}[AVISO] Sin AUR helper utilizable: los paquetes del AUR no se instalaron."
+        fi
+    fi
+    echo ""
+    sleep 1
+
+    # ==========================================================================
+    # [4/5] Editores de código
+    # ==========================================================================
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}[4/5] Configurando o ambiente de editores de código...${NC}" \
+        "${CYAN_NEON}[4/5] Configuring the code editor environment...${NC}" \
+        "${CYAN_NEON}[4/5] Configurando el entorno de editores de código..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    echo ""
+    sleep 1
+    if (( bloqueado )); then
+        msg "${YELLOW_NEON}[PULADO] Etapa ignorada por falha crítica anterior.${NC}" \
+            "${YELLOW_NEON}[SKIPPED] Step skipped due to an earlier critical failure.${NC}" \
+            "${YELLOW_NEON}[OMITIDO] Paso omitido por un fallo crítico anterior.${NC}"
+    else
+        while true; do
+            echo ""
+            echo -e "${NEON_BLUE}-------------------------------------------------------------------------------------------------${NC}"
+            msg "${CYAN_NEON}                          [ MENU DE SELEÇÃO DE EDITORES DE CÓDIGO ]${NC}" \
+                "${CYAN_NEON}                              [ CODE EDITOR SELECTION MENU ]${NC}" \
+                "${CYAN_NEON}                       [ MENÚ DE SELECCIÓN DE EDITORES DE CÓDIGO ]${NC}"
+            echo -e "$dev_sep"
+            echo ""
+            msg "${CYAN_NEON}[1]${NC} - Kate ${CYAN_NEON}(oficial)${NC}" \
+                "${CYAN_NEON}[1]${NC} - Kate ${CYAN_NEON}(official)${NC}" \
+                "${CYAN_NEON}[1]${NC} - Kate ${CYAN_NEON}(oficial)${NC}"
+            echo ""
+            msg "${CYAN_NEON}[2]${NC} - VS Code OSS ${CYAN_NEON}(oficial: code)${NC}" \
+                "${CYAN_NEON}[2]${NC} - VS Code OSS ${CYAN_NEON}(official: code)${NC}" \
+                "${CYAN_NEON}[2]${NC} - VS Code OSS ${CYAN_NEON}(oficial: code)${NC}"
+            echo ""
+            msg "${CYAN_NEON}[3]${NC} - VS Code Microsoft ${CYAN_NEON}(AUR: visual-studio-code-bin)${NC}" \
+                "${CYAN_NEON}[3]${NC} - VS Code Microsoft ${CYAN_NEON}(AUR: visual-studio-code-bin)${NC}" \
+                "${CYAN_NEON}[3]${NC} - VS Code Microsoft ${CYAN_NEON}(AUR: visual-studio-code-bin)${NC}"
+            echo ""
+            msg "${CYAN_NEON}[4]${NC} - VS Code Insiders ${CYAN_NEON}(AUR: visual-studio-code-insiders-bin)${NC}" \
+                "${CYAN_NEON}[4]${NC} - VS Code Insiders ${CYAN_NEON}(AUR: visual-studio-code-insiders-bin)${NC}" \
+                "${CYAN_NEON}[4]${NC} - VS Code Insiders ${CYAN_NEON}(AUR: visual-studio-code-insiders-bin)${NC}"
+            echo ""
+            msg "${CYAN_NEON}[5]${NC} - Zed ${CYAN_NEON}(oficial: zed)${NC}" \
+                "${CYAN_NEON}[5]${NC} - Zed ${CYAN_NEON}(official: zed)${NC}" \
+                "${CYAN_NEON}[5]${NC} - Zed ${CYAN_NEON}(oficial: zed)${NC}"
+            echo ""
+            msg "${YELLOW_NEON}[6]${NC} - Instalar múltiplos editores ${CYAN_NEON}(ex.: 1 3 5)${NC}" \
+                "${YELLOW_NEON}[6]${NC} - Install multiple editors ${CYAN_NEON}(e.g. 1 3 5)${NC}" \
+                "${YELLOW_NEON}[6]${NC} - Instalar varios editores ${CYAN_NEON}(ej.: 1 3 5)${NC}"
+            echo ""
+            msg "${RED_NEON}[0]${NC} - Não instalar editor" \
+                "${RED_NEON}[0]${NC} - Do not install an editor" \
+                "${RED_NEON}[0]${NC} - No instalar editor"
+            echo ""
+            msg "${WHITE_NEON}Escolha uma opção de ${YELLOW_NEON}1 a 6${WHITE_NEON} ou ${RED_NEON}0${WHITE_NEON} para pular:${NC}" \
+                "${WHITE_NEON}Choose an option from ${YELLOW_NEON}1 to 6${WHITE_NEON} or ${RED_NEON}0${WHITE_NEON} to skip:${NC}" \
+                "${WHITE_NEON}Elija una opción del ${YELLOW_NEON}1 al 6${WHITE_NEON} o ${RED_NEON}0${WHITE_NEON} para omitir:${NC}"
+            echo ""
+            echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------------------${NC}"
+            if ! IFS= read -r -p ">> " opcao_ed; then
+            echo ""
+                sel_editores=()
+                AVISOS+=("entrada-encerrada")
+                msg "${YELLOW_NEON}[AVISO] Entrada encerrada: a seleção de editor foi cancelada.${NC}" \
+                    "${YELLOW_NEON}[WARNING] Input ended: the editor selection was cancelled.${NC}" \
+                    "${YELLOW_NEON}[AVISO] Entrada finalizada: se canceló la selección de editor.${NC}"
+                break
+            fi
+            opcao_ed="$(_dev_trim "${opcao_ed,,}")"
+
+            case "$opcao_ed" in
+                0|n|no|nao|não|skip|pular|omitir|none|sair|exit)
+                    sel_editores=()
+                    msg "${YELLOW_NEON}[PULADO] Instalação de editor ignorada.${NC}" \
+                        "${YELLOW_NEON}[SKIPPED] Editor installation skipped.${NC}" \
+                        "${YELLOW_NEON}[OMITIDO] Instalación de editor omitida.${NC}"
+                    break
+                    ;;
+                6|multi|multiplos|múltiplos|multiple)
+                    msg "${CYAN_NEON}Digite os números dos editores (1 a 5), separados por espaço. Repetições são ignoradas.${NC}" \
+                        "${CYAN_NEON}Enter the editor numbers (1 to 5), separated by spaces. Duplicates are ignored.${NC}" \
+                        "${CYAN_NEON}Escriba los números de los editores (1 a 5), separados por espacios. Se ignoran los duplicados.${NC}"
+                    if ! IFS= read -r -p ">> " ed_multi; then
+                        sel_editores=()
+                        AVISOS+=("entrada-encerrada")
+                        msg "${YELLOW_NEON}[AVISO] Entrada encerrada: a seleção de editor foi cancelada.${NC}" \
+                            "${YELLOW_NEON}[WARNING] Input ended: the editor selection was cancelled.${NC}" \
+                            "${YELLOW_NEON}[AVISO] Entrada finalizada: se canceló la selección de editor.${NC}"
+                        break
+                    fi
+                    ed_multi="${ed_multi,,}"
+                    ed_multi="${ed_multi//,/ }"
+                    read -r -a words <<< "$ed_multi"
+                    sel_editores=()
+                    for word in "${words[@]}"; do
+                        _dev_editor_id "$word"
+                        if [[ -z "$editor_id" ]]; then
+                            msg "${YELLOW_NEON}[AVISO] Entrada ignorada na seleção múltipla: '$(_dev_safe "$word")'${NC}" \
+                                "${YELLOW_NEON}[WARNING] Ignored entry in the multiple selection: '$(_dev_safe "$word")'${NC}" \
+                                "${YELLOW_NEON}[AVISO] Entrada ignorada en la selección múltiple: '$(_dev_safe "$word")'${NC}"
+                            continue
+                        fi
+                        [[ " ${sel_editores[*]} " == *" $editor_id "* ]] || sel_editores+=("$editor_id")
+                    done
+                    if (( ${#sel_editores[@]} > 0 )); then
+                        msg "${GREEN_NEON}[OK] Seleção múltipla validada.${NC}" \
+                            "${GREEN_NEON}[OK] Multiple selection validated.${NC}" \
+                            "${GREEN_NEON}[OK] Selección múltiple validada.${NC}"
+                        break
+                    fi
+                    msg "${RED_NEON}[ERRO] Nenhuma opção válida foi informada. Voltando ao menu.${NC}" \
+                        "${RED_NEON}[ERROR] No valid option was provided. Returning to the menu.${NC}" \
+                        "${RED_NEON}[ERROR] No se proporcionó ninguna opción válida. Volviendo al menú.${NC}"
+                    sleep 1
+                    ;;
+                *)
+                    _dev_editor_id "$opcao_ed"
+                    if [[ -n "$editor_id" ]]; then
+                        sel_editores=("$editor_id")
+                        break
+                    fi
+                    msg "${RED_NEON}[ERRO] Opção inválida: '$(_dev_safe "$opcao_ed")'. Digite de 0 a 6.${NC}" \
+                        "${RED_NEON}[ERROR] Invalid option: '$(_dev_safe "$opcao_ed")'. Enter 0 to 6.${NC}" \
+                        "${RED_NEON}[ERROR] Opción inválida: '$(_dev_safe "$opcao_ed")'. Escriba de 0 a 6.${NC}"
+                    sleep 1
+                    ;;
+            esac
+        done
+
+        if (( ${#sel_editores[@]} > 0 )); then
+            mapfile -t sel_editores < <(printf '%s\n' "${sel_editores[@]}" | sort -un)
+            echo ""
+            for ed in "${sel_editores[@]}"; do
+                case "$ed" in
+                    1) tok="kate";                              label="Kate" ;;
+                    2) tok="code";                              label="VS Code OSS" ;;
+                    3) tok=":visual-studio-code-bin";           label="VS Code Microsoft" ;;
+                    4) tok=":visual-studio-code-insiders-bin";  label="VS Code Insiders" ;;
+                    5) tok="zed:zed-bin";                       label="Zed" ;;
+                    *) continue ;;
+                esac
+                _dev_classificar "$tok"
+                case "$CLS_KIND" in
+                    installed|provided)
+                        _dev_ja "$CLS_PKG"
+                        ed_itens+=("$label|$CLS_PKG")
+                        ;;
+                    official|aur)
+                        ed_itens+=("$label|$CLS_PKG")
+                        if _dev_conflita "$CLS_PKG"; then
+                            FALHARAM+=("$CLS_PKG")
+                            msg "${YELLOW_NEON}[AVISO] $CLS_PKG conflita com o VS Code já instalado/selecionado.${NC}" \
+                                "${YELLOW_NEON}[WARNING] $CLS_PKG conflicts with the VS Code already installed/selected.${NC}" \
+                                "${YELLOW_NEON}[AVISO] $CLS_PKG entra en conflicto con el VS Code ya instalado/seleccionado."
+                        elif [[ "$CLS_KIND" == "official" ]]; then
+                            ed_oficial+=("$CLS_PKG")
+                        else
+                            ed_aur+=("$CLS_PKG")
+                        fi
+                        ;;
+                    *)
+                        INDISPONIVEIS+=("$CLS_PKG")
+                        ed_itens+=("$label|$CLS_PKG")
+                        msg "${YELLOW_NEON}[AVISO] Editor indisponível nesta execução: $CLS_PKG${NC}" \
+                            "${YELLOW_NEON}[WARNING] Editor unavailable in this run: $CLS_PKG${NC}" \
+                            "${YELLOW_NEON}[AVISO] Editor no disponible en esta ejecución: $CLS_PKG${NC}"
+                        ;;
+                esac
+            done
+            if (( ${#ed_oficial[@]} > 0 )); then
+                _dev_instalar_lote official "${ed_oficial[@]}"
+            fi
+            if (( ${#ed_aur[@]} > 0 )); then
+                _dev_instalar_lote aur "${ed_aur[@]}"
+            fi
+        fi
+    fi
+    echo ""
+    sleep 1
+
+    # ==========================================================================
+    # [5/5] Validação real
+    # ==========================================================================
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    msg "${CYAN_NEON}[5/5] Validando a integridade e as versões das toolchains instaladas...${NC}" \
+        "${CYAN_NEON}[5/5] Validating the integrity and versions of the installed toolchains...${NC}" \
+        "${CYAN_NEON}[5/5] Validando la integridad y las versiones de las toolchains instaladas..."
+    echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+    echo ""
+    sleep 1
+    hash -r
+    for rec in "${STACKS[@]}" "${FERRAMENTAS[@]}"; do
+        _dev_validar_rec "$rec"
+    done
+    msg "${GREEN_NEON}[OK] Validação concluída.${NC}" \
+        "${GREEN_NEON}[OK] Validation finished.${NC}" \
+        "${GREEN_NEON}[OK] Validación finalizada."
+    echo ""
+    sleep 1
+
+    # ==========================================================================
+    # Resumo final
+    # ==========================================================================
+    echo -e "$dev_sep"
+    msg "${CYAN_NEON}                                  MODO DEV FINALIZADO${NC}" \
+        "${CYAN_NEON}                                  DEV MODE FINISHED${NC}" \
+        "${CYAN_NEON}                                  MODO DEV FINALIZADO${NC}"
+    echo -e "$dev_sep"
+    echo ""
+
+    msg "${CYAN_NEON}LINGUAGENS / STACKS${NC}" \
+        "${CYAN_NEON}LANGUAGES / STACKS${NC}" \
+        "${CYAN_NEON}LENGUAJES / STACKS${NC}"
+    for rec in "${STACKS[@]}"; do
+        _dev_linha "${rec%%|*}" "${status_val["${rec%%|*}"]}"
+    done
+    echo ""
+
+    msg "${CYAN_NEON}FERRAMENTAS${NC}" \
+        "${CYAN_NEON}TOOLS${NC}" \
+        "${CYAN_NEON}HERRAMIENTAS${NC}"
+    for rec in "${FERRAMENTAS[@]}"; do
+        _dev_linha "${rec%%|*}" "${status_val["${rec%%|*}"]}"
+    done
+    echo ""
+
+    msg "${CYAN_NEON}AUR HELPER${NC}" \
+        "${CYAN_NEON}AUR HELPER${NC}" \
+        "${CYAN_NEON}AUR HELPER${NC}"
+    if [[ -n "$helper" ]]; then
+        _dev_linha "$helper" "OK"
+    elif (( aur_permitido == 0 )); then
+        msg "${YELLOW_NEON}[--]${NC}    ignorado (execução como root)" \
+            "${YELLOW_NEON}[--]${NC}    skipped (running as root)" \
+            "${YELLOW_NEON}[--]${NC}    omitido (ejecución como root)"
+    elif (( bloqueado )); then
+        msg "${YELLOW_NEON}[--]${NC}    não configurado (etapa interrompida)" \
+            "${YELLOW_NEON}[--]${NC}    not configured (step halted)" \
+            "${YELLOW_NEON}[--]${NC}    no configurado (paso interrumpido)"
+    else
+        _dev_linha "yay/paru" "FALHA"
+    fi
+    echo ""
+
+    msg "${CYAN_NEON}EDITOR${NC}" \
+        "${CYAN_NEON}EDITOR${NC}" \
+        "${CYAN_NEON}EDITOR${NC}"
+    if (( ${#ed_itens[@]} > 0 )); then
+        for rec in "${ed_itens[@]}"; do
+            if _dev_instalado "${rec#*|}"; then
+                _dev_linha "${rec%%|*} (${rec#*|})" "OK"
+            else
+                _dev_linha "${rec%%|*} (${rec#*|})" "FALHA"
+            fi
+        done
+    else
+        msg "${YELLOW_NEON}[--]${NC}    nenhum editor selecionado" \
+            "${YELLOW_NEON}[--]${NC}    no editor selected" \
+            "${YELLOW_NEON}[--]${NC}    ningún editor seleccionado"
+    fi
+    echo ""
+
+    echo -e "$dev_sep"
+    msg " - Já existentes             : ${JA_INSTALADOS[*]:-Nenhum}" \
+        " - Already present           : ${JA_INSTALADOS[*]:-None}" \
+        " - Ya existentes             : ${JA_INSTALADOS[*]:-Ninguno}"
+    msg " - Instalados nesta execução : ${INSTALADOS[*]:-Nenhum}" \
+        " - Installed in this run     : ${INSTALADOS[*]:-None}" \
+        " - Instalados en esta ejecución: ${INSTALADOS[*]:-Ninguno}"
+    msg " - Falharam                  : ${FALHARAM[*]:-Nenhum}" \
+        " - Failed                    : ${FALHARAM[*]:-None}" \
+        " - Fallaron                  : ${FALHARAM[*]:-Ninguno}"
+    msg " - Indisponíveis             : ${INDISPONIVEIS[*]:-Nenhum}" \
+        " - Unavailable               : ${INDISPONIVEIS[*]:-None}" \
+        " - No disponibles            : ${INDISPONIVEIS[*]:-Ninguno}"
+    msg " - Validação falhou          : ${VALIDACAO_FALHOU[*]:-Nenhuma}" \
+        " - Validation failed         : ${VALIDACAO_FALHOU[*]:-None}" \
+        " - Validación fallida        : ${VALIDACAO_FALHOU[*]:-Ninguna}"
+    if (( ${#AVISOS[@]} > 0 )); then
+        msg " - Avisos                    : ${AVISOS[*]}" \
+            " - Warnings                  : ${AVISOS[*]}" \
+            " - Avisos                    : ${AVISOS[*]}"
+    fi
+   if (( ${#CRITICOS[@]} > 0 )); then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${RED_NEON}[MODO DEV CONCLUÍDO COM ERROS CRÍTICOS]${NC}" \
+            "${RED_NEON}[DEV MODE COMPLETED WITH CRITICAL ERRORS]${NC}" \
+            "${RED_NEON}[MODO DEV COMPLETADO CON ERRORES CRÍTICOS]${NC}"
+        echo -e "$dev_sep"
+        _dev_encerrar
+        return 1
+    elif (( ${#FALHARAM[@]} + ${#INDISPONIVEIS[@]} + ${#VALIDACAO_FALHOU[@]} + ${#AVISOS[@]} > 0 )); then
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${YELLOW_NEON}[CONCLUÍDO COM AVISOS] O ambiente foi preparado parcialmente.${NC}" \
+            "${YELLOW_NEON}[COMPLETED WITH WARNINGS] The environment was partially prepared.${NC}" \
+            "${YELLOW_NEON}[COMPLETADO CON AVISOS] El entorno se preparó parcialmente."
+        echo -e "$dev_sep"
+    else
+        echo -e "${NEON_BLUE}--------------------------------------------------------------------------------------${NC}"
+        msg "${GREEN_NEON}[SUCESSO] Ambiente de Desenvolvimento configurado e validado com sucesso!${NC}" \
+            "${GREEN_NEON}[SUCCESS] Development environment configured and validated successfully!${NC}" \
+            "${GREEN_NEON}[ÉXITO] ¡Entorno de Desarrollo configurado y validado con éxito!"
+        echo -e "$dev_sep"
+    fi
+    echo ""
+    _dev_encerrar
+    sleep 1
+    return 0
+}
+
+export -f DEV_MODE
+
+#+++++++++++++++++++
 
 
 
@@ -4278,6 +5339,9 @@ OPCAO_INICIANTE_SCRIPT_PADRAO() {
         FUNCAO_INSTALAR_WALLPAPERS
     echo ""
     sleep 0.7
+    ESCOLHA_ENTRE_MODOS
+    echo ""
+    sleep 0.7 
     LIMPAR_ORFAOS
     sleep 0.7
     echo ""
@@ -4425,22 +5489,63 @@ OPCAO_PRE_DEFINIDAS_SCRIPTS() {
             clear
             MENU_CABECALHO
             echo ""
+            msg "${CYAN_NEON}[MODO DEV]${NC} Iniciando protocolo pré-definido Modo Dev..." \
+                "${CYAN_NEON}[DEV MODE]${NC} Starting predefined Dev Mode protocol..." \
+                "${CYAN_NEON}[MODO DEV]${NC} Iniciando protocolo predefinido Modo Dev..."
+            sleep 1
+            echo ""    
             FUNCAO_CORE
             sleep 1
             echo ""
             FUNCAO_OTIMIZACAO
             sleep 1
             echo ""
+            CODECS_MULTIMIDIA_CORE
+            sleep 1 
+            echo ""
+            FUNCAO_AUR_HELPER
+            sleep 1
+            echo ""
+            DEV_MODE
+            sleep 1
+            echo  ""
+            FUNCAO_INSTALAR_NAVEGADORES
+            sleep 1 
+            echo ""
+            FUNCAO_INSTALAR_ARCH_UPDATE_FULL
+            sleep 1
+            echo ""
+            FUNCAO_INSTALAR_WALLPAPERS
+            echo ""
+            sleep 1
+            LIMPAR_ORFAOS
+            sleep 1
+            echo ""
+            MENSAGEM_FINAL
+            sleep 1
+            echo ""
+            PERGUNTAR_REINICIAR
             ;;
         3|hacker|pentest|blackarch)
             echo ""
             clear
             MENU_CABECALHO
             echo ""
+            msg "${CYAN_NEON}[HACKER MODE]${NC} Iniciando protocolo para Modo Hacker / Pentest: habilitando repositórios BlackArch..." \
+                "${CYAN_NEON}[HACKER MODE]${NC} Starting protocol for Hacker / Pentest Mode: enabling BlackArch repositories..." \
+                "${CYAN_NEON}[HACKER MODE]${NC} Iniciando protocolo para Modo Hacker / Pentest: habilitando repositorios BlackArch..."
+            sleep 1
+            echo ""    
             FUNCAO_CORE
             sleep 1
             echo ""
             FUNCAO_OTIMIZACAO
+            sleep 1
+            echo ""
+            CODECS_MULTIMIDIA_CORE
+            sleep 1 
+            echo ""
+            FUNCAO_AUR_HELPER
             sleep 1
             echo ""
             ;;
