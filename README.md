@@ -1,9 +1,8 @@
 ### ⚡ Project Odin (`post-install-arch-full`)
+Odin Protocol: Advanced Arch Linux post-installation automation, intelligent multimedia codecs detection, AUR helpers.
 ---
 
 <img width="1280" height="896" alt="post-install-odin-nordic-banner-preview" src="https://github.com/user-attachments/assets/729d9577-2739-439a-afcd-adcbf80b912d" />
-
-Odin Protocol: Advanced Arch Linux post-installation automation, intelligent multimedia codecs detection, AUR helpers.
 
 > ⚠️ **WORK IN PROGRESS / EM DESENVOLVIMENTO**
 > Este repositório contém os scripts de automação pós-instalação para Arch Linux (Projeto Odin). 
