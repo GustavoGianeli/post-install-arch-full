@@ -16,7 +16,9 @@ Odin Protocol: Advanced Arch Linux post-installation automation, intelligent mul
 ## novas noticias logo!
 
 ---
-### 🛠️ 1. Via Git (recomendado para inspeção do PKGBUILD) > Pacote disponível no AUR: 
+### **Pacote disponível no AUR:** 
+
+### **🛠️ 1. Via Git (recomendado para inspeção do PKGBUILD)** 
 
 ```bash
 sudo pacman -S --needed git debugedit base-devel curl unzip pciutils enscript ghostscript glibc && \
@@ -25,20 +27,20 @@ cd post-install-arch-full && \
 makepkg -si
 ```
 ---------
-### Se você já tem um helper instalado pode instalar direto via AUR : 
+### **Se você já tem um helper instalado, pode instalar direto via AUR :** 
 
-### 1. Via yay: 
+### 1. **Via yay:** 
 ```bash
 yay -S --noconfirm post-install-arch-full
 ```
-### 2. Via paru:
+### 2. **Via paru:**
 ```bash
 paru -S --noconfirm post-install-arch-full
 ```
 ### 📦 Instalação do zero (helper + pacote)
-Se você ainda não tem nenhum helper AUR instalado, use um dos blocos abaixo. Eles instalam o helper a partir do código-fonte e, na sequência, já instalam o post-install-arch-full.
+**Se você ainda não tem nenhum helper AUR instalado, use um dos blocos abaixo. Eles instalam o helper a partir do código-fonte e, na sequência, já instalam o post-install-arch-full.**
 
-### Intalção junto com yay:
+### Intalação junto com yay:
 
 ```bash
 sudo pacman -S --needed base-devel git && \
