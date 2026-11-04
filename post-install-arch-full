@@ -5148,7 +5148,1769 @@ export -f DEV_MODE
 
 #+++++++++++++++++++
 
+HACKER_MODE() {
+    # --------------------------------------------------------------------------
+    # Estado do módulo
+    # --------------------------------------------------------------------------
+    local IFS=$' \t\n'
+    local had_errexit=0
+    [[ $- == *e* ]] && had_errexit=1
+    set +e
 
+    local -a SUDO=()
+    local -a INSTALADOS=() JA_INSTALADOS=() FALHARAM=() INDISPONIVEIS=()
+    local -a CONSULTA_FALHOU=() VALIDACAO_FALHOU=() REGISTRO=()
+    local -a grupos_disp=() membros=()
+    local -A T_PKGS=() T_GRP=() INST=() CLS_MAP=() REPO_MAP=() SZ_MAP=()
+    local EST_MB=0 FALTAM=0 LIVRE_MB=0 TRIM="" SAFE=""
+
+    local abortar=0 sync_pendente=0 so_ok=1 so_artix=0
+    local repo_estado="" repo_include=""
+    local CLS="" CLS_REPO="" ALT="" opcao="" tmp_user="" tmp_root="" ka_pid=""
+    local old_int="" old_term="" traps_set=0 sinal_hk=""
+    local tmp_base="${TMPDIR:-/tmp}"
+    [[ "$tmp_base" == /* && -d "$tmp_base" && -w "$tmp_base" ]] || tmp_base="/tmp"
+    local pacman_lock="/var/lib/pacman/db.lck"
+    local pacman_sync="/var/lib/pacman/sync"
+    local pinned_sha1="d338a4bb95d9e09f97508da68ac9e17d963b85f6"
+    local strap_url="https://blackarch.org/strap.sh"
+    local downloads_url="https://blackarch.org/downloads.html"
+    local hk_sep="${NEON_BLUE}==========================================================================================${NC}"
+    # Grupos de alto risco operacional: exigem uma confirmação extra.
+    local avancados=" blackarch-social blackarch-exploitation blackarch-backdoor blackarch-dos blackarch-spoof blackarch-keylogger blackarch-malware blackarch-bruteforce "
+
+    # Catálogo por tema (nomes de PACOTE, não de executável). Cada nome é
+    # classificado em tempo de execução; indisponível = registrado e ignorado.
+    T_PKGS[essencial]="nmap tcpdump wireshark-cli git python python-pip bind whois openbsd-netcat socat"
+    T_PKGS[recon]="amass assetfinder subfinder theharvester recon-ng bbot"
+    T_PKGS[scan]="nmap masscan nuclei nikto whatweb arjun"
+    T_PKGS[web]="burpsuite ffuf gobuster feroxbuster sqlmap wpscan"
+    T_PKGS[exploit]="metasploit exploitdb|exploit-db routersploit"
+    T_PKGS[cracker]="hashcat john hydra medusa"
+    T_PKGS[rede]="tcpdump wireshark-cli bettercap"
+    T_PKGS[wifi]="aircrack-ng kismet wifite hcxdumptool hcxtools"
+    T_PKGS[ad]="impacket netexec responder evil-winrm bloodhound"
+    T_PKGS[defesa]="aide chkrootkit rkhunter lynis clamav capa chainsaw yara"
+    T_PKGS[forense]="autopsy bulk-extractor dc3dd sleuthkit volatility3"
+    T_PKGS[re]="ghidra radare2 rizin rz-cutter|cutter binwalk flare-floss"
+    T_PKGS[code]="gitleaks trivy checkov dependency-check"
+    # Grupos BlackArch relacionados (apenas referência; a instalação de grupo é a opção 16).
+    T_GRP[recon]="blackarch-recon"
+    T_GRP[scan]="blackarch-scanner"
+    T_GRP[web]="blackarch-webapp"
+    T_GRP[exploit]="blackarch-exploitation"
+    T_GRP[cracker]="blackarch-cracker"
+    T_GRP[rede]="blackarch-networking blackarch-sniffer"
+    T_GRP[wifi]="blackarch-wireless"
+    T_GRP[ad]="blackarch-recon blackarch-scanner blackarch-exploitation"
+    T_GRP[defesa]="blackarch-defensive"
+    T_GRP[forense]="blackarch-forensic"
+    T_GRP[re]="blackarch-reversing blackarch-binary blackarch-malware"
+    T_GRP[code]="blackarch-code-audit"
+
+    # --------------------------------------------------------------------------
+    # Auxiliares de mensagem (sempre msg com 3 idiomas, cor sempre fechada)
+    # --------------------------------------------------------------------------
+    _hk_i() { msg "${CYAN_NEON}$1${NC}" "${CYAN_NEON}$2${NC}" "${CYAN_NEON}$3${NC}"; }
+    _hk_ok() { msg "${GREEN_NEON}[OK] $1${NC}" "${GREEN_NEON}[OK] $2${NC}" "${GREEN_NEON}[OK] $3${NC}"; }
+    _hk_w() { msg "${YELLOW_NEON}[AVISO] $1${NC}" "${YELLOW_NEON}[WARNING] $2${NC}" "${YELLOW_NEON}[AVISO] $3${NC}"; }
+    _hk_e() { msg "${RED_NEON}[ERRO] $1${NC}" "${RED_NEON}[ERROR] $2${NC}" "${RED_NEON}[ERROR] $3${NC}"; }
+    _hk_n() { msg "${YELLOW_NEON}[NOTA] $1${NC}" "${YELLOW_NEON}[NOTE] $2${NC}" "${YELLOW_NEON}[NOTA] $3${NC}"; }
+
+    # Texto digitado pelo usuário nunca vai cru para o msg (echo -e interpreta \).
+    _hk_safe() {
+        SAFE="${1//[^[:alnum:]._+@-]/?}"
+        SAFE="${SAFE:0:40}"
+    }
+
+    # Lê uma linha em $1. EOF => abortar=1 e retorno 1.
+    _hk_ler() {
+        IFS= read -r -p ">> " "$1" && return 0
+        abortar=1
+        return 1
+    }
+
+    _hk_recusada() {
+        _hk_w "Instalação recusada." "Installation declined." "Instalación rechazada."
+    }
+
+    _hk_msg_est() {
+        msg "${CYAN_NEON}Tamanho instalado estimado: ~$1 MiB${NC}" \
+            "${CYAN_NEON}Estimated installed size: ~$1 MiB${NC}" \
+            "${CYAN_NEON}Tamaño instalado estimado: ~$1 MiB${NC}"
+    }
+
+    _hk_trim() {
+        local s="$1"
+        s="${s#"${s%%[![:space:]]*}"}"
+        TRIM="${s%"${s##*[![:space:]]}"}"
+    }
+
+    # Adiciona sem duplicar (a lista é passada por nome).
+    _hk_add() {
+        local -n _lista="$1"
+        [[ " ${_lista[*]} " == *" $2 "* ]] || _lista+=("$2")
+    }
+
+    # Registro da sessão: data/hora, ação e resultado (sem dados sensíveis).
+    _hk_reg() {
+        local t=""
+        printf -v t '%(%H:%M:%S)T' -1
+        REGISTRO+=("$t | $1 | $2")
+    }
+
+    # Pergunta s/n. 0 = sim; 1 = não OU entrada encerrada (abortar=1 em EOF).
+    _hk_sn() {
+        local r=""
+        while true; do
+            msg "${YELLOW_NEON}$1 (s/n)${NC}" "${YELLOW_NEON}$2 (y/n)${NC}" "${YELLOW_NEON}$3 (s/n)${NC}"
+            _hk_ler r || return 1
+            _hk_trim "${r,,}"
+            if [[ "$TRIM" =~ ^(s|sim|y|yes|si|sí)$ ]]; then
+                return 0
+            elif [[ "$TRIM" =~ ^(n|nao|não|no)$ ]]; then
+                return 1
+            else
+                _hk_e "Resposta inválida! Digite s ou n." \
+                      "Invalid answer! Type y or n." \
+                      "¡Respuesta inválida! Escriba s o n."
+                sleep 1
+            fi
+        done
+    }
+
+    _hk_carregar_inst() {
+        local p="" lista=""
+        INST=()
+        lista=$(pacman -Qq 2>/dev/null) || return 1
+        while IFS= read -r p; do
+            [[ -n "$p" ]] && INST[$p]=1
+        done <<< "$lista"
+        return 0
+    }
+
+    _hk_parse_si() {
+        local linha="" repo="" nome="" val="" num="" un="" v=0 alvo=""
+        while IFS= read -r linha; do
+            if [[ "$linha" == Repository*:* ]]; then
+                repo="${linha#*: }"
+                repo="${repo%% *}"
+            elif [[ "$linha" == Name*:* ]]; then
+                nome="${linha#*: }"
+                nome="${nome%% *}"
+                CLS_MAP[$nome]="disponivel"
+                REPO_MAP[$nome]="$repo"
+                SZ_MAP[$nome]=-1
+            elif [[ "$linha" == "Installed Size"*:* ]]; then
+                val="${linha#*: }"
+                num="${val%% *}"
+                un="${val##* }"
+                if [[ -n "$nome" && "$num" =~ ^[0-9]+\.[0-9]{2}$ ]]; then
+                    v="${num/./}"
+                    v=$((10#$v))
+                    case "$un" in
+                        MiB) ;;
+                        KiB) v=$((v / 1024)) ;;
+                        GiB) v=$((v * 1024)) ;;
+                        B)   v=$((v / 1048576)) ;;
+                        *)   v=-100 ;;
+                    esac
+                    if (( v >= 0 )); then SZ_MAP[$nome]=$(( (v + 99) / 100 )); fi
+                fi
+            elif [[ "$linha" == error:* ]]; then
+                if [[ "$linha" == *"was not found"* || "$linha" == *"target not found"* ]]; then
+                    if [[ "$linha" == *"'"* ]]; then
+                        alvo="${linha#*\'}"
+                        alvo="${alvo%%\'*}"
+                    else
+                        alvo="${linha##*: }"
+                    fi
+                    CLS_MAP[$alvo]="indisponivel"
+                fi
+            fi
+        done
+    }
+
+    _hk_classificar_lote() {
+        local p="" out="" prc=0 sat=""
+        local -a consulta=() indisp=()
+        CLS_MAP=() REPO_MAP=() SZ_MAP=()
+        if ! _hk_carregar_inst; then
+            for p in "$@"; do CLS_MAP[$p]="erro"; done
+            return 1
+        fi
+        for p in "$@"; do
+            if [[ ! "$p" =~ ^[a-zA-Z0-9@._+-]+$ ]]; then
+                CLS_MAP[$p]="indisponivel"
+            elif [[ -n "${INST[$p]:-}" ]]; then
+                CLS_MAP[$p]="instalado"
+            else
+                consulta+=("$p")
+            fi
+        done
+        (( ${#consulta[@]} > 0 )) || return 0
+        out=$(LC_ALL=C pacman -Si -- "${consulta[@]}" 2>&1)
+        _hk_parse_si <<< "$out"
+        for p in "${consulta[@]}"; do
+            if [[ -z "${CLS_MAP[$p]:-}" ]]; then
+                CLS_MAP[$p]="erro"
+            elif [[ "${CLS_MAP[$p]}" == "indisponivel" ]]; then
+                indisp+=("$p")
+            fi
+        done
+        if (( ${#indisp[@]} > 0 )); then
+            sat=$(pacman -T -- "${indisp[@]}" 2>/dev/null)
+            prc=$?
+            if (( prc == 0 || prc == 127 )); then
+                sat=$'\n'"$sat"$'\n'
+                for p in "${indisp[@]}"; do
+                    [[ "$sat" == *$'\n'"$p"$'\n'* ]] || CLS_MAP[$p]="instalado"
+                done
+            fi
+        fi
+        return 0
+    }
+
+    _hk_resolver() {
+        local cand="" c=""
+        local -a alts=()
+        IFS='|' read -r -a alts <<< "$1"
+        CLS="indisponivel"
+        for cand in "${alts[@]}"; do
+            c="${CLS_MAP[$cand]:-erro}"
+            if [[ "$c" == "instalado" || "$c" == "disponivel" ]]; then
+                ALT="$cand"
+                CLS="$c"
+                CLS_REPO="${REPO_MAP[$cand]:-}"
+                return 0
+            fi
+            [[ "$c" == "erro" ]] && CLS="erro"
+        done
+        ALT="${alts[0]}"
+        CLS_REPO=""
+        return 0
+    }
+
+    #
+    _hk_soma_sz() {
+        local p="" v=0
+        EST_MB=0
+        for p in "$@"; do
+            v="${SZ_MAP[$p]:--1}"
+            (( v >= 0 )) || return 1
+            EST_MB=$((EST_MB + v))
+        done
+        return 0
+    }
+
+    _hk_membros() {
+        local out="" rc=0 a="" b=""
+        local -A vistos=()
+        membros=()
+        out=$(LC_ALL=C pacman -Sg -- "$1" 2>&1)
+        rc=$?
+        if (( rc != 0 )); then
+            if [[ "$out" == *"was not found"* || "$out" == *"target not found"* ]]; then
+                return 1
+            fi
+            return 2
+        fi
+        while read -r a b; do
+            if [[ "$a" == "$1" && -n "$b" && -z "${vistos[$b]:-}" ]]; then
+                vistos[$b]=1
+                membros+=("$b")
+            fi
+        done <<< "$out"
+        (( ${#membros[@]} > 0 )) || return 1
+        return 0
+    }
+
+    
+    _hk_estimar_mb() {
+        local -a todos=("$@")
+        local i=0 out=""
+        EST_MB=0
+        (( ${#todos[@]} > 0 )) || return 1
+        CLS_MAP=() REPO_MAP=() SZ_MAP=()
+        for (( i = 0; i < ${#todos[@]}; i += 150 )); do
+            out=$(LC_ALL=C pacman -Si -- "${todos[@]:i:150}" 2>/dev/null) || return 1
+            _hk_parse_si <<< "$out"
+        done
+        _hk_soma_sz "${todos[@]}"
+    }
+
+    # Espaço livre (MiB) no menor entre / e o cache do pacman.
+    _hk_livre_mb() {
+        local av=""
+        LIVRE_MB=-1
+        while read -r _ _ _ av _; do
+            [[ "$av" =~ ^[0-9]+$ ]] || continue
+            if (( LIVRE_MB < 0 || av < LIVRE_MB )); then LIVRE_MB="$av"; fi
+        done < <(df -Pm / /var/cache/pacman/pkg 2>/dev/null)
+        (( LIVRE_MB >= 0 ))
+    }
+
+    # Bloqueia a operação se não houver espaço (não começa para descobrir no meio).
+    _hk_checar_espaco() {
+        local nec="$1"
+        if ! _hk_livre_mb; then
+            _hk_e "Não foi possível medir o espaço livre em disco. Operação bloqueada por segurança." \
+                  "Could not measure the free disk space. Operation blocked for safety." \
+                  "No se pudo medir el espacio libre en disco. Operación bloqueada por seguridad."
+            return 1
+        fi
+        if (( LIVRE_MB < nec )); then
+            _hk_e "Espaço insuficiente: necessário ~${nec} MiB, livre ${LIVRE_MB} MiB." \
+                  "Insufficient space: ~${nec} MiB required, ${LIVRE_MB} MiB free." \
+                  "Espacio insuficiente: se necesitan ~${nec} MiB, libres ${LIVRE_MB} MiB."
+            return 1
+        fi
+        _hk_ok "Espaço verificado: ~${nec} MiB necessários, ${LIVRE_MB} MiB livres." \
+               "Space verified: ~${nec} MiB required, ${LIVRE_MB} MiB free." \
+               "Espacio verificado: ~${nec} MiB necesarios, ${LIVRE_MB} MiB libres."
+        return 0
+    }
+
+    # Espera um pacman legítimo terminar; NUNCA remove a trava nem mata processo.
+    _hk_trava() {
+        local espera=0
+        while [[ -e "$pacman_lock" ]] && pgrep -x pacman &>/dev/null && (( espera < 30 )); do
+            if (( espera == 0 )); then
+                _hk_w "Há outro pacman em execução. Aguardando ele terminar..." \
+                      "Another pacman is running. Waiting for it to finish..." \
+                      "Hay otro pacman en ejecución. Esperando a que termine..."
+            fi
+            sleep 2
+            espera=$((espera + 1))
+        done
+        if [[ -e "$pacman_lock" ]]; then
+            _hk_e "O banco do pacman está travado ($pacman_lock). Nada foi removido. Se nenhum pacman estiver rodando, remova a trava manualmente e tente de novo." \
+                  "The pacman database is locked ($pacman_lock). Nothing was removed. If no pacman is running, remove the lock manually and try again." \
+                  "La base de datos de pacman está bloqueada ($pacman_lock). No se eliminó nada. Si no hay ningún pacman en ejecución, elimine el bloqueo manualmente e inténtelo de nuevo."
+            return 1
+        fi
+        return 0
+    }
+
+    # Condições comuns antes de QUALQUER instalação.
+    _hk_pre() {
+        local pend="" prc=0 npend=0 l=""
+        _hk_ferramentas || return 1
+       
+        _hk_repo_estado
+        if [[ "$repo_estado" != "ausente" && "$repo_estado" != "funcional" ]]; then
+            _hk_estado_txt
+            _hk_e "Instalação bloqueada: corrija a configuração do BlackArch (opção 1 ou manualmente) e tente de novo." \
+                  "Installation blocked: fix the BlackArch configuration (option 1 or manually) and try again." \
+                  "Instalación bloqueada: corrija la configuración de BlackArch (opción 1 o manualmente) e inténtelo de nuevo."
+            return 1
+        fi
+        if ! compgen -G "$pacman_sync/*.db" >/dev/null; then
+            _hk_e "Nenhuma base do pacman está sincronizada. Atualize o sistema (pacman -Syu) antes." \
+                  "No pacman database is synchronized. Update the system (pacman -Syu) first." \
+                  "Ninguna base de datos de pacman está sincronizada. Actualice el sistema (pacman -Syu) antes."
+            return 1
+        fi
+        _hk_trava || return 1
+        if (( sync_pendente )); then
+            _hk_w "O BlackArch acabou de ser habilitado e o sistema ainda NÃO foi atualizado. Instalar agora causaria atualização parcial (não suportada pelo Arch)." \
+                  "BlackArch was just enabled and the system has NOT been updated yet. Installing now would cause a partial upgrade (unsupported by Arch)." \
+                  "BlackArch se acaba de habilitar y el sistema AÚN NO se actualizó. Instalar ahora causaría una actualización parcial (no soportada por Arch)."
+            _hk_exigir_syu || return 1
+        fi
+      
+        pend=$(LC_ALL=C pacman -Qu 2>&1)
+        prc=$?
+        if (( prc != 0 )) && [[ "$pend" == *"error:"* ]]; then
+            _hk_e "A consulta de atualizações pendentes falhou; por segurança a instalação foi interrompida." \
+                  "The pending-updates query failed; installation was stopped for safety." \
+                  "Falló la consulta de actualizaciones pendientes; la instalación se detuvo por seguridad."
+            _hk_add CONSULTA_FALHOU "pacman-Qu"
+            return 1
+        fi
+        while IFS= read -r l; do
+            [[ "$l" == *" -> "* ]] && npend=$((npend + 1))
+        done <<< "$pend"
+        if (( npend > 0 )); then
+            _hk_w "Há ${npend} pacote(s) com atualização disponível. Para evitar atualização parcial, conclua o pacman -Syu antes de instalar ferramentas." \
+                  "${npend} package(s) have updates available. To avoid a partial upgrade, finish pacman -Syu before installing tools." \
+                  "Hay ${npend} paquete(s) con actualización disponible. Para evitar una actualización parcial, complete pacman -Syu antes de instalar herramientas."
+            _hk_exigir_syu || return 1
+        fi
+        return 0
+    }
+
+    _hk_sn_syu() {
+        _hk_sn "Executar a atualização completa (pacman -Syu) agora?" \
+               "Run the full system update (pacman -Syu) now?" \
+               "¿Ejecutar la actualización completa (pacman -Syu) ahora?"
+    }
+
+    # Oferece o -Syu; recusar adia a instalação (retorno 1).
+    _hk_exigir_syu() {
+        if ! _hk_sn_syu; then
+            _hk_w "Instalação adiada: atualize o sistema primeiro." \
+                  "Installation postponed: update the system first." \
+                  "Instalación aplazada: actualice el sistema primero."
+            return 1
+        fi
+        _hk_atualizar
+    }
+
+    _hk_atualizar() {
+        _hk_i "Executando: pacman -Syu (acompanhe a lista de pacotes e confirme)..." \
+              "Running: pacman -Syu (review the package list and confirm)..." \
+              "Ejecutando: pacman -Syu (revise la lista de paquetes y confirme)..."
+        if "${SUDO[@]}" pacman -Syu; then
+            sync_pendente=0
+            _hk_reg "pacman -Syu" "OK"
+            _hk_ok "Sistema sincronizado e atualizado." \
+                   "System synchronized and updated." \
+                   "Sistema sincronizado y actualizado."
+            return 0
+        fi
+        _hk_reg "pacman -Syu" "FALHOU"
+        _hk_e "A atualização completa falhou ou foi recusada. Nenhuma instalação será feita enquanto o sistema não estiver atualizado." \
+              "The full update failed or was declined. Nothing will be installed until the system is up to date." \
+              "La actualización completa falló o fue rechazada. No se instalará nada hasta que el sistema esté actualizado."
+        return 1
+    }
+
+    _hk_so() {
+        local os_id="" os_like="" arq="" k="" v=""
+        so_ok=1
+        so_artix=0
+        if [[ -r /etc/os-release ]]; then
+            while IFS='=' read -r k v; do
+                v="${v//\"/}"
+                v="${v//\'/}"
+                if [[ "$k" == "ID" ]]; then
+                    os_id="${v,,}"
+                elif [[ "$k" == "ID_LIKE" ]]; then
+                    os_like="${v,,}"
+                fi
+            done < /etc/os-release
+        fi
+        arq="${HOSTTYPE:-}"
+        [[ -n "$arq" ]] || arq=$(uname -m 2>/dev/null)
+        case "$os_id" in
+            arch|archarm) ;;
+            manjaro) so_ok=0 ;;
+            artix) so_artix=1 ;;
+            *) [[ " $os_like " == *" arch "* ]] || so_ok=0 ;;
+        esac
+        if [[ "$arq" != "x86_64" && "$arq" != "aarch64" ]]; then so_ok=0; fi
+        msg "${CYAN_NEON}Sistema: ${os_id:-?} (${os_like:--}) | Arquitetura: ${arq:-?}${NC}" \
+            "${CYAN_NEON}System: ${os_id:-?} (${os_like:--}) | Architecture: ${arq:-?}${NC}" \
+            "${CYAN_NEON}Sistema: ${os_id:-?} (${os_like:--}) | Arquitectura: ${arq:-?}${NC}"
+        if (( ! so_ok )); then
+            _hk_e "Sistema não compatível com o BlackArch (é preciso Arch Linux ou derivado direto, em x86_64/aarch64; Manjaro não é suportado)." \
+                  "System not compatible with BlackArch (Arch Linux or a direct derivative on x86_64/aarch64 is required; Manjaro is unsupported)." \
+                  "Sistema no compatible con BlackArch (se requiere Arch Linux o un derivado directo en x86_64/aarch64; Manjaro no está soportado)."
+            return 1
+        fi
+        if (( so_artix )); then
+            _hk_w "Artix detectado: o BlackArch é projetado para Arch Linux; o uso aqui não é oficialmente suportado." \
+                  "Artix detected: BlackArch is designed for Arch Linux; usage here is not officially supported." \
+                  "Artix detectado: BlackArch está diseñado para Arch Linux; su uso aquí no está soportado oficialmente."
+        fi
+        return 0
+    }
+
+    _hk_ferramentas() {
+        local t="" falta="" lista="awk sort df pgrep"
+        [[ "${1:-}" == "repo" ]] && lista+=" curl sha1sum mktemp install stat"
+        for t in $lista; do
+            command -v "$t" &>/dev/null || falta+="$t "
+        done
+        if [[ -n "$falta" ]]; then
+            _hk_e "Ferramentas necessárias ausentes: $falta" \
+                  "Required tools are missing: $falta" \
+                  "Faltan herramientas necesarias: $falta"
+            return 1
+        fi
+        return 0
+    }
+
+    # Distingue DNS, conexão, TLS e tempo esgotado.
+    _hk_rede() {
+        local rc=0
+        curl -fsS --proto '=https' --proto-redir '=https' --tlsv1.2 --connect-timeout 10 --max-time 20 -o /dev/null "$downloads_url" 2>/dev/null
+        rc=$?
+        case "$rc" in
+            0) return 0 ;;
+            6)
+                _hk_e "Falha de DNS: não foi possível resolver blackarch.org." \
+                      "DNS failure: could not resolve blackarch.org." \
+                      "Fallo de DNS: no se pudo resolver blackarch.org."
+                ;;
+            7|35|51|58|60)
+                _hk_e "Falha de conexão/TLS com blackarch.org (curl código $rc)." \
+                      "Connection/TLS failure reaching blackarch.org (curl code $rc)." \
+                      "Fallo de conexión/TLS con blackarch.org (código curl $rc)."
+                ;;
+            28)
+                _hk_e "Tempo esgotado ao contatar blackarch.org." \
+                      "Timed out contacting blackarch.org." \
+                      "Tiempo agotado al contactar blackarch.org."
+                ;;
+            *)
+                _hk_e "Sem acesso ao site do BlackArch (curl código $rc)." \
+                      "No access to the BlackArch site (curl code $rc)." \
+                      "Sin acceso al sitio de BlackArch (código curl $rc)."
+                ;;
+        esac
+        return 1
+    }
+
+    _hk_repo_estado() {
+        local info="" rest="" n=0 l="" achou=0 out=""
+        repo_estado="ausente"
+        repo_include=""
+        if [[ ! -r /etc/pacman.conf ]]; then
+            repo_estado="config-invalida"
+            return 2
+        fi
+        info=$(awk '
+            /^[[:space:]]*#/ {next}
+            /^[[:space:]]*\[/ {
+                sec = $0; gsub(/[[:space:]]/, "", sec); gsub(/\[|\]/, "", sec)
+                if (sec == "blackarch") n++
+                next
+            }
+            /^[[:space:]]*SigLevel[[:space:]]*=/ {
+                if (sec == "options") g = g " " tolower($0)
+                else if (sec == "blackarch") r = r " " tolower($0)
+            }
+            sec == "blackarch" && n == 1 && inc == "" && /^[[:space:]]*Include[[:space:]]*=/ {
+                x = $0; sub(/^[^=]*=[[:space:]]*/, "", x); sub(/[[:space:]]+#.*/, "", x); gsub(/^[[:space:]]+|[[:space:]]+$/, "", x); inc = x
+            }
+            END {
+                a = (r != "") ? r : g; ok = "ok"
+                if (a != "" && (a ~ /(^|[ \t=])(never|trustall|optional)([ \t]|$)/ || a !~ /required/)) ok = "bad"
+                print ok "|" n + 0 "|" inc
+            }' /etc/pacman.conf 2>/dev/null)
+        if [[ "${info%%|*}" != "ok" ]]; then
+            repo_estado="assinatura-insegura"
+            return 2
+        fi
+        rest="${info#*|}"
+        n="${rest%%|*}"
+        repo_include="${rest#*|}"
+        [[ "$n" =~ ^[0-9]+$ ]] || n=0
+        if (( n == 0 )); then
+            # Definida fora do pacman.conf (ex.: arquivo incluído)? Não é "ausente".
+            if command -v pacman-conf &>/dev/null; then
+                out=$(pacman-conf --repo-list 2>/dev/null)
+                if [[ $'\n'"$out"$'\n' == *$'\n'blackarch$'\n'* ]]; then
+                    repo_estado="config-externa"
+                    return 2
+                fi
+            fi
+            return 1
+        fi
+        if (( n > 1 )); then
+            repo_estado="duplicada"
+            return 2
+        fi
+        if [[ -z "$repo_include" ]]; then
+            repo_estado="config-parcial"
+            return 2
+        fi
+        if [[ "$repo_include" == /* && -r "$repo_include" ]]; then
+            while IFS= read -r l; do
+                if [[ "$l" =~ ^[[:space:]]*Server[[:space:]]*=[[:space:]]*https:// ]]; then
+                    achou=1
+                    break
+                fi
+            done < "$repo_include"
+        fi
+        if (( ! achou )); then
+            repo_estado="mirrorlist-parcial"
+            return 2
+        fi
+        if ! pacman -Q blackarch-keyring &>/dev/null; then
+            repo_estado="keyring-ausente"
+            return 2
+        fi
+        l=""
+        read -r l < <(pacman -Sl blackarch 2>/dev/null)
+        if [[ -z "$l" ]]; then
+            repo_estado="precisa-sync"
+            return 2
+        fi
+        repo_estado="funcional"
+        return 0
+    }
+
+    
+    _hk_estado_txt() {
+        case "$repo_estado" in
+            funcional)
+                _hk_ok "BlackArch: FUNCIONAL (seção, mirrorlist HTTPS, keyring e banco sincronizado)." \
+                       "BlackArch: HEALTHY (section, HTTPS mirrorlist, keyring and synchronized database)." \
+                       "BlackArch: FUNCIONAL (sección, mirrorlist HTTPS, keyring y base sincronizada)." ;;
+            ausente)
+                _hk_w "BlackArch: AUSENTE (nenhuma seção [blackarch] em /etc/pacman.conf)." \
+                      "BlackArch: ABSENT (no [blackarch] section in /etc/pacman.conf)." \
+                      "BlackArch: AUSENTE (ninguna sección [blackarch] en /etc/pacman.conf)." ;;
+            duplicada)
+                _hk_e "BlackArch: seção [blackarch] DUPLICADA em /etc/pacman.conf. Corrija manualmente; nada foi alterado." \
+                      "BlackArch: [blackarch] section DUPLICATED in /etc/pacman.conf. Fix it manually; nothing was changed." \
+                      "BlackArch: sección [blackarch] DUPLICADA en /etc/pacman.conf. Corríjalo manualmente; no se cambió nada." ;;
+            config-invalida)
+                _hk_e "BlackArch: /etc/pacman.conf ausente ou ilegível." \
+                      "BlackArch: /etc/pacman.conf is missing or unreadable." \
+                      "BlackArch: /etc/pacman.conf ausente o ilegible." ;;
+            assinatura-insegura)
+                _hk_e "A política SigLevel do pacman é insegura (Never/TrustAll/Optional). O módulo não a enfraquece nem a corrige; ajuste /etc/pacman.conf." \
+                      "The pacman SigLevel policy is unsafe (Never/TrustAll/Optional). The module neither weakens nor fixes it; edit /etc/pacman.conf." \
+                      "La política SigLevel de pacman es insegura (Never/TrustAll/Optional). El módulo no la debilita ni la corrige; edite /etc/pacman.conf." ;;
+            config-externa)
+                _hk_e "BlackArch: o repositório está definido fora de /etc/pacman.conf (arquivo incluído). Não vou mexer nisso automaticamente." \
+                      "BlackArch: the repository is defined outside /etc/pacman.conf (an included file). I will not touch it automatically." \
+                      "BlackArch: el repositorio está definido fuera de /etc/pacman.conf (archivo incluido). No lo modificaré automáticamente." ;;
+            config-parcial)
+                _hk_e "BlackArch: a seção [blackarch] existe, mas não tem diretiva Include. Não vou reescrever o pacman.conf (poderia apagar personalizações)." \
+                      "BlackArch: the [blackarch] section exists but has no Include directive. I will not rewrite pacman.conf (it could erase customizations)." \
+                      "BlackArch: la sección [blackarch] existe pero no tiene directiva Include. No reescribiré pacman.conf (podría borrar personalizaciones)." ;;
+            mirrorlist-parcial)
+                _hk_w "BlackArch: o mirrorlist (${repo_include:-?}) está ausente, ilegível ou sem entradas HTTPS." \
+                      "BlackArch: the mirrorlist (${repo_include:-?}) is missing, unreadable or has no HTTPS entries." \
+                      "BlackArch: el mirrorlist (${repo_include:-?}) está ausente, ilegible o sin entradas HTTPS." ;;
+            keyring-ausente)
+                _hk_w "BlackArch: o pacote blackarch-keyring não está instalado." \
+                      "BlackArch: the blackarch-keyring package is not installed." \
+                      "BlackArch: el paquete blackarch-keyring no está instalado." ;;
+            precisa-sync)
+                _hk_w "BlackArch: configurado, mas o banco sincronizado está ausente/vazio. É preciso sincronizar (pacman -Syu)." \
+                      "BlackArch: configured, but the synchronized database is missing/empty. A sync is needed (pacman -Syu)." \
+                      "BlackArch: configurado, pero la base sincronizada está ausente/vacía. Hace falta sincronizar (pacman -Syu)." ;;
+        esac
+    }
+
+    _hk_mostrar_repo() {
+        _hk_repo_estado
+        _hk_estado_txt
+    }
+
+    # Exige o repositório funcional (para grupos/populares/completo).
+    _hk_exige_repo() {
+        _hk_repo_estado
+        if [[ "$repo_estado" != "funcional" ]]; then
+            _hk_estado_txt
+            _hk_e "Esta opção exige o BlackArch funcional. Use a opção 1 primeiro." \
+                  "This option requires a functional BlackArch. Use option 1 first." \
+                  "Esta opción requiere BlackArch funcional. Use primero la opción 1."
+            return 1
+        fi
+        return 0
+    }
+
+    # --------------------------------------------------------------------------
+    # Habilitar BlackArch (strap.sh oficial, com verificação de integridade)
+    # --------------------------------------------------------------------------
+    _hk_limpar_tmp() {
+        if [[ -n "$tmp_user" && -d "$tmp_user" && "$tmp_user" == "${tmp_base%/}"/odin-hk.* ]]; then
+            rm -rf -- "${tmp_user:?}"
+        fi
+        tmp_user=""
+        if [[ -n "$tmp_root" && "$tmp_root" == /var/tmp/odin-hk-root.* ]]; then
+            "${SUDO[@]}" rm -rf -- "${tmp_root:?}" 2>/dev/null
+        fi
+        tmp_root=""
+    }
+
+    _hk_habilitar_blackarch() {
+        local strap="" calc="" calc2="" first="" interp="sh" tam=0 rc=0 mirror_antes=0
+        local mirror_path="/etc/pacman.d/blackarch-mirrorlist"
+
+        _hk_i "[BlackArch] Verificando o ambiente e o estado do repositório..." \
+              "[BlackArch] Checking the environment and the repository state..." \
+              "[BlackArch] Verificando el entorno y el estado del repositorio..."
+        _hk_ferramentas repo || return 1
+        _hk_trava || return 1
+
+        _hk_mostrar_repo
+        case "$repo_estado" in
+            funcional)
+                _hk_ok "O repositório BlackArch já está configurado e funcional. Nada a fazer." \
+                       "The BlackArch repository is already configured and functional. Nothing to do." \
+                       "El repositorio BlackArch ya está configurado y funcional. Nada que hacer."
+                _hk_add JA_INSTALADOS "repo-blackarch"
+                _hk_reg "BlackArch" "já funcional"
+                return 0
+                ;;
+            duplicada|config-invalida|assinatura-insegura|config-parcial|config-externa)
+                _hk_e "O instalador oficial NÃO será executado sobre uma configuração ambígua/insegura. Corrija e tente de novo." \
+                      "The official installer will NOT be run on top of an ambiguous/unsafe configuration. Fix it and retry." \
+                      "El instalador oficial NO se ejecutará sobre una configuración ambigua/insegura. Corríjala e inténtelo de nuevo."
+                _hk_reg "BlackArch" "bloqueado: $repo_estado"
+                return 1
+                ;;
+            mirrorlist-parcial)
+                if [[ "$repo_include" != "$mirror_path" ]]; then
+                    _hk_e "O mirrorlist configurado é personalizado ($repo_include). Para preservá-lo, o módulo não o substitui. Corrija-o manualmente." \
+                          "The configured mirrorlist is custom ($repo_include). To preserve it, the module will not replace it. Fix it manually." \
+                          "El mirrorlist configurado es personalizado ($repo_include). Para preservarlo, el módulo no lo sustituye. Corríjalo manualmente."
+                    _hk_reg "BlackArch" "mirrorlist personalizado"
+                    return 1
+                fi
+                ;;
+            precisa-sync)
+                _hk_n "O repositório já está configurado: só falta sincronizar. Isto se resolve com a atualização completa, sem executar o strap.sh." \
+                      "The repository is already configured: it only needs syncing. A full update fixes this, without running strap.sh." \
+                      "El repositorio ya está configurado: solo falta sincronizar. Se resuelve con la actualización completa, sin ejecutar strap.sh."
+                if _hk_sn_syu; then
+                    _hk_trava && _hk_atualizar
+                    _hk_repo_estado
+                    [[ "$repo_estado" == "funcional" ]] && return 0
+                fi
+                return 1
+                ;;
+        esac
+
+        _hk_rede || { _hk_reg "BlackArch" "sem rede"; return 1; }
+        _hk_checar_espaco 2048 || return 1
+
+        if ! _hk_sn "Baixar, verificar (SHA-1 fixado) e executar o instalador OFICIAL do BlackArch (strap.sh)? Ele altera /etc/pacman.conf, instala chaves e sincroniza os bancos. Se ele perguntar sobre 'pacman -Su', responda n: o Odin oferece o -Syu completo depois." \
+                    "Download, verify (pinned SHA-1) and run the OFFICIAL BlackArch installer (strap.sh)? It edits /etc/pacman.conf, installs keys and syncs the databases. If it asks about 'pacman -Su', answer n: Odin offers the full -Syu afterwards." \
+                    "¿Descargar, verificar (SHA-1 fijado) y ejecutar el instalador OFICIAL de BlackArch (strap.sh)? Modifica /etc/pacman.conf, instala claves y sincroniza las bases. Si pregunta por 'pacman -Su', responda n: Odin ofrece el -Syu completo después."; then
+            _hk_w "Operação cancelada pelo usuário." \
+                  "Operation cancelled by the user." \
+                  "Operación cancelada por el usuario."
+            _hk_reg "BlackArch" "cancelado"
+            return 1
+        fi
+
+        tmp_user=$(mktemp -d "${tmp_base%/}/odin-hk.XXXXXX" 2>/dev/null) || tmp_user=""
+        if [[ -z "$tmp_user" ]]; then
+            _hk_e "Não foi possível criar o diretório temporário." \
+                  "Could not create the temporary directory." \
+                  "No se pudo crear el directorio temporal."
+            return 1
+        fi
+        chmod 700 "$tmp_user" 2>/dev/null
+        strap="$tmp_user/strap.sh"
+
+        _hk_i "Baixando strap.sh por HTTPS..." \
+              "Downloading strap.sh over HTTPS..." \
+              "Descargando strap.sh por HTTPS..."
+        if ! curl -fsSL --proto '=https' --proto-redir '=https' --tlsv1.2 --retry 2 --connect-timeout 15 --max-time 120 -o "$strap" "$strap_url"; then
+            _hk_e "Falha no download do strap.sh. Nada foi executado." \
+                  "strap.sh download failed. Nothing was executed." \
+                  "Falló la descarga de strap.sh. No se ejecutó nada."
+            _hk_reg "BlackArch" "download falhou"
+            _hk_limpar_tmp
+            return 1
+        fi
+        tam=$(stat -c '%s' "$strap" 2>/dev/null)
+        [[ "$tam" =~ ^[0-9]+$ ]] || tam=0
+        IFS= read -r first < "$strap" 2>/dev/null
+        if (( tam < 100 || tam > 500000 )) || [[ "$first" != '#!'* ]]; then
+            _hk_e "O arquivo baixado não parece um script válido. Nada foi executado." \
+                  "The downloaded file does not look like a valid script. Nothing was executed." \
+                  "El archivo descargado no parece un script válido. No se ejecutó nada."
+            _hk_reg "BlackArch" "arquivo inválido"
+            _hk_limpar_tmp
+            return 1
+        fi
+        [[ "$first" == *bash* ]] && interp="bash"
+
+        calc=""
+        read -r calc _ < <(sha1sum "$strap" 2>/dev/null)
+        msg "${CYAN_NEON}SHA-1 do arquivo baixado : ${calc:-?}${NC}\n${CYAN_NEON}SHA-1 oficial fixado     : ${pinned_sha1}${NC}" \
+            "${CYAN_NEON}Downloaded file SHA-1 : ${calc:-?}${NC}\n${CYAN_NEON}Pinned official SHA-1  : ${pinned_sha1}${NC}" \
+            "${CYAN_NEON}SHA-1 del archivo     : ${calc:-?}${NC}\n${CYAN_NEON}SHA-1 oficial fijado  : ${pinned_sha1}${NC}"
+        if [[ ! "$calc" =~ ^[0-9a-f]{40}$ ]]; then
+            _hk_e "Não foi possível calcular o checksum. Nada foi executado." \
+                  "Could not compute the checksum. Nothing was executed." \
+                  "No se pudo calcular el checksum. No se ejecutó nada."
+            _hk_limpar_tmp
+            return 1
+        fi
+        if [[ "$calc" != "$pinned_sha1" ]]; then
+            _hk_e "CHECKSUM INVÁLIDO: o strap.sh NÃO confere com o SHA-1 oficial fixado e NÃO foi executado. Se o BlackArch publicou uma nova versão, confira o hash em blackarch.org/downloads.html e atualize o valor fixado no módulo." \
+                  "INVALID CHECKSUM: strap.sh does NOT match the pinned official SHA-1 and was NOT executed. If BlackArch published a new version, check the hash at blackarch.org/downloads.html and update the value pinned in the module." \
+                  "CHECKSUM INVÁLIDO: strap.sh NO coincide con el SHA-1 oficial fijado y NO se ejecutó. Si BlackArch publicó una versión nueva, compruebe el hash en blackarch.org/downloads.html y actualice el valor fijado en el módulo."
+            _hk_reg "BlackArch" "checksum inválido"
+            _hk_limpar_tmp
+            return 1
+        fi
+        _hk_ok "Checksum confere com o valor oficial fixado." \
+               "Checksum matches the pinned official value." \
+               "El checksum coincide con el valor oficial fijado."
+
+        
+        tmp_root=$("${SUDO[@]}" mktemp -d /var/tmp/odin-hk-root.XXXXXX 2>/dev/null) || tmp_root=""
+        if [[ -z "$tmp_root" ]] \
+            || ! "${SUDO[@]}" chmod 700 "$tmp_root" \
+            || ! "${SUDO[@]}" install -m 0700 -o root -g root -- "$strap" "$tmp_root/strap.sh"; then
+            _hk_e "Não foi possível preparar a cópia segura do instalador (privilégios)." \
+                  "Could not prepare the secure copy of the installer (privileges)." \
+                  "No se pudo preparar la copia segura del instalador (privilegios)."
+            _hk_limpar_tmp
+            return 1
+        fi
+        calc2=""
+        read -r calc2 _ < <("${SUDO[@]}" sha1sum "$tmp_root/strap.sh" 2>/dev/null)
+        if [[ "$calc2" != "$calc" ]]; then
+            _hk_e "A cópia segura não confere com o arquivo verificado. Abortado." \
+                  "The secure copy does not match the verified file. Aborted." \
+                  "La copia segura no coincide con el archivo verificado. Abortado."
+            _hk_limpar_tmp
+            return 1
+        fi
+        if ! "${SUDO[@]}" cp -a -- /etc/pacman.conf "$tmp_root/pacman.conf.bak"; then
+            _hk_e "Não foi possível salvar o backup de /etc/pacman.conf; execução bloqueada." \
+                  "Could not back up /etc/pacman.conf; execution blocked." \
+                  "No se pudo respaldar /etc/pacman.conf; ejecución bloqueada."
+            _hk_limpar_tmp
+            return 1
+        fi
+        if [[ -f "$mirror_path" ]] && "${SUDO[@]}" cp -a -- "$mirror_path" "$tmp_root/mirrorlist.bak"; then
+            mirror_antes=1
+        fi
+
+        _hk_i "Executando o instalador oficial (ele é interativo: acompanhe e responda)..." \
+              "Running the official installer (it is interactive: follow and answer)..." \
+              "Ejecutando el instalador oficial (es interactivo: siga y responda)..."
+        "${SUDO[@]}" "$interp" "$tmp_root/strap.sh"
+        rc=$?
+        if (( rc != 0 )); then
+            "${SUDO[@]}" cp -a -- "$tmp_root/pacman.conf.bak" /etc/pacman.conf 2>/dev/null
+            (( mirror_antes )) && "${SUDO[@]}" cp -a -- "$tmp_root/mirrorlist.bak" "$mirror_path" 2>/dev/null
+            _hk_e "O instalador oficial terminou com erro (código $rc). /etc/pacman.conf e o mirrorlist anteriores foram restaurados quando possível; chaveiro/pacotes já alterados podem exigir verificação manual." \
+                  "The official installer finished with an error (code $rc). The previous /etc/pacman.conf and mirrorlist were restored when possible; keyring/packages already changed may need manual checking." \
+                  "El instalador oficial terminó con error (código $rc). Se restauraron /etc/pacman.conf y el mirrorlist anteriores cuando fue posible; el llavero/paquetes ya cambiados pueden requerir revisión manual."
+            _hk_reg "strap.sh" "FALHOU rc=$rc (rollback da configuração)"
+        else
+            _hk_reg "strap.sh" "OK"
+        fi
+        _hk_limpar_tmp
+
+        _hk_mostrar_repo
+        if [[ "$repo_estado" == "funcional" ]]; then
+            _hk_ok "Repositório BlackArch habilitado e validado." \
+                   "BlackArch repository enabled and validated." \
+                   "Repositorio BlackArch habilitado y validado."
+            _hk_add INSTALADOS "repo-blackarch"
+            sync_pendente=1
+            _hk_n "O instalador sincroniza apenas os bancos. É NECESSÁRIO atualizar o sistema completo (pacman -Syu) antes de instalar ferramentas." \
+                  "The installer only syncs the databases. A FULL system update (pacman -Syu) is REQUIRED before installing tools." \
+                  "El instalador solo sincroniza las bases. Es NECESARIO actualizar el sistema completo (pacman -Syu) antes de instalar herramientas."
+            if _hk_sn_syu; then
+                _hk_trava && _hk_atualizar
+            else
+                _hk_w "Atualização pendente. As instalações ficam bloqueadas até você atualizar." \
+                      "Update pending. Installations stay blocked until you update." \
+                      "Actualización pendiente. Las instalaciones quedan bloqueadas hasta que actualice."
+            fi
+            return 0
+        fi
+        _hk_e "O repositório NÃO ficou funcional. Revise a saída do instalador acima; nada mais foi alterado." \
+              "The repository did NOT become functional. Review the installer output above; nothing else was changed." \
+              "El repositorio NO quedó funcional. Revise la salida del instalador arriba; no se cambió nada más."
+        _hk_add FALHARAM "repo-blackarch"
+        return 1
+    }
+
+    # --------------------------------------------------------------------------
+    # Temas curados (listas pequenas e justificadas)
+    # --------------------------------------------------------------------------
+    _hk_titulo() {
+        case "$1" in
+            essencial) _hk_i "== Arsenal essencial ==" "== Essential arsenal ==" "== Arsenal esencial ==" ;;
+            recon)     _hk_i "== Reconhecimento e OSINT ==" "== Reconnaissance and OSINT ==" "== Reconocimiento y OSINT ==" ;;
+            scan)      _hk_i "== Scanning e enumeração ==" "== Scanning and enumeration ==" "== Escaneo y enumeración ==" ;;
+            web)       _hk_i "== Segurança web e APIs ==" "== Web and API security ==" "== Seguridad web y APIs ==" ;;
+            exploit)   _hk_i "== Exploração e pesquisa de vulnerabilidades ==" "== Exploitation and vulnerability research ==" "== Explotación e investigación de vulnerabilidades ==" ;;
+            cracker)   _hk_i "== Auditoria de credenciais e hashes ==" "== Credential and hash auditing ==" "== Auditoría de credenciales y hashes ==" ;;
+            rede)      _hk_i "== Redes e análise de tráfego ==" "== Networking and traffic analysis ==" "== Redes y análisis de tráfico ==" ;;
+            wifi)      _hk_i "== Segurança wireless ==" "== Wireless security ==" "== Seguridad inalámbrica ==" ;;
+            ad)        _hk_i "== Active Directory e segurança Windows ==" "== Active Directory and Windows security ==" "== Active Directory y seguridad Windows ==" ;;
+            defesa)    _hk_i "== Blue Team: defesa e monitoramento ==" "== Blue Team: defense and monitoring ==" "== Blue Team: defensa y monitoreo ==" ;;
+            forense)   _hk_i "== Forense digital ==" "== Digital forensics ==" "== Forense digital ==" ;;
+            re)        _hk_i "== Engenharia reversa e análise de malware ==" "== Reverse engineering and malware analysis ==" "== Ingeniería inversa y análisis de malware ==" ;;
+            code)      _hk_i "== Auditoria de código e DevSecOps ==" "== Code auditing and DevSecOps ==" "== Auditoría de código y DevSecOps ==" ;;
+        esac
+    }
+
+    # Observações de uso responsável/operacional de cada tema.
+    _hk_nota_tema() {
+        case "$1" in
+            essencial)
+                _hk_n "Utilitários básicos (varredura, captura, DNS, transferência). O 'bind' é instalado só pelas ferramentas dig/nslookup; o servidor NÃO é habilitado." \
+                      "Basic utilities (scanning, capture, DNS, transfer). 'bind' is installed only for dig/nslookup; the server is NOT enabled." \
+                      "Utilidades básicas (escaneo, captura, DNS, transferencia). 'bind' se instala solo por dig/nslookup; el servidor NO se habilita." ;;
+            recon)
+                _hk_n "Coleta passiva (OSINT) não toca o alvo; reconhecimento ativo (ex.: enumeração DNS por força bruta) GERA tráfego contra ele. Várias ferramentas dependem de chaves de API externas. Use só com autorização." \
+                      "Passive collection (OSINT) does not touch the target; active recon (e.g. DNS brute-forcing) GENERATES traffic against it. Many tools rely on external API keys. Use only with authorization." \
+                      "La recolección pasiva (OSINT) no toca el objetivo; el reconocimiento activo (p. ej. fuerza bruta de DNS) GENERA tráfico contra él. Varias herramientas dependen de claves API externas. Úselo solo con autorización." ;;
+            scan)
+                _hk_n "Scanners geram tráfego intenso e podem derrubar serviços frágeis. Nada é executado automaticamente. Use só em alvos autorizados." \
+                      "Scanners generate heavy traffic and can crash fragile services. Nothing is run automatically. Use only on authorized targets." \
+                      "Los escáneres generan mucho tráfico y pueden tumbar servicios frágiles. No se ejecuta nada automáticamente. Úselo solo en objetivos autorizados." ;;
+            web)
+                _hk_n "Auditoria de aplicações web/APIs: fuzzing e testes de injeção alteram dados no alvo. Use em ambientes de teste ou com autorização escrita." \
+                      "Web/API auditing: fuzzing and injection tests change data on the target. Use in test environments or with written authorization." \
+                      "Auditoría web/API: el fuzzing y las pruebas de inyección alteran datos del objetivo. Úselo en entornos de prueba o con autorización escrita." ;;
+            exploit)
+                _hk_n "ALTO RISCO OPERACIONAL: só para laboratório/validação controlada. Nenhum exploit é executado e nenhum serviço (ex.: banco do Metasploit) é iniciado." \
+                      "HIGH OPERATIONAL RISK: lab/controlled validation only. No exploit is run and no service (e.g. the Metasploit database) is started." \
+                      "ALTO RIESGO OPERATIVO: solo laboratorio/validación controlada. No se ejecuta ningún exploit ni se inicia ningún servicio (p. ej. la base de Metasploit)." ;;
+            cracker)
+                _hk_n "Análise OFFLINE de hashes (hashcat/john) é diferente de testes de autenticação em serviços ATIVOS (hydra/medusa), que geram tráfego e podem bloquear contas. Só com autorização." \
+                      "OFFLINE hash analysis (hashcat/john) differs from authentication tests against LIVE services (hydra/medusa), which generate traffic and can lock accounts. Authorized use only." \
+                      "El análisis OFFLINE de hashes (hashcat/john) es distinto de las pruebas de autenticación en servicios ACTIVOS (hydra/medusa), que generan tráfico y pueden bloquear cuentas. Solo con autorización." ;;
+            rede)
+                _hk_n "Captura de pacotes exige permissões especiais e autorização. Nenhuma interface é colocada em modo promíscuo e nenhuma captura é iniciada." \
+                      "Packet capture needs special permissions and authorization. No interface is put in promiscuous mode and no capture is started." \
+                      "La captura de paquetes requiere permisos especiales y autorización. Ninguna interfaz pasa a modo promiscuo ni se inicia captura alguna." ;;
+            wifi)
+                _hk_n "Nem toda placa suporta modo monitor/injeção. Nenhuma configuração de rede é alterada e nenhum ataque é executado. Use só em redes suas ou autorizadas." \
+                      "Not every card supports monitor mode/injection. No network setting is changed and no attack is run. Use only on your own or authorized networks." \
+                      "No todas las tarjetas soportan modo monitor/inyección. No se cambia ninguna configuración de red ni se ejecuta ningún ataque. Úselo solo en redes propias o autorizadas." ;;
+            ad)
+                _hk_n "Auditoria autorizada de ambientes Windows/AD. As ferramentas geram tráfego e autenticações no domínio. Se houver conflito de dependências, o pacman avisa e a instalação do pacote é abortada (nada é forçado)." \
+                      "Authorized auditing of Windows/AD environments. The tools generate traffic and domain authentications. On a dependency conflict, pacman warns and that package install is aborted (nothing is forced)." \
+                      "Auditoría autorizada de entornos Windows/AD. Las herramientas generan tráfico y autenticaciones en el dominio. Si hay conflicto de dependencias, pacman avisa y se aborta esa instalación (no se fuerza nada)." ;;
+            defesa)
+                _hk_n "Instalar NÃO configura nem ativa a proteção: serviços (ex.: clamav) e regras ficam desligados e o firewall não é alterado. A configuração é manual." \
+                      "Installing does NOT configure or enable protection: services (e.g. clamav) and rules stay off and the firewall is untouched. Configuration is manual." \
+                      "Instalar NO configura ni activa la protección: los servicios (p. ej. clamav) y las reglas quedan apagados y el firewall no se modifica. La configuración es manual." ;;
+            forense)
+                _hk_n "Ferramentas pesadas para imagens de disco. Nenhum disco ou evidência é tocado. Preserve evidências com bloqueio de escrita e trabalhe sempre sobre cópias." \
+                      "Heavy tools for disk images. No disk or evidence is touched. Preserve evidence with write-blocking and always work on copies." \
+                      "Herramientas pesadas para imágenes de disco. No se toca ningún disco ni evidencia. Preserve las evidencias con bloqueo de escritura y trabaje siempre sobre copias." ;;
+            re)
+                _hk_n "Nenhuma amostra de malware é executada e nenhuma proteção do sistema é desligada. Analise amostras só em máquina virtual isolada." \
+                      "No malware sample is run and no system protection is disabled. Analyze samples only in an isolated virtual machine." \
+                      "No se ejecuta ninguna muestra de malware ni se desactiva ninguna protección del sistema. Analice muestras solo en una máquina virtual aislada." ;;
+            code)
+                _hk_n "Análise estática, segredos e dependências. O nível de integração com o seu código varia por ferramenta; algumas pedem configuração própria." \
+                      "Static analysis, secrets and dependencies. Integration with your code varies by tool; some need their own setup." \
+                      "Análisis estático, secretos y dependencias. La integración con su código varía según la herramienta; algunas requieren configuración propia." ;;
+        esac
+    }
+
+    _hk_linha_pkg() {
+        local p="$1" st="$2" repo="$3"
+        case "$st" in
+            instalado)
+                msg "  ${GREEN_NEON}[já instalado]${NC}  $p" "  ${GREEN_NEON}[already installed]${NC}  $p" "  ${GREEN_NEON}[ya instalado]${NC}  $p" ;;
+            disponivel)
+                msg "  ${CYAN_NEON}[disponível: ${repo:-?}]${NC}  $p" "  ${CYAN_NEON}[available: ${repo:-?}]${NC}  $p" "  ${CYAN_NEON}[disponible: ${repo:-?}]${NC}  $p" ;;
+            indisponivel)
+                msg "  ${YELLOW_NEON}[indisponível]${NC}  $p" "  ${YELLOW_NEON}[unavailable]${NC}  $p" "  ${YELLOW_NEON}[no disponible]${NC}  $p" ;;
+            *)
+                msg "  ${RED_NEON}[falha na consulta]${NC}  $p" "  ${RED_NEON}[query failed]${NC}  $p" "  ${RED_NEON}[fallo de consulta]${NC}  $p" ;;
+        esac
+    }
+
+    
+    _hk_instalar_lista() {
+        local -a pacotes=("$@")
+        local p="" consec=0 ok_lote=0
+        (( ${#pacotes[@]} > 0 )) || return 0
+        if "${SUDO[@]}" pacman -S --needed -- "${pacotes[@]}"; then ok_lote=1; fi
+        _hk_carregar_inst
+        if (( ok_lote )); then
+            for p in "${pacotes[@]}"; do
+                if [[ -n "${INST[$p]:-}" ]]; then
+                    _hk_add INSTALADOS "$p"
+                else
+                    _hk_add VALIDACAO_FALHOU "$p"
+                fi
+            done
+            return 0
+        fi
+        _hk_w "A transação em lote falhou (veja a saída do pacman acima)." \
+              "The batch transaction failed (see the pacman output above)." \
+              "La transacción en lote falló (vea la salida de pacman arriba)."
+        if ! _hk_sn "Tentar instalar os pacotes um por um (os que derem conflito serão pulados)?" \
+                    "Try installing the packages one by one (conflicting ones will be skipped)?" \
+                    "¿Intentar instalar los paquetes uno por uno (los que den conflicto se omitirán)?"; then
+            for p in "${pacotes[@]}"; do
+                if [[ -n "${INST[$p]:-}" ]]; then _hk_add INSTALADOS "$p"; else _hk_add FALHARAM "$p"; fi
+            done
+            return 1
+        fi
+        for p in "${pacotes[@]}"; do
+            if (( consec >= 3 )); then
+                _hk_add FALHARAM "$p"
+                continue
+            fi
+            if "${SUDO[@]}" pacman -S --needed -- "$p" && pacman -Q -- "$p" &>/dev/null; then
+                _hk_add INSTALADOS "$p"
+                consec=0
+            else
+                _hk_add FALHARAM "$p"
+                consec=$((consec + 1))
+                if (( consec == 3 )); then
+                    _hk_e "3 falhas seguidas: provável problema de rede/mirror/repositório. Interrompendo o restante deste lote." \
+                          "3 failures in a row: likely a network/mirror/repository problem. Stopping the rest of this batch." \
+                          "3 fallos seguidos: probable problema de red/mirror/repositorio. Se detiene el resto de este lote."
+                fi
+            fi
+        done
+        return 1
+    }
+
+    
+    _hk_instalar_tema() {
+        local k="" p="" nec=0
+        local -a ja_visto=() cands=() alts=() todos_pkgs=() l_disp=() l_indisp=() l_erro=()
+        _hk_pre || return 1
+
+        for k in "$@"; do
+            _hk_titulo "$k"
+            _hk_nota_tema "$k"
+            if [[ -n "${T_GRP[$k]:-}" ]]; then
+                msg "${CYAN_NEON}Grupos BlackArch relacionados (opção 16): ${T_GRP[$k]}${NC}" \
+                    "${CYAN_NEON}Related BlackArch groups (option 16): ${T_GRP[$k]}${NC}" \
+                    "${CYAN_NEON}Grupos BlackArch relacionados (opción 16): ${T_GRP[$k]}${NC}"
+            fi
+            for p in ${T_PKGS[$k]}; do
+                [[ " ${ja_visto[*]} " == *" $p "* ]] && continue
+                ja_visto+=("$p")
+                todos_pkgs+=("$p")
+            done
+        done
+        echo ""
+        for p in "${todos_pkgs[@]}"; do
+            IFS='|' read -r -a alts <<< "$p"
+            cands+=("${alts[@]}")
+        done
+        _hk_classificar_lote "${cands[@]}"
+        for p in "${todos_pkgs[@]}"; do
+            _hk_resolver "$p"
+            p="$ALT"
+            _hk_linha_pkg "$p" "$CLS" "$CLS_REPO"
+            case "$CLS" in
+                instalado)    _hk_add JA_INSTALADOS "$p" ;;
+                disponivel)   _hk_add l_disp "$p" ;;
+                indisponivel) _hk_add l_indisp "$p"; _hk_add INDISPONIVEIS "$p" ;;
+                *)            _hk_add l_erro "$p"; _hk_add CONSULTA_FALHOU "$p" ;;
+            esac
+        done
+        echo ""
+        if (( ${#l_indisp[@]} > 0 )); then
+            if [[ "$repo_estado" == "ausente" ]]; then
+                _hk_w "O BlackArch NÃO está habilitado: os indisponíveis (${l_indisp[*]}) provavelmente vêm dele. Use a opção 1 e repita esta opção para instalá-los." \
+                      "BlackArch is NOT enabled: the unavailable ones (${l_indisp[*]}) probably come from it. Use option 1 and repeat this option to install them." \
+                      "BlackArch NO está habilitado: los no disponibles (${l_indisp[*]}) probablemente vienen de él. Use la opción 1 y repita esta opción para instalarlos."
+            else
+                _hk_n "Pacotes indisponíveis foram ignorados. Alguns só existem no AUR; o módulo NÃO instala do AUR automaticamente." \
+                      "Unavailable packages were skipped. Some exist only in the AUR; the module does NOT install from the AUR automatically." \
+                      "Los paquetes no disponibles se omitieron. Algunos solo existen en el AUR; el módulo NO instala desde el AUR automáticamente."
+            fi
+        fi
+        if (( ${#l_erro[@]} > 0 )); then
+            _hk_w "A consulta falhou para: ${l_erro[*]}. Isso NÃO prova que o pacote não exista; tente de novo depois de sincronizar os bancos." \
+                  "The query failed for: ${l_erro[*]}. This does NOT prove the package does not exist; retry after syncing the databases." \
+                  "La consulta falló para: ${l_erro[*]}. Esto NO prueba que el paquete no exista; reintente tras sincronizar las bases."
+        fi
+        if (( ${#l_disp[@]} == 0 )); then
+            _hk_ok "Nada novo para instalar neste conjunto." \
+                   "Nothing new to install in this set." \
+                   "Nada nuevo que instalar en este conjunto."
+            _hk_reg "tema $*" "nada a instalar"
+            return 0
+        fi
+
+        if _hk_soma_sz "${l_disp[@]}"; then
+            nec=$(( EST_MB * 14 / 10 + 512 ))
+            _hk_msg_est "$EST_MB"
+        else
+            nec=3072
+            _hk_n "Não foi possível estimar o tamanho com confiabilidade; usando uma reserva conservadora de ${nec} MiB." \
+                  "Could not estimate the size reliably; using a conservative reserve of ${nec} MiB." \
+                  "No se pudo estimar el tamaño con fiabilidad; se usa una reserva conservadora de ${nec} MiB."
+        fi
+        _hk_checar_espaco "$nec" || { _hk_reg "tema $*" "sem espaço"; return 1; }
+
+        if ! _hk_sn "Instalar ${#l_disp[@]} pacote(s): ${l_disp[*]}?" \
+                    "Install ${#l_disp[@]} package(s): ${l_disp[*]}?" \
+                    "¿Instalar ${#l_disp[@]} paquete(s): ${l_disp[*]}?"; then
+            _hk_recusada
+            _hk_reg "tema $*" "recusado"
+            return 1
+        fi
+        if _hk_instalar_lista "${l_disp[@]}"; then
+            _hk_ok "Conjunto instalado e verificado." \
+                   "Set installed and verified." \
+                   "Conjunto instalado y verificado."
+            _hk_reg "tema $*" "OK"
+        else
+            _hk_w "Conjunto concluído com falhas. Veja o resumo da sessão." \
+                  "Set finished with failures. See the session summary." \
+                  "Conjunto finalizado con fallos. Vea el resumen de la sesión."
+            _hk_reg "tema $*" "parcial"
+        fi
+        return 0
+    }
+
+    
+    _hk_descobrir_grupos() {
+        local out="" rc=0 a=""
+        local -A vistos=()
+        grupos_disp=()
+        out=$(LC_ALL=C pacman -Sg 2>&1)
+        rc=$?
+        if (( rc != 0 )); then
+            _hk_e "A consulta de grupos falhou (pacman -Sg, código $rc). Isto é diferente de 'não há grupos'." \
+                  "The group query failed (pacman -Sg, code $rc). This is different from 'there are no groups'." \
+                  "La consulta de grupos falló (pacman -Sg, código $rc). Esto es distinto de 'no hay grupos'."
+            _hk_add CONSULTA_FALHOU "grupos"
+            return 2
+        fi
+        while read -r a _; do
+            if [[ "$a" =~ ^blackarch-[a-z0-9-]+$ && "$a" != "blackarch-officials" && -z "${vistos[$a]:-}" ]]; then
+                vistos[$a]=1
+                grupos_disp+=("$a")
+            fi
+        done <<< "$out"
+        if (( ${#grupos_disp[@]} > 1 )); then
+            mapfile -t grupos_disp < <(printf '%s\n' "${grupos_disp[@]}" | LC_ALL=C sort)
+        fi
+        if (( ${#grupos_disp[@]} == 0 )); then
+            _hk_w "Nenhum grupo blackarch-* encontrado nos bancos sincronizados (repositório ausente ou bancos desatualizados)." \
+                  "No blackarch-* group was found in the synchronized databases (repository missing or databases outdated)." \
+                  "No se encontró ningún grupo blackarch-* en las bases sincronizadas (repositorio ausente o bases desactualizadas)."
+            return 1
+        fi
+        return 0
+    }
+
+    
+    _hk_mostrar_grupo() {
+        local grp="$1" rc=0 i=0 lim=20
+        _hk_membros "$grp"
+        rc=$?
+        if (( rc == 0 )); then
+                msg "${CYAN_NEON}Grupo ${grp}: ${#membros[@]} pacote(s) únicos${NC}" \
+                    "${CYAN_NEON}Group ${grp}: ${#membros[@]} unique package(s)${NC}" \
+                    "${CYAN_NEON}Grupo ${grp}: ${#membros[@]} paquete(s) únicos${NC}"
+                for (( i = 0; i < ${#membros[@]} && i < lim; i++ )); do
+                    echo "   - ${membros[i]}"
+                done
+                if (( ${#membros[@]} > lim )); then
+                    msg "   ... e mais $(( ${#membros[@]} - lim ))" "   ... and $(( ${#membros[@]} - lim )) more" "   ... y $(( ${#membros[@]} - lim )) más"
+                fi
+        elif (( rc == 1 )); then
+                _hk_e "O grupo '$grp' não existe nos bancos sincronizados." \
+                      "The group '$grp' does not exist in the synchronized databases." \
+                      "El grupo '$grp' no existe en las bases sincronizadas."
+        else
+                _hk_w "Não foi possível consultar a composição do grupo '$grp' (falha de consulta)." \
+                      "Could not query the composition of group '$grp' (query failure)." \
+                      "No se pudo consultar la composición del grupo '$grp' (fallo de consulta)."
+                _hk_add CONSULTA_FALHOU "$grp"
+        fi
+        return "$rc"
+    }
+
+    
+    _hk_verificar_grupo() {
+        local m=""
+        FALTAM=0
+        (( ${#membros[@]} > 0 )) || _hk_membros "$1" || return 2
+        _hk_carregar_inst || return 2
+        for m in "${membros[@]}"; do
+            [[ -n "${INST[$m]:-}" ]] || FALTAM=$((FALTAM + 1))
+        done
+        return 0
+    }
+
+    _hk_instalar_grupo() {
+        local grp="$1" nec=0 rc=0
+        _hk_mostrar_grupo "$grp"
+        rc=$?
+        if (( rc == 1 )); then
+            _hk_add INDISPONIVEIS "$grp"
+            return 1
+        fi
+        if (( rc == 0 )); then
+            if _hk_estimar_mb "${membros[@]}"; then
+                nec=$(( EST_MB * 14 / 10 + 1024 ))
+                _hk_msg_est "$EST_MB"
+            else
+                nec=10240
+                _hk_n "Estimativa de tamanho indisponível; reserva conservadora de ${nec} MiB." \
+                      "Size estimate unavailable; conservative reserve of ${nec} MiB." \
+                      "Estimación de tamaño no disponible; reserva conservadora de ${nec} MiB."
+            fi
+        else
+            nec=10240
+            if ! _hk_sn "Sem a composição do grupo não há como prever o impacto. Continuar mesmo assim?" \
+                        "Without the group composition the impact cannot be predicted. Continue anyway?" \
+                        "Sin la composición del grupo no se puede prever el impacto. ¿Continuar de todos modos?"; then
+                return 1
+            fi
+        fi
+        _hk_checar_espaco "$nec" || { _hk_reg "grupo $grp" "sem espaço"; return 1; }
+
+        if [[ "$avancados" == *" $grp "* ]]; then
+            _hk_w "O grupo '$grp' contém ferramentas de ALTO RISCO OPERACIONAL (uso avançado, somente em ambiente autorizado)." \
+                  "Group '$grp' contains HIGH OPERATIONAL RISK tools (advanced use, authorized environments only)." \
+                  "El grupo '$grp' contiene herramientas de ALTO RIESGO OPERATIVO (uso avanzado, solo en entornos autorizados)."
+            if ! _hk_sn "Confirma que deseja instalar esta categoria avançada?" \
+                        "Do you confirm installing this advanced category?" \
+                        "¿Confirma que desea instalar esta categoría avanzada?"; then
+                _hk_reg "grupo $grp" "avançado recusado"
+                return 1
+            fi
+        fi
+        if ! _hk_sn "Instalar a categoria COMPLETA '$grp'? (o pacman mostrará as dependências e pedirá confirmação)" \
+                    "Install the COMPLETE category '$grp'? (pacman will show dependencies and ask for confirmation)" \
+                    "¿Instalar la categoría COMPLETA '$grp'? (pacman mostrará las dependencias y pedirá confirmación)"; then
+            _hk_recusada
+            _hk_reg "grupo $grp" "recusado"
+            return 1
+        fi
+        "${SUDO[@]}" pacman -S --needed -- "$grp"
+        rc=$?
+        if (( rc == 0 )); then
+            if _hk_verificar_grupo "$grp"; then
+                if (( FALTAM == 0 )); then
+                    _hk_ok "Categoria '$grp' instalada e verificada." \
+                           "Category '$grp' installed and verified." \
+                           "Categoría '$grp' instalada y verificada."
+                    _hk_add INSTALADOS "$grp"
+                    _hk_reg "grupo $grp" "OK"
+                    return 0
+                fi
+               
+                _hk_w "Categoria '$grp' instalada PARCIALMENTE: $FALTAM pacote(s) do grupo não estão instalados (esperado se você escolheu só alguns no menu do pacman)." \
+                      "Category '$grp' installed PARTIALLY: $FALTAM group package(s) are not installed (expected if you picked only some in the pacman menu)." \
+                      "Categoría '$grp' instalada PARCIALMENTE: $FALTAM paquete(s) del grupo no están instalados (esperado si eligió solo algunos en el menú de pacman)."
+                _hk_add INSTALADOS "$grp(parcial)"
+                _hk_reg "grupo $grp" "parcial ($FALTAM pendentes)"
+                return 0
+            fi
+            _hk_w "O pacman terminou sem erro, mas não foi possível verificar a composição de '$grp'." \
+                  "pacman finished without error, but the composition of '$grp' could not be verified." \
+                  "pacman terminó sin error, pero no se pudo verificar la composición de '$grp'."
+            _hk_add VALIDACAO_FALHOU "$grp"
+            _hk_reg "grupo $grp" "não verificado"
+            return 0
+        fi
+        _hk_e "A categoria '$grp' NÃO foi concluída (código $rc)." \
+              "Category '$grp' was NOT completed (code $rc)." \
+              "La categoría '$grp' NO se completó (código $rc)."
+        _hk_add FALHARAM "$grp"
+        _hk_reg "grupo $grp" "FALHOU rc=$rc"
+        return 1
+    }
+
+   
+    _hk_categorias() {
+        local i=0 grp="" tok="" marca="" sel="" pag=0 ini=0 fim=0 tam=20
+        local -a toks=() validos=()
+        _hk_pre || return 1
+        _hk_exige_repo || return 1
+        _hk_descobrir_grupos || return 1
+        while true; do
+            ini=$((pag * tam))
+            fim=$((ini + tam))
+            (( fim > ${#grupos_disp[@]} )) && fim=${#grupos_disp[@]}
+            _hk_i "== Categorias oficiais do BlackArch (descobertas agora) — ${#grupos_disp[@]} grupos ==" \
+                  "== Official BlackArch categories (discovered now) — ${#grupos_disp[@]} groups ==" \
+                  "== Categorías oficiales de BlackArch (descubiertas ahora) — ${#grupos_disp[@]} grupos =="
+            for (( i = ini; i < fim; i++ )); do
+                grp="${grupos_disp[i]}"
+                marca=""
+                [[ "$avancados" == *" $grp "* ]] && marca=" ${RED_NEON}[AVANÇADA]${NC}"
+                msg "${GREEN_NEON}[$((i + 1))]${NC} - $grp$marca" \
+                    "${GREEN_NEON}[$((i + 1))]${NC} - $grp${marca/AVANÇADA/ADVANCED}" \
+                    "${GREEN_NEON}[$((i + 1))]${NC} - $grp${marca/AVANÇADA/AVANZADA}"
+            done
+            (( fim < ${#grupos_disp[@]} )) && msg "${YELLOW_NEON}[n]${NC} - Próxima página" "${YELLOW_NEON}[n]${NC} - Next page" "${YELLOW_NEON}[n]${NC} - Página siguiente"
+            (( ini > 0 )) && msg "${YELLOW_NEON}[p]${NC} - Página anterior" "${YELLOW_NEON}[p]${NC} - Previous page" "${YELLOW_NEON}[p]${NC} - Página anterior"
+            msg "${RED_NEON}[0]${NC} - Voltar" "${RED_NEON}[0]${NC} - Back" "${RED_NEON}[0]${NC} - Volver"
+            msg "${CYAN_NEON}Digite um ou mais números separados por espaço (repetições são ignoradas):${NC}" \
+                "${CYAN_NEON}Type one or more numbers separated by spaces (duplicates are ignored):${NC}" \
+                "${CYAN_NEON}Escriba uno o más números separados por espacios (se ignoran duplicados):${NC}"
+            _hk_ler sel || return 1
+            _hk_trim "${sel,,}"
+            sel="$TRIM"
+            if [[ "$sel" =~ ^(0|voltar|back|volver)$ ]]; then
+                return 0
+            elif [[ "$sel" =~ ^(n|next|proxima|próxima|siguiente)$ ]]; then
+                if (( fim < ${#grupos_disp[@]} )); then pag=$((pag + 1)); else
+                    _hk_w "Não há próxima página." "There is no next page." "No hay página siguiente."
+                fi
+                continue
+            elif [[ "$sel" =~ ^(p|prev|anterior)$ ]]; then
+                if (( pag > 0 )); then pag=$((pag - 1)); else
+                    _hk_w "Você já está na primeira página." "You are already on the first page." "Ya está en la primera página."
+                fi
+                continue
+            fi
+            read -r -a toks <<< "$sel"
+            validos=()
+            for tok in "${toks[@]}"; do
+                if [[ "$tok" =~ ^[0-9]+$ ]] && (( tok >= 1 && tok <= ${#grupos_disp[@]} )); then
+                    [[ " ${validos[*]} " == *" ${grupos_disp[tok-1]} "* ]] || validos+=("${grupos_disp[tok-1]}")
+                else
+                    _hk_safe "$tok"
+                    _hk_w "Entrada ignorada: '$SAFE'" \
+                          "Ignored entry: '$SAFE'" \
+                          "Entrada ignorada: '$SAFE'"
+                fi
+            done
+            if (( ${#validos[@]} == 0 )); then
+                _hk_e "Nenhuma opção válida. Tente novamente." \
+                      "No valid option. Try again." \
+                      "Ninguna opción válida. Inténtelo de nuevo."
+                sleep 1
+                continue
+            fi
+            break
+        done
+       
+        for grp in "${validos[@]}"; do
+            echo ""
+            _hk_instalar_grupo "$grp"
+            (( abortar )) && return 1
+        done
+        return 0
+    }
+
+    
+    _hk_populares() {
+        local rc=0 deps="" out="" l=""
+        _hk_pre || return 1
+        _hk_exige_repo || return 1
+        _hk_membros "blackarch-officials"
+        rc=$?
+        if (( rc == 0 )); then
+            _hk_instalar_grupo "blackarch-officials"
+            return 0
+        fi
+        if out=$(LC_ALL=C pacman -Si -- blackarch-officials 2>&1); then
+            deps=""
+            CLS_REPO=""
+            while IFS= read -r l; do
+                if [[ -z "$deps" && "$l" == "Depends On"*:* ]]; then deps="${l#*: }"; fi
+                if [[ -z "$CLS_REPO" && "$l" == Repository*:* ]]; then CLS_REPO="${l#*: }"; CLS_REPO="${CLS_REPO%% *}"; fi
+            done <<< "$out"
+            if [[ "${CLS_REPO,,}" != *blackarch* ]]; then
+                _hk_e "O pacote blackarch-officials veio de '${CLS_REPO:-?}', não do repositório BlackArch. Instalação bloqueada." \
+                      "The blackarch-officials package came from '${CLS_REPO:-?}', not the BlackArch repository. Installation blocked." \
+                      "El paquete blackarch-officials proviene de '${CLS_REPO:-?}', no del repositorio BlackArch. Instalación bloqueada."
+                _hk_add INDISPONIVEIS "blackarch-officials"
+                return 1
+            fi
+            msg "${CYAN_NEON}blackarch-officials é um metapacote. Depende de: ${deps:-?}${NC}" \
+                "${CYAN_NEON}blackarch-officials is a metapackage. Depends on: ${deps:-?}${NC}" \
+                "${CYAN_NEON}blackarch-officials es un metapaquete. Depende de: ${deps:-?}${NC}"
+            _hk_checar_espaco 5120 || return 1
+            if _hk_sn "Instalar o metapacote blackarch-officials (o pacman mostrará as dependências)?" \
+                      "Install the blackarch-officials metapackage (pacman will show the dependencies)?" \
+                      "¿Instalar el metapaquete blackarch-officials (pacman mostrará las dependencias)?"; then
+                if "${SUDO[@]}" pacman -S --needed -- blackarch-officials && pacman -Q -- blackarch-officials &>/dev/null; then
+                    _hk_ok "blackarch-officials instalado e verificado." \
+                           "blackarch-officials installed and verified." \
+                           "blackarch-officials instalado y verificado."
+                    _hk_add INSTALADOS "blackarch-officials"
+                    _hk_reg "blackarch-officials" "OK"
+                else
+                    _hk_e "A instalação de blackarch-officials falhou." \
+                          "The blackarch-officials installation failed." \
+                          "La instalación de blackarch-officials falló."
+                    _hk_add FALHARAM "blackarch-officials"
+                    _hk_reg "blackarch-officials" "FALHOU"
+                fi
+            else
+                _hk_recusada
+            fi
+            return 0
+        fi
+        _hk_w "blackarch-officials não existe nesta base (grupo ou pacote). Use a opção 16 para ver as categorias reais." \
+              "blackarch-officials does not exist in this database (group or package). Use option 16 to see the real categories." \
+              "blackarch-officials no existe en esta base (grupo o paquete). Use la opción 16 para ver las categorías reales."
+        _hk_add INDISPONIVEIS "blackarch-officials"
+        return 1
+    }
+
+    
+    _hk_completo() {
+        local est="" nec=0 rc=0 resp="" total=0
+        _hk_pre || return 1
+        _hk_exige_repo || return 1
+        _hk_w "ARSENAL COMPLETO: milhares de pacotes, MUITO espaço em disco e muitas dependências. Não é o perfil recomendado." \
+              "COMPLETE ARSENAL: thousands of packages, A LOT of disk space and many dependencies. This is not the recommended profile." \
+              "ARSENAL COMPLETO: miles de paquetes, MUCHO espacio en disco y muchas dependencias. No es el perfil recomendado."
+        _hk_membros "blackarch"
+        rc=$?
+        if (( rc != 0 )); then
+            _hk_e "Não foi possível consultar o grupo 'blackarch' (código $rc)." \
+                  "Could not query the 'blackarch' group (code $rc)." \
+                  "No se pudo consultar el grupo 'blackarch' (código $rc)."
+            _hk_add CONSULTA_FALHOU "blackarch"
+            return 1
+        fi
+        total=${#membros[@]}
+        msg "${CYAN_NEON}O grupo 'blackarch' tem ${total} pacotes únicos.${NC}" \
+            "${CYAN_NEON}The 'blackarch' group has ${total} unique packages.${NC}" \
+            "${CYAN_NEON}El grupo 'blackarch' tiene ${total} paquetes únicos.${NC}"
+        if _hk_estimar_mb "${membros[@]}"; then
+            est="$EST_MB"
+            nec=$(( est * 14 / 10 + 5120 ))
+            msg "${CYAN_NEON}Tamanho instalado estimado: ~${est} MiB (necessário com margem: ~${nec} MiB)${NC}" \
+                "${CYAN_NEON}Estimated installed size: ~${est} MiB (required with margin: ~${nec} MiB)${NC}" \
+                "${CYAN_NEON}Tamaño instalado estimado: ~${est} MiB (necesario con margen: ~${nec} MiB)${NC}"
+        else
+            nec=61440
+            _hk_n "Estimativa confiável indisponível; exigindo reserva conservadora de ${nec} MiB." \
+                  "Reliable estimate unavailable; requiring a conservative reserve of ${nec} MiB." \
+                  "Estimación fiable no disponible; se exige una reserva conservadora de ${nec} MiB."
+        fi
+        _hk_checar_espaco "$nec" || { _hk_reg "blackarch completo" "sem espaço"; return 1; }
+
+        if ! _hk_sn "Você entende o impacto e quer prosseguir com o ARSENAL COMPLETO?" \
+                    "Do you understand the impact and want to proceed with the COMPLETE ARSENAL?" \
+                    "¿Entiende el impacto y desea continuar con el ARSENAL COMPLETO?"; then
+            _hk_recusada
+            _hk_reg "blackarch completo" "recusado"
+            return 1
+        fi
+        msg "${RED_NEON}Para confirmar, digite exatamente BLACKARCH (qualquer outra coisa cancela):${NC}" \
+            "${RED_NEON}To confirm, type exactly BLACKARCH (anything else cancels):${NC}" \
+            "${RED_NEON}Para confirmar, escriba exactamente BLACKARCH (cualquier otra cosa cancela):${NC}"
+        _hk_ler resp || return 1
+        if [[ "$resp" != "BLACKARCH" ]]; then
+            _hk_w "Confirmação não recebida. Cancelado." \
+                  "Confirmation not received. Cancelled." \
+                  "Confirmación no recibida. Cancelado."
+            _hk_reg "blackarch completo" "cancelado"
+            return 1
+        fi
+        "${SUDO[@]}" pacman -S --needed -- blackarch
+        rc=$?
+        if (( rc == 0 )); then
+            if _hk_verificar_grupo "blackarch"; then
+                if (( FALTAM == 0 )); then
+                    _hk_ok "Arsenal completo instalado e verificado." \
+                           "Complete arsenal installed and verified." \
+                           "Arsenal completo instalado y verificado."
+                    _hk_add INSTALADOS "blackarch"
+                    _hk_reg "blackarch completo" "OK"
+                    return 0
+                fi
+                _hk_w "Arsenal instalado PARCIALMENTE: $FALTAM pacote(s) do grupo não estão instalados (esperado se você escolheu só alguns no menu do pacman)." \
+                      "Arsenal installed PARTIALLY: $FALTAM group package(s) are not installed (expected if you picked only some in the pacman menu)." \
+                      "Arsenal instalado PARCIALMENTE: $FALTAM paquete(s) del grupo no están instalados (esperado si eligió solo algunos en el menú de pacman)."
+                _hk_add INSTALADOS "blackarch(parcial)"
+                _hk_reg "blackarch completo" "parcial ($FALTAM pendentes)"
+                return 0
+            fi
+            _hk_add VALIDACAO_FALHOU "blackarch"
+            _hk_reg "blackarch completo" "não verificado"
+            return 0
+        fi
+        _hk_e "O arsenal completo NÃO foi concluído (código $rc)." \
+              "The complete arsenal was NOT completed (code $rc)." \
+              "El arsenal completo NO se completó (código $rc)."
+        _hk_add FALHARAM "blackarch"
+        _hk_reg "blackarch completo" "FALHOU rc=$rc"
+        return 1
+    }
+
+    
+    _hk_resumo() {
+        local r=""
+        echo -e "$hk_sep"
+        msg "${CYAN_NEON}                          RESUMO DA SESSÃO — MODO HACKER${NC}" \
+            "${CYAN_NEON}                          SESSION SUMMARY — HACKER MODE${NC}" \
+            "${CYAN_NEON}                          RESUMEN DE LA SESIÓN — MODO HACKER${NC}"
+        echo -e "$hk_sep"
+        msg " - Já existentes             : ${JA_INSTALADOS[*]:-Nenhum}" \
+            " - Already present           : ${JA_INSTALADOS[*]:-None}" \
+            " - Ya existentes             : ${JA_INSTALADOS[*]:-Ninguno}"
+        msg " - Instalados nesta sessão   : ${INSTALADOS[*]:-Nenhum}" \
+            " - Installed this session    : ${INSTALADOS[*]:-None}" \
+            " - Instalados en esta sesión : ${INSTALADOS[*]:-Ninguno}"
+        msg " - Falhas de instalação      : ${FALHARAM[*]:-Nenhuma}" \
+            " - Installation failures     : ${FALHARAM[*]:-None}" \
+            " - Fallos de instalación     : ${FALHARAM[*]:-Ninguno}"
+        msg " - Indisponíveis             : ${INDISPONIVEIS[*]:-Nenhum}" \
+            " - Unavailable               : ${INDISPONIVEIS[*]:-None}" \
+            " - No disponibles            : ${INDISPONIVEIS[*]:-Ninguno}"
+        msg " - Falha de consulta         : ${CONSULTA_FALHOU[*]:-Nenhuma}" \
+            " - Query failures            : ${CONSULTA_FALHOU[*]:-None}" \
+            " - Fallos de consulta        : ${CONSULTA_FALHOU[*]:-Ninguno}"
+        msg " - Verificação pós-instalação falhou: ${VALIDACAO_FALHOU[*]:-Nenhuma}" \
+            " - Post-install check failed : ${VALIDACAO_FALHOU[*]:-None}" \
+            " - Verificación posterior fallida: ${VALIDACAO_FALHOU[*]:-Ninguna}"
+        if (( ${#REGISTRO[@]} > 0 )); then
+            msg "${CYAN_NEON}Registro da sessão:${NC}" "${CYAN_NEON}Session log:${NC}" "${CYAN_NEON}Registro de la sesión:${NC}"
+            for r in "${REGISTRO[@]}"; do
+                echo "   $r"
+            done
+        fi
+        echo -e "$hk_sep"
+        if (( ${#FALHARAM[@]} + ${#VALIDACAO_FALHOU[@]} > 0 )); then
+            msg "${YELLOW_NEON}[CONCLUÍDO COM FALHAS] Consulte o resumo acima.${NC}" \
+                "${YELLOW_NEON}[COMPLETED WITH FAILURES] See the summary above.${NC}" \
+                "${YELLOW_NEON}[COMPLETADO CON FALLOS] Consulte el resumen anterior.${NC}"
+            echo -e "$hk_sep"
+        fi
+    }
+
+  
+    _hk_ka_iniciar() {
+        local pai=$$
+        (
+            while kill -0 "$pai" 2>/dev/null; do
+                sudo -n true 2>/dev/null
+                sleep 45
+            done
+        ) >/dev/null 2>&1 &
+        ka_pid=$!
+        disown "$ka_pid" 2>/dev/null
+        return 0
+    }
+
+   
+    _hk_encerrar() {
+        local f="" sinal="$sinal_hk"
+        local -a funcs=()
+        if [[ -n "$sinal" ]]; then
+            echo ""
+            msg "${YELLOW_NEON}[AVISO] MODO HACKER interrompido. Limpando temporários...${NC}" \
+                "${YELLOW_NEON}[WARNING] HACKER MODE interrupted. Cleaning up temporary files...${NC}" \
+                "${YELLOW_NEON}[AVISO] MODO HACKER interrumpido. Limpiando archivos temporales...${NC}"
+        fi
+        if [[ -n "$ka_pid" ]]; then
+            kill "$ka_pid" 2>/dev/null || true
+            ka_pid=""
+        fi
+        _hk_limpar_tmp
+        if (( traps_set )); then
+            if [[ -n "$old_int" ]]; then eval "$old_int"; else trap - INT; fi
+            if [[ -n "$old_term" ]]; then eval "$old_term"; else trap - TERM; fi
+            traps_set=0
+        fi
+        (( had_errexit )) && set -e
+        mapfile -t funcs < <(compgen -A function _hk_)
+        for f in "${funcs[@]}"; do
+            unset -f "$f"
+        done
+        [[ -n "$sinal" ]] || return 0
+        kill -s "$sinal" $$
+        [[ "$sinal" == "INT" ]] && exit 130
+        exit 143
+    }
+
+    # --------------------------------------------------------------------------
+    # Menu
+    # --------------------------------------------------------------------------
+    _hk_menu() {
+        echo ""
+        echo -e "$hk_sep"
+        msg "${CYAN_NEON}                              [ HACKER (DEV) — ARSENAL DE CIBERSEGURANÇA ]${NC}" \
+            "${CYAN_NEON}                              [ HACKER (DEV) — CYBERSECURITY ARSENAL ]${NC}" \
+            "${CYAN_NEON}                              [ HACKER (DEV) — ARSENAL DE CIBERSEGURIDAD ]${NC}"
+        echo -e "$hk_sep"
+        echo ""
+        echo -e "$hk_sep"
+        msg "${CYAN_NEON}[1]${NC}  - Habilitar / verificar repositório BlackArch" \
+            "${CYAN_NEON}[1]${NC}  - Enable / verify the BlackArch repository" \
+            "${CYAN_NEON}[1]${NC}  - Habilitar / verificar el repositorio BlackArch"
+        echo ""
+        msg "${CYAN_NEON}[2]${NC}  - Arsenal essencial" \
+            "${CYAN_NEON}[2]${NC}  - Essential arsenal" \
+            "${CYAN_NEON}[2]${NC}  - Arsenal esencial"
+        echo ""
+        msg "${CYAN_NEON}[3]${NC}  - Red Team ${YELLOW_NEON}(recon + scan + web + exploração + credenciais + AD)${NC}" \
+            "${CYAN_NEON}[3]${NC}  - Red Team ${YELLOW_NEON}(recon + scan + web + exploitation + credentials + AD)${NC}" \
+            "${CYAN_NEON}[3]${NC}  - Red Team ${YELLOW_NEON}(recon + scan + web + explotación + credenciales + AD)${NC}"
+        echo ""
+        msg "${CYAN_NEON}[4]${NC}  - Blue Team ${YELLOW_NEON}(defesa + forense)${NC}" \
+            "${CYAN_NEON}[4]${NC}  - Blue Team ${YELLOW_NEON}(defense + forensics)${NC}" \
+            "${CYAN_NEON}[4]${NC}  - Blue Team ${YELLOW_NEON}(defensa + forense)${NC}"
+        echo ""
+        msg "${CYAN_NEON}[5]${NC}  - Reconhecimento e OSINT" \
+            "${CYAN_NEON}[5]${NC}  - Reconnaissance and OSINT" \
+            "${CYAN_NEON}[5]${NC}  - Reconocimiento y OSINT"
+        echo ""
+        msg "${CYAN_NEON}[6]${NC}  - Scanning e enumeração" \
+            "${CYAN_NEON}[6]${NC}  - Scanning and enumeration" \
+            "${CYAN_NEON}[6]${NC}  - Escaneo y enumeración"
+        echo ""
+        msg "${CYAN_NEON}[7]${NC}  - Segurança web e APIs" \
+            "${CYAN_NEON}[7]${NC}  - Web and API security" \
+            "${CYAN_NEON}[7]${NC}  - Seguridad web y APIs"
+        echo ""
+        msg "${CYAN_NEON}[8]${NC}  - Exploração e pesquisa de vulnerabilidades ${RED_NEON}[ALTO RISCO]${NC}" \
+            "${CYAN_NEON}[8]${NC}  - Exploitation and vulnerability research ${RED_NEON}[HIGH RISK]${NC}" \
+            "${CYAN_NEON}[8]${NC}  - Explotación e investigación de vulnerabilidades ${RED_NEON}[ALTO RIESGO]${NC}"
+        echo ""
+        msg "${CYAN_NEON}[9]${NC}  - Auditoria de credenciais e hashes" \
+            "${CYAN_NEON}[9]${NC}  - Credential and hash auditing" \
+            "${CYAN_NEON}[9]${NC}  - Auditoría de credenciales y hashes"
+        echo ""
+        msg "${CYAN_NEON}[10]${NC} - Redes e análise de tráfego" \
+            "${CYAN_NEON}[10]${NC} - Networking and traffic analysis" \
+            "${CYAN_NEON}[10]${NC} - Redes y análisis de tráfico"
+        echo ""
+        msg "${CYAN_NEON}[11]${NC} - Segurança wireless" \
+            "${CYAN_NEON}[11]${NC} - Wireless security" \
+            "${CYAN_NEON}[11]${NC} - Seguridad inalámbrica"
+        echo ""
+        msg "${CYAN_NEON}[12]${NC} - Active Directory e segurança Windows" \
+            "${CYAN_NEON}[12]${NC} - Active Directory and Windows security" \
+            "${CYAN_NEON}[12]${NC} - Active Directory y seguridad Windows"
+        echo ""
+        msg "${CYAN_NEON}[13]${NC} - Forense digital" \
+            "${CYAN_NEON}[13]${NC} - Digital forensics" \
+            "${CYAN_NEON}[13]${NC} - Forense digital"
+        echo ""
+        msg "${CYAN_NEON}[14]${NC} - Engenharia reversa e análise de malware" \
+            "${CYAN_NEON}[14]${NC} - Reverse engineering and malware analysis" \
+            "${CYAN_NEON}[14]${NC} - Ingeniería inversa y análisis de malware"
+        echo ""
+        msg "${CYAN_NEON}[15]${NC} - Auditoria de código e DevSecOps" \
+            "${CYAN_NEON}[15]${NC} - Code auditing and DevSecOps" \
+            "${CYAN_NEON}[15]${NC} - Auditoría de código y DevSecOps"
+        echo ""
+        msg "${CYAN_NEON}[16]${NC} - Selecionar categorias oficiais BlackArch ${YELLOW_NEON}(descobertas no repositório)${NC}" \
+            "${CYAN_NEON}[16]${NC} - Select official BlackArch categories ${YELLOW_NEON}(discovered from the repository)${NC}" \
+            "${CYAN_NEON}[16]${NC} - Seleccionar categorías oficiales BlackArch ${YELLOW_NEON}(descubiertas en el repositorio)${NC}"
+        echo ""
+        msg "${CYAN_NEON}[17]${NC} - Ferramentas populares BlackArch ${YELLOW_NEON}(blackarch-officials)${NC}" \
+            "${CYAN_NEON}[17]${NC} - Popular BlackArch tools ${YELLOW_NEON}(blackarch-officials)${NC}" \
+            "${CYAN_NEON}[17]${NC} - Herramientas populares BlackArch ${YELLOW_NEON}(blackarch-officials)${NC}"
+        echo ""
+        msg "${RED_NEON}[18]${NC} - Arsenal BlackArch COMPLETO ${RED_NEON}[AVANÇADO: milhares de pacotes e muito espaço]${NC}" \
+            "${RED_NEON}[18]${NC} - COMPLETE BlackArch arsenal ${RED_NEON}[ADVANCED: thousands of packages and lots of space]${NC}" \
+            "${RED_NEON}[18]${NC} - Arsenal BlackArch COMPLETO ${RED_NEON}[AVANZADO: miles de paquetes y mucho espacio]${NC}"
+        echo ""
+        msg "${RED_NEON}[0]${NC}  - Voltar" \
+            "${RED_NEON}[0]${NC}  - Back" \
+            "${RED_NEON}[0]${NC}  - Volver"
+        echo -e "$hk_sep"
+        echo ""
+    }
+
+    # ==========================================================================
+    # Pré-condições absolutas
+    # ==========================================================================
+    if ! command -v pacman &>/dev/null; then
+        _hk_e "pacman não foi encontrado. O MODO HACKER não pode continuar." \
+              "pacman was not found. HACKER MODE cannot continue." \
+              "No se encontró pacman. El MODO HACKER no puede continuar."
+        _hk_encerrar
+        return 1
+    fi
+
+    old_int=$(trap -p INT)
+    old_term=$(trap -p TERM)
+    trap 'sinal_hk=INT; _hk_encerrar' INT
+    trap 'sinal_hk=TERM; _hk_encerrar' TERM
+    traps_set=1
+
+    # Compatibilidade do sistema (uma vez, antes de qualquer coisa).
+    if ! _hk_so; then
+        _hk_encerrar
+        return 1
+    fi
+    if (( so_artix )); then
+        if ! _hk_sn "Continuar mesmo assim no Artix?" \
+                    "Continue anyway on Artix?" \
+                    "¿Continuar de todos modos en Artix?"; then
+            _hk_encerrar
+            (( abortar )) && return 1
+            return 0
+        fi
+    fi
+
+    echo -e "$hk_sep"
+    msg "${CYAN_NEON}[MODO HACKER]${NC} Iniciando protocolo de preparação do laboratório de cibersegurança..." \
+        "${CYAN_NEON}[HACKER MODE]${NC} Starting the cybersecurity lab setup protocol..." \
+        "${CYAN_NEON}[MODO HACKER]${NC} Iniciando el protocolo de preparación del laboratorio de ciberseguridad..."
+    echo -e "$hk_sep"
+    _hk_n "Uso exclusivo em sistemas e redes que você possui ou tem autorização por escrito para testar. Este módulo apenas INSTALA ferramentas; nada é executado contra alvo algum." \
+          "Use only on systems and networks you own or are authorized in writing to test. This module only INSTALLS tools; nothing is run against any target." \
+          "Uso exclusivo en sistemas y redes que posee o que tiene autorización por escrito para probar. Este módulo solo INSTALA herramientas; no se ejecuta nada contra ningún objetivo."
+    sleep 1.5
+    echo ""
+
+    # sudo: valida o acesso e mantém a credencial viva durante o módulo.
+    if (( EUID != 0 )); then
+        SUDO=(sudo)
+        if ! command -v sudo &>/dev/null; then
+            _hk_e "sudo não foi encontrado." "sudo was not found." "No se encontró sudo."
+            _hk_encerrar
+            return 1
+        elif ! sudo -n true 2>/dev/null && ! sudo -v; then
+            _hk_e "Não foi possível obter privilégios de administrador (sudo)." \
+                  "Could not obtain administrator privileges (sudo)." \
+                  "No se pudieron obtener privilegios de administrador (sudo)."
+            _hk_encerrar
+            return 1
+        fi
+        _hk_ka_iniciar
+    fi
+
+    # ==========================================================================
+    # Laço do menu: opção inválida repete; EOF encerra com erro.
+    # ==========================================================================
+    while (( ! abortar )); do
+        _hk_menu
+        _hk_ler opcao || break
+        _hk_trim "${opcao,,}"
+        opcao="$TRIM"
+        case "$opcao" in
+            0|voltar|back|volver|sair|exit|salir) break ;;
+            1)  _hk_habilitar_blackarch ;;
+            2)  _hk_instalar_tema essencial ;;
+            3)  _hk_instalar_tema recon scan web exploit cracker ad ;;
+            4)  _hk_instalar_tema defesa forense ;;
+            5)  _hk_instalar_tema recon ;;
+            6)  _hk_instalar_tema scan ;;
+            7)  _hk_instalar_tema web ;;
+            8)  _hk_instalar_tema exploit ;;
+            9)  _hk_instalar_tema cracker ;;
+            10) _hk_instalar_tema rede ;;
+            11) _hk_instalar_tema wifi ;;
+            12) _hk_instalar_tema ad ;;
+            13) _hk_instalar_tema forense ;;
+            14) _hk_instalar_tema re ;;
+            15) _hk_instalar_tema code ;;
+            16) _hk_categorias ;;
+            17) _hk_populares ;;
+            18) _hk_completo ;;
+            *)
+                _hk_safe "$opcao"
+                _hk_e "Opção inválida: '$SAFE'. Digite um número de 0 a 18." \
+                      "Invalid option: '$SAFE'. Type a number from 0 to 18." \
+                      "Opción inválida: '$SAFE'. Escriba un número del 0 al 18."
+                sleep 1
+                ;;
+        esac
+        (( abortar )) && break
+        sleep 1
+    done
+
+    if (( abortar )); then
+        _hk_w "Entrada encerrada: saindo do MODO HACKER." \
+              "Input ended: leaving HACKER MODE." \
+              "Entrada finalizada: saliendo del MODO HACKER."
+        _hk_resumo
+        _hk_encerrar
+        return 1
+    fi
+    _hk_resumo
+    _hk_encerrar
+    sleep 1
+    return 0
+}
+
+export -f HACKER_MODE
 
 #=======================================================
 #fim dos modos pre definidos
@@ -5548,6 +7310,25 @@ OPCAO_PRE_DEFINIDAS_SCRIPTS() {
             FUNCAO_AUR_HELPER
             sleep 1
             echo ""
+            HACKER_MODE
+            sleep 1
+            echo ""
+            FUNCAO_INSTALAR_NAVEGADORES
+            sleep 1 
+            echo ""
+            FUNCAO_INSTALAR_ARCH_UPDATE_FULL
+            sleep 1
+            echo ""
+            FUNCAO_INSTALAR_WALLPAPERS
+            echo ""
+            sleep 1
+            LIMPAR_ORFAOS
+            sleep 1
+            echo ""
+            MENSAGEM_FINAL
+            sleep 1
+            echo ""
+            PERGUNTAR_REINICIAR
             ;;
         4|voltar|back|regresar)
         echo ""
