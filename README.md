@@ -44,7 +44,6 @@ Se você ainda não tem nenhum helper AUR instalado, use um dos blocos abaixo. E
 sudo pacman -S --needed base-devel git && \
 git clone https://aur.archlinux.org/yay.git && \
 cd yay && makepkg -si && cd .. && \
-# 2. Usa o yay recém-instalado para instalar o post-install-arch-full
 yay -S --noconfirm post-install-arch-full
 ```
 ### Instalação junto com paru:
@@ -53,7 +52,6 @@ yay -S --noconfirm post-install-arch-full
 sudo pacman -S --needed base-devel git && \
 git clone https://aur.archlinux.org/paru.git && \
 cd paru && makepkg -si && cd .. && \
-# 2. Usa o paru recém-instalado para instalar o post-install-arch-full
 paru -S --noconfirm post-install-arch-full
 ```
 ## 👨‍💻 Autor
