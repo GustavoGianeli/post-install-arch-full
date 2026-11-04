@@ -11,16 +11,50 @@ Odin Protocol: Advanced Arch Linux post-installation automation, intelligent mul
 ## 🛠️ Status do Projeto
 - [x] Módulo Base e Automação Graphical
 - [x] Blindagem contra erros de execução (Sanity checks)
-- [ ] Predefinições e Perfis Avançados (Opção 3 - Em breve)
+- [x] Predefinições e Perfis Avançados (Opção 3 - Em breve)
 - [ ] Interface TTY simplificada (`dialog` / `whiptail`)
-
-## 👨‍💻 Autor
-Desenvolvido por **The Seventh** (Gustavo Gianeli).
 ## novas noticias logo!
+
+---
+### 🛠️ 1. Via Git (recomendado para inspeção do PKGBUILD) > Pacote disponível no AUR: 
+
 ```bash
 sudo pacman -S --needed git debugedit base-devel curl unzip pciutils enscript ghostscript glibc && \
 git clone https://github.com/GustavoGianeli/post-install-arch-full.git && \
 cd post-install-arch-full && \
 makepkg -si
 ```
-Created By: **Gustavo Gianeli (𝕿𝖍𝖊 S𝖊𝖛𝖊𝖓𝖙𝖍)**"
+---------
+### Se você já tem um helper instalado pode instalar direto via AUR : 
+
+### 1. Via yay: 
+```bash
+yay -S --noconfirm post-install-arch-full
+```
+### 2. Via paru:
+```bash
+paru -S --noconfirm post-install-arch-full
+```
+### 📦 Instalação do zero (helper + pacote)
+Se você ainda não tem nenhum helper AUR instalado, use um dos blocos abaixo. Eles instalam o helper a partir do código-fonte e, na sequência, já instalam o post-install-arch-full.
+
+### Intalção junto com yay:
+
+```bash
+sudo pacman -S --needed base-devel git && \
+git clone https://aur.archlinux.org/yay.git && \
+cd yay && makepkg -si && cd .. && \
+# 2. Usa o yay recém-instalado para instalar o post-install-arch-full
+yay -S --noconfirm post-install-arch-full
+```
+### Instalação junto com paru:
+
+```bash
+sudo pacman -S --needed base-devel git && \
+git clone https://aur.archlinux.org/paru.git && \
+cd paru && makepkg -si && cd .. && \
+# 2. Usa o paru recém-instalado para instalar o post-install-arch-full
+paru -S --noconfirm post-install-arch-full
+```
+## 👨‍💻 Autor
+Desenvolvido por **The Seventh** (Gustavo Gianeli).
