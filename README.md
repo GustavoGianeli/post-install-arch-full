@@ -62,7 +62,7 @@ paru -S --noconfirm post-install-arch-full
 ### 📦 Instalação do zero (helper + pacote)
 **Se você ainda não tem nenhum helper AUR instalado, use um dos blocos abaixo. Eles instalam o helper a partir do código-fonte e, na sequência, já instalam o post-install-arch-full.**
 
-### Intalação junto com yay:
+### Instalação junto com yay:
 
 ```bash
 sudo pacman -S --needed base-devel git && \
