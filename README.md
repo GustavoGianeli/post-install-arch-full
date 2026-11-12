@@ -1,3 +1,5 @@
+<img src="https://flagcdn.com/16x12/us.png" alt="US"> [English (US)](README.en-usmd) 
+---
 
 <img width="1280" height="896" alt="post-install-odin-nordic-banner-preview" src="https://github.com/user-attachments/assets/729d9577-2739-439a-afcd-adcbf80b912d" />
 
@@ -285,3 +287,5 @@ Funções independentes: uma falha fica isolada no seu bloco.
 Desenvolvido por **Gustavo Gianeli (𝕿𝖍𝖊 𝑺𝖊𝖛𝖊𝖓𝖙𝖍).**
 
 Foco do projeto: automação Shell para instalação e preparação da base Arch Linux.
+
+
