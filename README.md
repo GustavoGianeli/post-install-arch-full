@@ -1,4 +1,6 @@
-<img src="https://flagcdn.com/16x12/us.png" alt="US"> [English (US)](README.en-us.md) 
+**Readme**: 
+
+### **<img src="https://flagcdn.com/16x12/us.png" alt="US"> [English (US)](README.en-us.md)**      |      **<img src="https://flagcdn.com/16x12/es.png" alt="ES"> [Español (ES)](README.es-es.md)** 
 ---
 
 <img width="1280" height="896" alt="post-install-odin-nordic-banner-preview" src="https://github.com/user-attachments/assets/729d9577-2739-439a-afcd-adcbf80b912d" />
@@ -37,9 +39,10 @@ Ele conversa com você no seu idioma e não deixa nada pela metade: cada bloco v
 ---
 
 <img width="1176" height="825" alt="print1" src="https://github.com/user-attachments/assets/00404901-bde2-4529-9775-29affba01b7d" />
+
 <img width="1176" height="825" alt="print2" src="https://github.com/user-attachments/assets/b033cc4b-4acf-4040-ba1d-8033052cd14b" />
 
-
+---
 ### **Pacote disponível no AUR:** 
 
 ### **🛠️ 1. Via Git (recomendado para inspeção do PKGBUILD)** 
@@ -99,6 +102,7 @@ paru -S --noconfirm post-install-arch-full
 **⭐ Modo 1 — Iniciante / Padrão (o recomendado)**
 
 <img width="1743" height="968" alt="executando 2" src="https://github.com/user-attachments/assets/1d58d2bf-6f9c-4969-8956-e316bf5dc421" />
+
 <img width="1308" height="816" alt="reboot" src="https://github.com/user-attachments/assets/da78897b-e560-4c94-9450-f20603c4e3a9" />
 
 
@@ -243,6 +247,7 @@ Instala só as ferramentas que você escolher: arsenal essencial, kit completo d
 Nunca executa nenhuma ferramenta contra alvo algum: **o módulo só habilita o repositório e instala**
 
 ---
+
 <img width="1176" height="825" alt="print2" src="https://github.com/user-attachments/assets/b0ec5c17-991e-450a-bb56-3eb1a96a0dab" />
 
 <img width="1146" height="829" alt="modo 2" src="https://github.com/user-attachments/assets/c2f81f6f-3054-43a4-9c1f-4f8d36c574dc" />
