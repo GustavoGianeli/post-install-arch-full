@@ -5,7 +5,7 @@
 
 <img width="1280" height="896" alt="post-install-odin-nordic-banner-preview" src="https://github.com/user-attachments/assets/729d9577-2739-439a-afcd-adcbf80b912d" />
 
-### ⚡ Project Odin (`post-install-arch-full`) V : 1.0-4
+### ⚡ Project Odin (`post-install-arch-full`) V : 1.0-5
 
 **⚡Proyecto Odin⚡ >** Una herramienta modular de post-instalación y aprovisionamiento para Arch Linux y sistemas compatibles, con detección de entorno, configuración automatizada y perfiles especializados.
 
