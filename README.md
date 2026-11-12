@@ -1,4 +1,4 @@
-<img src="https://flagcdn.com/16x12/us.png" alt="US"> [English (US)](README.en-usmd) 
+<img src="https://flagcdn.com/16x12/us.png" alt="US"> [English (US)](README.en-us.md) 
 ---
 
 <img width="1280" height="896" alt="post-install-odin-nordic-banner-preview" src="https://github.com/user-attachments/assets/729d9577-2739-439a-afcd-adcbf80b912d" />
