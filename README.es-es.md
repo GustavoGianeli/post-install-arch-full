@@ -9,6 +9,8 @@
 
 **⚡Proyecto Odin⚡ >** Una herramienta modular de post-instalación y aprovisionamiento para Arch Linux y sistemas compatibles, con detección de entorno, configuración automatizada y perfiles especializados.
 
+**Nota:** Al tratarse de un script que descarga una gran cantidad de paquetes, es necesario tener al menos **15 GB LIBRES** para ejecutarlo. El propio script cuenta con un bloqueo de seguridad que impide su ejecución si hay menos de 15 GB disponibles.
+
 ---
 
 ¿Instalaste Arch puro y quieres dejarlo listo en minutos? El Project Odin es un instalador posterior (un mini software en Bash, en un solo archivo) hecho para quien acaba de instalar Arch Linux, o un derivado, y quiere empezar a usarlo: códecs de video y audio, entorno gráfico funcionando, controladores de tu hardware, AUR helper, navegador, fondos de pantalla y herramientas de mantenimiento, sin buscar tutoriales.
