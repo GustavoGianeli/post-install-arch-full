@@ -1,5 +1,8 @@
-<img src="https://flagcdn.com/16x12/br.png" alt="BR"> [Português (BR)](README.md)
+**Readme**: 
+
+### **<img src="https://flagcdn.com/16x12/es.png" alt="ES"> [Español (ES)](README.es-es.md)**      | <img src="https://flagcdn.com/16x12/br.png" alt="BR"> [Português (BR)](README.md)  
 ---
+
 
 <img width="1280" height="896" alt="post-install-odin-nordic-banner-preview" src="https://github.com/user-attachments/assets/16258984-112a-47e3-b0d6-9917c70ddce1" />
 
@@ -100,6 +103,7 @@ paru -S --noconfirm post-install-arch-full
 **⭐ Mode 1 — Beginner / Standard (the recommended one)**
 
 <img width="1743" height="968" alt="executando 2" src="https://github.com/user-attachments/assets/1d58d2bf-6f9c-4969-8956-e316bf5dc421" />
+
 <img width="1308" height="816" alt="reboot" src="https://github.com/user-attachments/assets/da78897b-e560-4c94-9450-f20603c4e3a9" />
 
 ---
