@@ -271,6 +271,9 @@ Nunca ejecuta ninguna herramienta contra ningún objetivo: **el módulo solo hab
 
 <img width="1308" height="816" alt="reboot" src="https://github.com/user-attachments/assets/f6a26ae5-d3e4-4dd7-9447-5ed63fd724ac" />
 
+App menu:
+<img width="1118" height="1118" alt="iconeodin" src="https://github.com/user-attachments/assets/9a4c6af4-1b39-4270-bbba-c60beee92894" />
+
 ---
 ### **🛡️ Seguridad y fiabilidad**
 
