@@ -272,6 +272,10 @@ Nunca executa nenhuma ferramenta contra alvo algum: **o módulo só habilita o r
 
 <img width="1308" height="816" alt="reboot" src="https://github.com/user-attachments/assets/f6a26ae5-d3e4-4dd7-9447-5ed63fd724ac" />
 
+App menu:
+<img width="1118" height="1118" alt="iconeodin" src="https://github.com/user-attachments/assets/9a4c6af4-1b39-4270-bbba-c60beee92894" />
+
+
 ---
 ### **🛡️ Segurança e confiabilidade**
 
